@@ -7,7 +7,7 @@
  * MIT Licensed.
  */
 
-Module.register(MMM-fitbit,{
+Module.register('MMM-fitbit',{
 
 	// Default module config.
 	defaults: {

@@ -1,3 +1,5 @@
 python/app_access.ini
 
 *.log
+*.pyc
+*.ini
