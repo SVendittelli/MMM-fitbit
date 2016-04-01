@@ -9,6 +9,7 @@ import urllib2
 import urllib
 import json
 
+#Where the ini files are stored
 workingDirectory = './modules/MMM-fitbit/python/'
 
 #Get keys and secrets

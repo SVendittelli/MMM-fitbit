@@ -32,10 +32,8 @@ module.exports = NodeHelper.create({
 	// Subclass socketNotificationReceived received.
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === 'RUN') {
-			this.pythonRun()
-			//var stepCount = 10;
-			//this.sendSocketNotification('COUNTED', {"steps": stepCount});
-			//console.log("Updating steps to " + stepCount);
+			console.log('Run request recieved.');
+			this.pythonRun();
 		};
 	},
 });
