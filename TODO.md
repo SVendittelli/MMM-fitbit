@@ -1,7 +1,11 @@
 TODO
 ==
-* Get goals for steps
-* Update data every 15 minutes
+* Get goals for steps.
+* Update data every 15 minutes.
+* Change to JSON rather than text from the Python output.
+* Get initial tokens automatically?
+* Update the step count every 15 minutes.
+* _Cleanup the code_
 
 ## Sample config:
 ````javascript
@@ -33,9 +37,10 @@ Files
 * `credentials.ini`
 * `tokens.ini`
 
-Support
+Supported Data
 --
 * Steps
+
 **WIP**:
 * Floors
 * Calories

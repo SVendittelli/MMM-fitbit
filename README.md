@@ -11,8 +11,4 @@ Dependencies
 
 TODO
 --
-* Change to JSON rather than text from the Python output.
-* Possibly swich to JS API for fitbit.
-* Get initial tokens automatically.
-* Update the step count every 15 minutes
-* _Cleanup the code_
+See [here](TODO.md).
