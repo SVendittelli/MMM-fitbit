@@ -9,6 +9,6 @@ def to_node(type, message):
 
 #to_node("output","Hello World!")
 
-f = open('modules/MMM-fitbit/python/test.txt','w')
-f.write("Hello World!\n")
-f.close()
+#f = open('modules/MMM-fitbit/python/test.txt','w')
+#f.write("Hello World!\n")
+#f.close()

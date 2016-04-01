@@ -12,7 +12,7 @@ import json
 #Where the ini files are stored
 workingDirectory = './modules/MMM-fitbit/python/'
 
-#Get keys and secrets
+#Get id, keys, and secrets
 keyParser = ConfigParser.SafeConfigParser()
 keyParser.read(workingDirectory + 'app_access.ini')
 client_id = keyParser.get('Login Parameters', 'C_ID')
@@ -26,7 +26,7 @@ FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"
 TokenURL = "https://api.fitbit.com/oauth2/token"
 
 #Get and write the tokens from here
-IniFile = "tokens.ini"
+tokenFile = "tokens.ini"
 
 #Some contants defining API error handling responses
 TokenRefreshedOK = "Token refreshed OK"
@@ -36,34 +36,34 @@ ErrorInAPI = "Error when making API call that I couldn't handle"
 def ReadTokens():
 	print "Reading from the tokens file..."
 	
-	#try:
-	tokenParser = ConfigParser.SafeConfigParser()
-	tokenParser.read(workingDirectory + IniFile)
-	AccToken = tokenParser.get('Tokens', 'ACC_TOK')
-	RefToken = tokenParser.get('Tokens', 'REF_TOK')
-	#except ConfigParser.NoSectionError:
-	#raise ValueError("tokens.ini file not found.")
-	#else:
-	#Return values
-	print "Read successful."
-	return AccToken, RefToken
+	try:
+		tokenParser = ConfigParser.SafeConfigParser()
+		tokenParser.read(workingDirectory + tokenFile)
+		AccToken = tokenParser.get('Tokens', 'ACC_TOK')
+		RefToken = tokenParser.get('Tokens', 'REF_TOK')
+	except ConfigParser.NoSectionError:
+		raise ValueError("tokens.ini file not found.")
+	else:
+		#Return values
+		print "Read successful."
+		return AccToken, RefToken
 
 def WriteTokens(AccToken,RefToken):
 	print "Writing new token to the config file..."
 	print "Writing this: " + AccToken + " and " + RefToken
 	
 	tokenParser = ConfigParser.SafeConfigParser()
-	tokenParser.read(workingDirectory + IniFile)
+	tokenParser.read(workingDirectory + tokenFile)
 	
 	try:
 		tokenParser.set('Tokens','REF_TOK',RefToken)
 		tokenParser.set('Tokens','ACC_TOK',AccToken)
-		with open(workingDirectory + IniFile, 'wb') as tokenFile:
+		with open(workingDirectory + tokenFile, 'wb') as tokenFile:
 			tokenParser.write(tokenFile)
 	except ConfigParser.NoSectionError:
 		print 'No Section Error'
 		tokenParser.add_section('Tokens')
-		with open(workingDirectory + IniFile, 'wb') as tokenFile:
+		with open(workingDirectory + tokenFile, 'wb') as tokenFile:
 			tokenParser.write(tokenFile)
 		WriteTokens(AccToken,RefToken)
 	else:

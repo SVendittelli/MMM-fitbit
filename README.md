@@ -7,6 +7,7 @@ MagicMirror Module for fitbit. You must create your application and store its de
 Dependencies
 --
 * [python-shell](https://www.npmjs.com/package/python-shell) (npm install python-shell)
+* [python-fitbit](https://github.com/orcasgit/python-fitbit) (sudo pip install -r fitbit/requirements.txt)
 
 TODO
 --
