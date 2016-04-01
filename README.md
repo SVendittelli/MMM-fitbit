@@ -4,8 +4,12 @@ MagicMirror Module for fitbit. You must create your application and store its de
 
 **WIP**: Currently only provides step count. Plan to expand to pretty much anything.
 
+Dependencies
+--
+* [python-shell](https://www.npmjs.com/package/python-shell) (npm install python-shell)
+
 TODO
-==
+--
 * Change to JSON rather than text from the Python output.
 * Possibly swich to JS API for fitbit.
 * Get initial tokens automatically.
