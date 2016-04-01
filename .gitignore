@@ -1,4 +1,5 @@
-python/app_access.ini
+python/testing.py
+python/fitbit/test.py
 
 *.log
 *.pyc
