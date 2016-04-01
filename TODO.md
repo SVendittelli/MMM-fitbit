@@ -19,15 +19,16 @@ TODO
 Files
 --
 ## Javascript
-MMM-fitbit.js
-node_helper.js
+`MMM-fitbit.js`
+`node_helper.js`
 ## Python
-file to get first access and refresh tokens
-file to update these
-file to return data
+`setCredenitals.py`
+`clientAuth.py` - file to get first access and refresh tokens
+`tokens.py`- file to update tokens
+`getData.py` - file to return data
 ## .ini
-app_access.ini
-tokens.ini
+`credentials.ini`
+`tokens.ini`
 
 Support
 --

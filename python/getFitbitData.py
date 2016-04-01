@@ -6,8 +6,8 @@ import checkTokens
 FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"
 
 #Declare these global variables that we'll use for the access and refresh tokens
-AccessToken = ""
-RefreshToken = ""
+#AccessToken = ""
+#RefreshToken = ""
 
 APICallOK = False
 attempts = 0
@@ -23,7 +23,7 @@ try:
 			break
 	
 	#Create authorised client and grab step count from one day of steps
-	authd_client = fitbit.Fitbit(checkTokens.consumer_key, checkTokens.consumer_secret, oauth2=True, access_token=AccessToken, refresh_token=RefreshToken)
+	authd_client = fitbit.Fitbit(checkTokens.client_key, checkTokens.client_secret, oauth2=True, access_token=AccessToken, refresh_token=RefreshToken)
 	timeSeriesSteps = authd_client.time_series('activities/steps',period='1d')
 	print "steps: " + timeSeriesSteps['activities-steps'][0]['value']
 except ValueError as err:

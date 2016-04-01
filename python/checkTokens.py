@@ -13,11 +13,11 @@ import json
 workingDirectory = './modules/MMM-fitbit/python/'
 
 #Get id, keys, and secrets
-keyParser = ConfigParser.SafeConfigParser()
-keyParser.read(workingDirectory + 'app_access.ini')
-client_id = keyParser.get('Login Parameters', 'C_ID')
-consumer_key = keyParser.get('Login Parameters', 'C_KEY')
-consumer_secret = keyParser.get('Login Parameters', 'C_SECRET')
+credentialParser = ConfigParser.SafeConfigParser()
+credentialParser.read(workingDirectory + 'credentials.ini')
+client_id = credentialParser.get('Credentials', 'C_ID')
+client_key = credentialParser.get('Credentials', 'C_KEY')
+client_secret = credentialParser.get('Credentials', 'C_SECRET')
 
 #This is the Fitbit URL to use for the API call
 FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"
@@ -58,13 +58,13 @@ def WriteTokens(AccToken,RefToken):
 	try:
 		tokenParser.set('Tokens','REF_TOK',RefToken)
 		tokenParser.set('Tokens','ACC_TOK',AccToken)
-		with open(workingDirectory + tokenFile, 'wb') as tokenFile:
-			tokenParser.write(tokenFile)
+		with open(workingDirectory + tokenFile, 'wb') as iniFile:
+			tokenParser.write(iniFile)
 	except ConfigParser.NoSectionError:
 		print 'No Section Error'
 		tokenParser.add_section('Tokens')
-		with open(workingDirectory + tokenFile, 'wb') as tokenFile:
-			tokenParser.write(tokenFile)
+		with open(workingDirectory + tokenFile, 'wb') as iniFile:
+			tokenParser.write(iniFile)
 		WriteTokens(AccToken,RefToken)
 	else:
 		print "Write successful."

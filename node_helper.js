@@ -1,10 +1,23 @@
 'use strict';
 const NodeHelper = require('node_helper');
 const PythonShell = require('python-shell');
+PythonShell.defaultOptions = { scriptPath: 'modules/MMM-fitbit/python' };
 
 module.exports = NodeHelper.create({
 	
-	pythonRun: function () {
+	setCreds: function (id,key,secret) {
+		var options = {
+			mode: 'json',
+			args: [id, key, secret]
+		}
+		PythonShell.run('setCredentials.py', options, function (err, results) {
+			if (err) throw err;
+			// results is an array consisting of messages collected during execution
+			console.log('results: %j', results);
+		});
+	},
+	
+	getData: function () {
 		var stepCount = 0;
 		const self = this;
 		const fileName = 'getFitbitData.py';
@@ -31,9 +44,14 @@ module.exports = NodeHelper.create({
 	
 	// Subclass socketNotificationReceived received.
 	socketNotificationReceived: function(notification, payload) {
+		if (notification === 'SET CREDS') {
+			console.log('Set credential request recieved.');
+			console.log(payload)
+			this.setCreds(payload.client_id,payload.client_key,payload.client_secret);
+		};
 		if (notification === 'RUN') {
 			console.log('Run request recieved.');
-			this.pythonRun();
+			this.getData();
 		};
 	},
 });

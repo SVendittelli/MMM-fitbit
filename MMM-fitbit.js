@@ -11,13 +11,13 @@ Module.register('MMM-fitbit',{
 
 	// Default module config.
 	defaults: {
+		credentials: {
+			client_id: '',
+			client_key: '',
+			client_secret: ''
+		},
 		STEPS: 0,
 	},
-	
-	// Define required scripts.
-	/*getScripts: function() {
-		return ['moment.js'];
-	},*/
 	
 	// Override socket notification handler.
 	socketNotificationReceived: function(notification, payload) {
@@ -30,9 +30,8 @@ Module.register('MMM-fitbit',{
 	
 	start: function() {
 		Log.info('Starting module: ' + this.name);
-		
+		this.sendSocketNotification('SET CREDS',this.config.credentials)
 		this.sendSocketNotification('RUN', 'intial');
-		//this.moveBar();
 		
 		// Schedule update interval.
 		var self = this;
