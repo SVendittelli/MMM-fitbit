@@ -8,16 +8,15 @@ import base64
 import urllib2
 import urllib
 import json
+import os
+
+from setCredentials import ReadCredentials
 
 #Where the ini files are stored
-workingDirectory = './modules/MMM-fitbit/python/'
+workingDirectory = './' + os.path.dirname(os.path.relpath(os.path.realpath(__file__))) + '/'
 
 #Get id, keys, and secrets
-credentialParser = ConfigParser.SafeConfigParser()
-credentialParser.read(workingDirectory + 'credentials.ini')
-client_id = credentialParser.get('Credentials', 'C_ID')
-client_key = credentialParser.get('Credentials', 'C_KEY')
-client_secret = credentialParser.get('Credentials', 'C_SECRET')
+client_id, client_key, client_secret = ReadCredentials()
 
 #This is the Fitbit URL to use for the API call
 FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"

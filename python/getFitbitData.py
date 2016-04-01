@@ -5,10 +5,6 @@ import checkTokens
 #This is the Fitbit URL to use for the API call
 FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"
 
-#Declare these global variables that we'll use for the access and refresh tokens
-#AccessToken = ""
-#RefreshToken = ""
-
 APICallOK = False
 attempts = 0
 try:

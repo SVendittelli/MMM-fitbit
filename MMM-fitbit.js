@@ -23,7 +23,6 @@ Module.register('MMM-fitbit',{
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "COUNTED"){
 			this.config.STEPS = payload.steps;
-			console.log("Steps counted: " + payload.steps + ".");
 			this.updateDom();
 		}
 	},
