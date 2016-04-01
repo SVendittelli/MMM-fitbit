@@ -83,7 +83,7 @@ def GetNewAccessToken(RefToken):
 	tokenreq = urllib2.Request(TokenURL,BodyURLEncoded)
 	
 	#Add the headers, first we base64 encode the client id and client secret with a : inbetween and create the authorisation header
-	tokenreq.add_header('Authorization', 'Basic ' + base64.b64encode(client_id + ":" + consumer_secret))
+	tokenreq.add_header('Authorization', 'Basic ' + base64.b64encode(client_id + ":" + client_secret))
 	tokenreq.add_header('Content-Type', 'application/x-www-form-urlencoded')
 	
 	#Fire off the request

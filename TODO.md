@@ -4,7 +4,8 @@ TODO
 * Update data every 15 minutes
 
 ## Sample config:
-```{
+````javascript
+{
 	module: 'MMM-fitbit',
 	position: 'top_center',
 	config: [
@@ -14,7 +15,7 @@ TODO
 			display: ['steps','sleep']
 		}
 	]
-},```
+},````
 
 Files
 --
