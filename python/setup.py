@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# addapted from gather_key_oauth2.py included with https://github.com/orcasgit/python-fitbit
+
 import cherrypy
 import os
 import sys
@@ -10,7 +12,7 @@ from base64 import b64encode
 from fitbit.api import FitbitOauth2Client
 from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
 from requests_oauthlib import OAuth2Session
-from checkTokens import WriteTokens
+from iniHandler import ReadCredentials, WriteTokens
 
 class OAuth2Server:
     def __init__(self, client_id, client_secret,
@@ -18,9 +20,14 @@ class OAuth2Server:
         """ Initialize the FitbitOauth2Client """
         self.redirect_uri = redirect_uri
         self.success_html = """
+			<style>
+			h1 {text-align:center;}
+			h3 {text-align:center;}
+			</style>
             <h1>You are now authorized to access the Fitbit API!</h1>
             <br/><h3>You can close this window</h3>"""
         self.failure_html = """
+			<style> h1 {text-align:center;} </style>
             <h1>ERROR: %s</h1><br/><h3>You can close this window</h3>%s"""
         self.oauth = FitbitOauth2Client(client_id, client_secret)
 
@@ -68,11 +75,36 @@ class OAuth2Server:
 
 
 if __name__ == '__main__':
+	
 	if not (len(sys.argv) == 3):
-		print("Give arguments: client_id and client_secret")
+		responce = raw_input("Get credentials from credentials.ini? (Y/N)\n").upper()
+		
+		if responce == "Y":
+			id, key, secret = ReadCredentials()
+		elif responce == "N":
+			responce = raw_input("Would you like to enter them manually now? (Y/N)\n").upper()
+			
+			if responce == "Y":
+				id = raw_input("Enter client id:\n")
+				secret = raw_input("Enter client secret:\n")
+			elif responce == "N":
+				print("Try again giving arguments: client id and client secret.")
+				sys.exit(1)
+			else:
+				print("Invalid input.")
+				sys.exit(1)
+			
+		else:
+			print("Invalid input.")
+			sys.exit(1)
+		
+	elif (len(sys.argv) == 3):
+		id, secret = sys.argv[1:]
+	else:
+		print("Try again giving arguments: client id and client secret.")
 		sys.exit(1)
 
-	server = OAuth2Server(*sys.argv[1:])
+	server = OAuth2Server(id,secret)
 	server.browser_authorize()
 	
 	acc_tok = server.oauth.token['access_token']

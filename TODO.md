@@ -13,10 +13,11 @@ TODO
 	module: 'MMM-fitbit',
 	position: 'top_center',
 	config: [
-		{
+		credentials: {
 			client_id:
+			client_key:
 			client_secret:
-			display: ['steps','sleep']
+			data: ['steps','floors']
 		}
 	]
 },
@@ -29,9 +30,9 @@ Files
 * `node_helper.js`
 
 ## Python
-* `setCredenitals.py`
-* `clientAuth.py` - file to get first access and refresh tokens
-* `tokens.py` - file to update tokens
+* `setup.py` - file to get first access and refresh tokens
+* `iniHandler.py` - reads and writes `.ini` files
+* `authHandler.py` - file to update tokens
 * `getData.py` - file to return data
 
 ## .ini
