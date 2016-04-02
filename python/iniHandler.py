@@ -11,12 +11,12 @@ tokensFile = 'tokens.ini'
 tokenParser = ConfigParser.SafeConfigParser()
 
 def print_json(type, message):
-    # Convert output to json and print (node_helper reads from stdout)
+    #Convert output to json and print (node_helper reads from stdout)
     print(json.dumps({type: message}))
-    # stdout has to be flushed manually to prevent delays in the node helper communication
+    #stdout has to be flushed manually to prevent delays in the node helper communication
     sys.stdout.flush()
 
-def isFile(path,file):
+def fileExists(path,file):
 	if os.path.isfile(path + file):
 		print_json("status","%s exists" %file)
 		return True
@@ -25,19 +25,23 @@ def isFile(path,file):
 		return False
 
 def ReadCredentials():
-	# Reads app credentials from credentials.ini
+	#Check if credentials.ini exists
+	if not fileExists(iniDirectory, credentialsFile):
+		print_json('error', '%s does not exist' %s)
+		sys.exit(1)
+	#Reads app credentials from credentials.ini
 	print_json("status", "Reading from %s" %credentialsFile)
 	
 	try:
-		# Open file and read credentials
+		#Open file and read credentials
 		credentialParser.read(iniDirectory + credentialsFile)
 		client_id = credentialParser.get('Credentials', 'C_ID')
 		client_key = credentialParser.get('Credentials', 'C_KEY')
 		client_secret = credentialParser.get('Credentials', 'C_SECRET')
 	except ConfigParser.NoSectionError:
-		# If the credentials file is not correctly formatted
+		#If the credentials file is not correctly formatted
 		print_json("error","Cannot read %s" %credentialsFile)
-		return "", "", ""
+		sys.exit(1)
 	else:
 		#Return credentials
 		print_json("status", "Read of %s successful." %credentialsFile)
@@ -50,13 +54,15 @@ def WriteCredentials(id,key,secret):
 	credentialParser.read(iniDirectory + credentialsFile)
 	
 	try:
-		# Write the credentials to credentials.ini
+		#Write the credentials to credentials.ini
 		credentialParser.set('Credentials', 'C_ID', id)
 		credentialParser.set('Credentials', 'C_KEY', key)
 		credentialParser.set('Credentials', 'C_SECRET', secret)
 		with open(iniDirectory + credentialsFile, 'wb') as iniFile:
 			credentialParser.write(iniFile)
 	except ConfigParser.NoSectionError:
+		#If the credentials file is incorrectly formatted
+		print_json("error", "%s missing section 'Credentials'" %tokensFile)
 		credentialParser.add_section('Credentials')
 		with open(iniDirectory + credentialsFile, 'wb') as iniFile:
 			credentialParser.write(iniFile)
@@ -65,18 +71,22 @@ def WriteCredentials(id,key,secret):
 		print_json("status", "Credentials write successful")
 		
 def ReadTokens():
-	# Reads tokens from tokens.ini
+	#Check if tokens.ini exists
+	if not fileExists(iniDirectory, credentialsFile):
+		print_json('error', '%s does not exist' %s)
+		sys.exit(1)
+	#Reads tokens from tokens.ini
 	print_json("status", "Reading from %s" %tokensFile)
 	
 	try:
-		# Open file and read tokens
+		#Open file and read tokens
 		tokenParser.read(iniDirectory + tokensFile)
 		AccToken = tokenParser.get('Tokens', 'ACC_TOK')
 		RefToken = tokenParser.get('Tokens', 'REF_TOK')
 	except ConfigParser.NoSectionError:
-		# If the token file is not correctly formatted
+		#If the token file is not correctly formatted
 		print_json("error","Cannot read %s" %tokensFile)
-		return "", ""
+		sys.exit(1)
 	else:
 		#Return tokens
 		print_json("status", "Read of %s successful." %tokensFile)
@@ -89,14 +99,14 @@ def WriteTokens(AccToken,RefToken):
 	tokenParser.read(iniDirectory + tokensFile)
 	
 	try:
-		# Write the access and refresh tokens tokens.ini
+		#Write the access and refresh tokens tokens.ini
 		tokenParser.set('Tokens','REF_TOK',RefToken)
 		tokenParser.set('Tokens','ACC_TOK',AccToken)
 		with open(iniDirectory + tokensFile, 'wb') as iniFile:
 			tokenParser.write(iniFile)
 	except ConfigParser.NoSectionError:
-		# If the tokens file is incorrectly formatted
-		print_json("error", "%s missing section tokens" %tokensFile)
+		#If the tokens file is incorrectly formatted
+		print_json("error", "%s missing section 'Tokens'" %tokensFile)
 		tokenParser.add_section('Tokens')
 		with open(iniDirectory + tokensFile, 'wb') as iniFile:
 			tokenParser.write(iniFile)
