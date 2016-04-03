@@ -58,11 +58,7 @@ Module.register('MMM-fitbit',{
 		this.sendSocketNotification('RUN', 'intial');
 		
 		// Schedule update interval.
-		var self = this;
-		setInterval(function() {
-			self.sendSocketNotification('RUN', 'refresh');
-			self.updateDom();
-		}, 15*60*1000);
+		// SOME BLACK MAGIC I DON'T KNOW!
 	},
 	
 	// Override dom generator.
@@ -70,11 +66,13 @@ Module.register('MMM-fitbit',{
 		// Create Wrappers
 		var wrapper = document.createElement("div");
 		
-		wrapper.appendChild(this.UIElementWithBar('steps'));
-		wrapper.appendChild(this.UIElementWithBar('floors'));
-		wrapper.appendChild(this.UIElementWithBar('distance'));
-		wrapper.appendChild(this.UIElementWithBar('activeMinutes'));
-		wrapper.appendChild(this.UIElementWithBar('caloriesOut'));
+		wrapper.appendChild(this.UIElementWithBar('steps',true));
+		wrapper.appendChild(this.UIElementWithBar('floors',true));
+		wrapper.appendChild(this.UIElementWithBar('distance',true,'mi'));
+		wrapper.appendChild(this.UIElementWithBar('activeMinutes',true,'mins'));
+		wrapper.appendChild(this.UIElementWithBar('caloriesOut',true));
+		wrapper.appendChild(this.UIElementWithBar('sleep',false));
+		wrapper.appendChild(this.UIElementWithBar('heart',false,'bpm'));
 		return wrapper;
 	},
 	
@@ -91,12 +89,14 @@ Module.register('MMM-fitbit',{
 		}
 	},
 	
-	UIElementWithBar: function(resource) {
+	UIElementWithBar: function(resource,withBar,suffix) {
 		iconPath = '/img/' + resource + 'White.png';
 		// Create wrappers
 		var wrapper = document.createElement("div");
 		var icon = document.createElement("img");
 		var text = document.createElement("div");
+		var userData = document.createElement("div")
+		var suff = document.createElement("div");
 		var progress = document.createElement("div");
 		var bar = document.createElement("div");
 		
@@ -108,8 +108,14 @@ Module.register('MMM-fitbit',{
 		icon.height = '40';
 		
 		// Text to display
-		text.className = 'normal medium';
-		text.innerHTML = this.numberWithCommas(this.userData[resource]);
+		userData.className = 'normal medium';
+		userData.innerHTML = this.numberWithCommas(this.userData[resource]);
+		suff.className = "dimmed small"
+		suff.innerHTML = suffix;
+		
+		// Make text on the same line
+		userData.style.display = 'inline-block';
+		suff.style.display = 'inline-block';
 		
 		// Progress bar
 		progress.style.position = 'relative';
@@ -118,13 +124,20 @@ Module.register('MMM-fitbit',{
 		progress.style.backgroundColor = 'grey';
 		
 		bar.style.position = 'absolute';
-    	bar.style.width = this.progressBar(resource) + '%';
-    	bar.style.height = '100%';
-    	bar.style.backgroundColor = 'lightgrey';
+		bar.style.width = this.progressBar(resource) + '%';
+		bar.style.height = '100%';
+		bar.style.backgroundColor = 'lightgrey';
 		
-		progress.appendChild(bar);
+		if (withBar) {
+			progress.appendChild(bar);
+		}
 		
+		// Put them all together
 		wrapper.appendChild(icon);
+		text.appendChild(userData);
+		if (suffix !== undefined) {
+			text.appendChild(suff);
+		}
 		wrapper.appendChild(text);
 		wrapper.appendChild(progress);
 		
@@ -133,6 +146,6 @@ Module.register('MMM-fitbit',{
 		wrapper.style.paddingRight = '5px';
 		
 		return wrapper;
-	}
+	},
 });
 

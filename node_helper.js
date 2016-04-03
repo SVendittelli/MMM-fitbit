@@ -48,8 +48,5 @@ module.exports = NodeHelper.create({
 			console.log('Run request recieved.');
 			this.getData();
 		};
-		if (notification === 'TESTING') {
-			console.log(payload);
-		};
 	},
 });
