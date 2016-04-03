@@ -13,9 +13,9 @@ tokenParser = ConfigParser.SafeConfigParser()
 def print_json(type, data, value=""):
 	if value == "":
 		#Convert output to json and print (node_helper reads from stdout)
-		print(json.dumps({type: data}))
+		print(json.dumps({'type': type, 'message': data}))
 	else:
-		print(json.dumps({type: {data: value}}))
+		print(json.dumps({'type': type, 'message': {data: value}}))
 	#stdout has to be flushed manually to prevent delays in the node helper communication
 	sys.stdout.flush()
 
