@@ -6,9 +6,29 @@
  * By Sam Vendittelli
  * MIT Licensed.
  */
-
+ 
 Module.register('MMM-fitbit',{
-
+	
+	userData: {
+		steps: 0,
+		floors: 0,
+		caloriesOut: 0,
+		distance: 0,
+		activeMinutes: 0,
+		sleep: '00:00',
+		heart: 0
+	},
+	
+	goals: {
+		steps: 10000,
+		floors: 10,
+		caloriesOut: 2000,
+		distance: 5,
+		activeMinutes: 30,
+		sleep: 0,
+		heart: 0
+	},
+	
 	// Default module config.
 	defaults: {
 		credentials: {
@@ -16,14 +36,23 @@ Module.register('MMM-fitbit',{
 			client_key: '',
 			client_secret: ''
 		},
-		STEPS: 0,
 	},
 	
 	// Override socket notification handler.
 	socketNotificationReceived: function(notification, payload) {
-		if (notification === "COUNTED"){
-			this.config.STEPS = payload.steps;
+		if (notification === "DATA"){
+			resource = payload['resource'];
+			Log.log("Writing " + resource)
+			this.userData[resource] = payload['values']['data'];
+			this.goals[resource] = payload['values']['goal']
 			this.updateDom();
+			/*
+			if (payload['resource'] === "steps") {
+				Log.log("Writing steps")
+				this.userData.steps = payload['values']['data'];
+				this.goals.steps = payload['values']['goal']
+				this.updateDom();
+			}*/
 		}
 	},
 	
@@ -56,7 +85,7 @@ Module.register('MMM-fitbit',{
 		
 		// Step count
 		steps.className = "normal medium";
-		steps.innerHTML = this.numberWithCommas(this.config.STEPS);
+		steps.innerHTML = this.numberWithCommas(this.userData.steps);
 		
 		// Progress bar
 		progress.style.position = 'relative';
@@ -65,7 +94,7 @@ Module.register('MMM-fitbit',{
 		progress.style.backgroundColor = 'grey';
 		
 		bar.style.position = 'absolute';
-    	bar.style.width = this.progressBar() + '%';
+    	bar.style.width = this.progressBar('steps') + '%';
     	bar.style.height = '100%';
     	bar.style.backgroundColor = 'lightgrey';
 		
@@ -82,11 +111,11 @@ Module.register('MMM-fitbit',{
 		return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	},
 	
-	progressBar: function() {
-		if (this.config.STEPS >= 10000) {
+	progressBar: function(resource) {
+		if (this.userData[resource] >= this.goals[resource]) {
 			return 100;
 		} else {
-			return Math.round(Number(this.config.STEPS) / 100)
+			return Math.round(Number(this.userData[resource]) / this.goals[resource] * 100)
 		}
 	}
 });

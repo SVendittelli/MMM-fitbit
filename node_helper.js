@@ -1,16 +1,15 @@
 'use strict';
 const NodeHelper = require('node_helper');
 const PythonShell = require('python-shell');
-PythonShell.defaultOptions = { scriptPath: 'modules/MMM-fitbit/python' };
+PythonShell.defaultOptions = { mode: 'json', scriptPath: 'modules/MMM-fitbit/python' };
 
 module.exports = NodeHelper.create({
 	
 	setCreds: function (id,key,secret) {
 		var options = {
-			mode: 'json',
 			args: [id, key, secret]
 		}
-		PythonShell.run('setCredentials.py', options, function (err, results) {
+		PythonShell.run('iniHandler.py', options, function (err, results) {
 			if (err) throw err;
 			// results is an array consisting of messages collected during execution
 			console.log('results: %j', results);
@@ -20,19 +19,13 @@ module.exports = NodeHelper.create({
 	getData: function () {
 		var stepCount = 0;
 		const self = this;
-		const fileName = 'getFitbitData.py';
-		const options = {
-			//mode: 'json',
-			scriptPath: 'modules/' + this.name + '/python',
-		};
+		const fileName = 'getData.py';
 		console.log('Running ' + fileName);
-		const pyshell = new PythonShell(fileName, options);
+		const pyshell = new PythonShell(fileName);
 		
 		pyshell.on('message', function (message) {
-			if (message.indexOf('steps') > -1) {
-				stepCount = message.slice(7);
-				console.log("Step count recorded.");
-				self.sendSocketNotification('COUNTED', {steps: stepCount});
+			if (message['type'] == 'data') {
+				self.sendSocketNotification('DATA', message);
 			}
 		});
 		

@@ -10,13 +10,17 @@ credentialParser = ConfigParser.SafeConfigParser()
 tokensFile = 'tokens.ini'
 tokenParser = ConfigParser.SafeConfigParser()
 
-def print_json(type, data, value=""):
+def print_json(type, message, value=""):
 	if value == "":
 		#Convert output to json and print (node_helper reads from stdout)
-		print(json.dumps({'type': type, 'message': data}))
+		print(json.dumps({'type': type, 'message': message}))
 	else:
-		print(json.dumps({'type': type, 'message': {data: value}}))
+		print(json.dumps({'type': type, 'message': {message: value}}))
 	#stdout has to be flushed manually to prevent delays in the node helper communication
+	sys.stdout.flush()
+
+def print_data(resource, data, goal):
+	print(json.dumps({'type': 'data', 'resource': resource, 'values': {'data': data, 'goal': goal}}))
 	sys.stdout.flush()
 
 def fileExists(path,file):
@@ -116,3 +120,6 @@ def WriteTokens(AccToken,RefToken):
 		WriteTokens(AccToken,RefToken)
 	else:
 		print_json("status", "Write of %s successful." %tokensFile)
+
+if __name__ == "__main__":
+	WriteCredentials(sys.argv[1],sys.argv[2],sys.argv[3])

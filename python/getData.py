@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 import fitbit
-from iniHandler import print_json, ReadCredentials, ReadTokens
+import json
+from iniHandler import print_data, ReadCredentials, ReadTokens
 from authHandler import *
 
-DataList = ['steps', 'floors', 'caloriesOut']
-GoalsList = ['steps', 'floors', 'caloriesOut', 'distance', 'activeMinutes']
+if __name__ == "__main__":
+	ResourceTypes = ['steps', 'floors', 'caloriesOut']
 
-#This is the Fitbit URL to use for the API call
-FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"
+	#This is the Fitbit URL to use for the API call
+	FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"
 
-#Get credentials
-ClientID, ClientKey, ClientSecret = ReadCredentials()
+	#Get credentials
+	ClientID, ClientKey, ClientSecret = ReadCredentials()
 
-APICallOK = False
-try:
+	APICallOK = False
 	while not APICallOK:
 		#Get tokens
 		AccessToken, RefreshToken = ReadTokens()
@@ -21,12 +21,13 @@ try:
 		APICallOK, TokensOK, APIResponse = MakeAPICall(FitbitURL, AccessToken, RefreshToken)
 	
 		if not TokensOK:
-			raise ValueError("Error in API")
+			sys.exit(1)
 	
 	#Create authorised client and grab step count from one day of steps
 	authdClient = fitbit.Fitbit(ClientKey, ClientSecret, oauth2=True, access_token=AccessToken, refresh_token=RefreshToken)
-	activitySummary = authdClient.activities()['summary'] #Use for steps, floors, calories. Adapt for distance, active minutes
-	activityGoals = authdClient.activities_daily_goal()['goals'] #Goals for steps, floors, calories, distance, active minutes
+	activityList = authdClient.activities()
+	activitySummary = activityList['summary'] #Use for steps, floors, calories. Adapt for distance, active minutes
+	activityGoals = activityList['goals'] #Goals for steps, floors, calories, distance, active minutes
 	sleepSummary = authdClient.sleep()['summary']
 	heartTimeSeries = authdClient.time_series('activities/heart',period='1d')
 	
@@ -39,17 +40,10 @@ try:
 	#Calculate active minutes
 	activeMinutes = activitySummary['fairlyActiveMinutes'] + activitySummary['veryActiveMinutes']
 	
-	#Output data
-	for data in DataList:
-		print_json('data',data,activitySummary[data])
+	for resource in ResourceTypes:
+		print_data(resource,activitySummary[resource],activityGoals[resource])
 	
-	print_json('data','distance',activitySummary['distances'][0]['distance'])
-	print_json('data','activeMinutes',activeMinutes)
-	print_json('data','sleep',totalTimeAsleep)
-	print_json('data','heart',heartTimeSeries['activities-heart'][0]['value']['restingHeartRate'])
-	
-	#Output goals
-	for goal in GoalsList:
-		print_json('goal',goal,activityGoals[goal])
-except ValueError as err:
-	print_json('error', err)
+	print_data('distance',activitySummary['distances'][0]['distance'],activityGoals['distance'])
+	print_data('activeMinutes',activeMinutes,activityGoals['activeMinutes'])
+	print_data('sleep',totalTimeAsleep,0)
+	print_data('heart',heartTimeSeries['activities-heart'][0]['value']['restingHeartRate'],0)
