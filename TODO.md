@@ -1,8 +1,7 @@
 TODO
 ==
-* Get goals for steps.
+* Front end.
 * Update data every 15 minutes.
-* Make getData.py
 * _Cleanup the code_
 
 ## Sample config:
@@ -15,7 +14,7 @@ TODO
 			client_id:
 			client_key:
 			client_secret:
-			data: ['steps','floors']
+			resources: ['steps','floors']
 		}
 	]
 },
@@ -45,9 +44,9 @@ Supported Data
 * Total distance
 * Sleep (api missing goals)
 * Resting heartrate
+* Active minutes
 
 **WIP**:
-* Active minutes?
 * Battery Levels?
 * Alarms?
 * Lifetime stats?
