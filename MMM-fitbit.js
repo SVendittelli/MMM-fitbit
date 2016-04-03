@@ -45,14 +45,10 @@ Module.register('MMM-fitbit',{
 			Log.log("Writing " + resource)
 			this.userData[resource] = payload['values']['data'];
 			this.goals[resource] = payload['values']['goal']
+		}
+		if (notification === "UPDATE") {
+			Log.log('Updating Dom')
 			this.updateDom();
-			/*
-			if (payload['resource'] === "steps") {
-				Log.log("Writing steps")
-				this.userData.steps = payload['values']['data'];
-				this.goals.steps = payload['values']['goal']
-				this.updateDom();
-			}*/
 		}
 	},
 	
@@ -73,36 +69,12 @@ Module.register('MMM-fitbit',{
 	getDom: function() {
 		// Create Wrappers
 		var wrapper = document.createElement("div");
-		var feet = document.createElement("img");
-		var steps = document.createElement("div");
-		var progress = document.createElement("div");
-		var bar = document.createElement("div");
 		
-		// Feet image
-		feet.style.opacity = "0.6";
-		feet.src = 'modules/' + this.name + '/img/shoeNeg.png';
-		feet.height = '35';
-		
-		// Step count
-		steps.className = "normal medium";
-		steps.innerHTML = this.numberWithCommas(this.userData.steps);
-		
-		// Progress bar
-		progress.style.position = 'relative';
-		progress.style.width = '80px';
-		progress.style.height = '5px';
-		progress.style.backgroundColor = 'grey';
-		
-		bar.style.position = 'absolute';
-    	bar.style.width = this.progressBar('steps') + '%';
-    	bar.style.height = '100%';
-    	bar.style.backgroundColor = 'lightgrey';
-		
-		progress.appendChild(bar);
-		
-		wrapper.appendChild(feet);
-		wrapper.appendChild(steps);
-		wrapper.appendChild(progress);
+		wrapper.appendChild(this.UIElementWithBar('steps'));
+		wrapper.appendChild(this.UIElementWithBar('floors'));
+		wrapper.appendChild(this.UIElementWithBar('distance'));
+		wrapper.appendChild(this.UIElementWithBar('activeMinutes'));
+		wrapper.appendChild(this.UIElementWithBar('caloriesOut'));
 		return wrapper;
 	},
 	
@@ -117,6 +89,50 @@ Module.register('MMM-fitbit',{
 		} else {
 			return Math.round(Number(this.userData[resource]) / this.goals[resource] * 100)
 		}
+	},
+	
+	UIElementWithBar: function(resource) {
+		iconPath = '/img/' + resource + 'White.png';
+		// Create wrappers
+		var wrapper = document.createElement("div");
+		var icon = document.createElement("img");
+		var text = document.createElement("div");
+		var progress = document.createElement("div");
+		var bar = document.createElement("div");
+		
+		// Icon
+		icon.style.opacity = "0.6";
+		icon.style.marginTop = '-5px';
+		icon.style.marginBottom = '-5px';
+		icon.src = 'modules/' + this.name + iconPath;
+		icon.height = '40';
+		
+		// Text to display
+		text.className = 'normal medium';
+		text.innerHTML = this.numberWithCommas(this.userData[resource]);
+		
+		// Progress bar
+		progress.style.position = 'relative';
+		progress.style.width = '75px';
+		progress.style.height = '5px';
+		progress.style.backgroundColor = 'grey';
+		
+		bar.style.position = 'absolute';
+    	bar.style.width = this.progressBar(resource) + '%';
+    	bar.style.height = '100%';
+    	bar.style.backgroundColor = 'lightgrey';
+		
+		progress.appendChild(bar);
+		
+		wrapper.appendChild(icon);
+		wrapper.appendChild(text);
+		wrapper.appendChild(progress);
+		
+		wrapper.style.display = 'inline-block';
+		wrapper.style.paddingLeft = '5px';
+		wrapper.style.paddingRight = '5px';
+		
+		return wrapper;
 	}
 });
 

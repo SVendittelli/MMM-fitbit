@@ -31,6 +31,8 @@ module.exports = NodeHelper.create({
 		
 		pyshell.end(function (err) {
 			if (err) throw err;
+			
+			self.sendSocketNotification('UPDATE', 'Data recieved.');
 			console.log('Finished running.');
 		});
 	},
@@ -39,12 +41,15 @@ module.exports = NodeHelper.create({
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === 'SET CREDS') {
 			console.log('Set credential request recieved.');
-			console.log(payload)
+			console.log(payload);
 			this.setCreds(payload.client_id,payload.client_key,payload.client_secret);
 		};
 		if (notification === 'RUN') {
 			console.log('Run request recieved.');
 			this.getData();
+		};
+		if (notification === 'TESTING') {
+			console.log(payload);
 		};
 	},
 });
