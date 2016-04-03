@@ -24,7 +24,7 @@ class OAuth2Server:
 			h1 {text-align:center;}
 			h3 {text-align:center;}
 			</style>
-            <h1>You are now authorized to access the Fitbit API!</h1>
+            <h1>You are now authorised to access the Fitbit API!</h1>
             <br/><h3>You can close this window</h3>"""
         self.failure_html = """
 			<style> h1 {text-align:center;} </style>

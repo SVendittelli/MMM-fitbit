@@ -10,11 +10,14 @@ credentialParser = ConfigParser.SafeConfigParser()
 tokensFile = 'tokens.ini'
 tokenParser = ConfigParser.SafeConfigParser()
 
-def print_json(type, message):
-    #Convert output to json and print (node_helper reads from stdout)
-    print(json.dumps({type: message}))
-    #stdout has to be flushed manually to prevent delays in the node helper communication
-    sys.stdout.flush()
+def print_json(type, data, value=""):
+	if value == "":
+		#Convert output to json and print (node_helper reads from stdout)
+		print(json.dumps({type: data}))
+	else:
+		print(json.dumps({type: {data: value}}))
+	#stdout has to be flushed manually to prevent delays in the node helper communication
+	sys.stdout.flush()
 
 def fileExists(path,file):
 	if os.path.isfile(path + file):
@@ -27,7 +30,7 @@ def fileExists(path,file):
 def ReadCredentials():
 	#Check if credentials.ini exists
 	if not fileExists(iniDirectory, credentialsFile):
-		print_json('error', '%s does not exist' %s)
+		print_json('error', '%s does not exist' %credentialsFile)
 		sys.exit(1)
 	#Reads app credentials from credentials.ini
 	print_json("status", "Reading from %s" %credentialsFile)
@@ -72,8 +75,8 @@ def WriteCredentials(id,key,secret):
 		
 def ReadTokens():
 	#Check if tokens.ini exists
-	if not fileExists(iniDirectory, credentialsFile):
-		print_json('error', '%s does not exist' %s)
+	if not fileExists(iniDirectory, tokensFile):
+		print_json('error', '%s does not exist' %tokensFile)
 		sys.exit(1)
 	#Reads tokens from tokens.ini
 	print_json("status", "Reading from %s" %tokensFile)

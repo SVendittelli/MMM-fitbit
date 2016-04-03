@@ -2,9 +2,7 @@ TODO
 ==
 * Get goals for steps.
 * Update data every 15 minutes.
-* Change to JSON rather than text from the Python output.
-* Get initial tokens automatically?
-* Update the step count every 15 minutes.
+* Make getData.py
 * _Cleanup the code_
 
 ## Sample config:
@@ -42,14 +40,15 @@ Files
 Supported Data
 --
 * Steps
-
-**WIP**:
 * Floors
 * Calories
 * Total distance
-* Sleep
+* Sleep (api missing goals)
 * Resting heartrate
+
+**WIP**:
 * Active minutes?
 * Battery Levels?
 * Alarms?
-* Friends leaderboard (Hard)
+* Lifetime stats?
+* Friends leaderboard (api buggy, waiting on fix)

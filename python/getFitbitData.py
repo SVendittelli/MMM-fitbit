@@ -20,7 +20,10 @@ try:
 	
 	#Create authorised client and grab step count from one day of steps
 	authd_client = fitbit.Fitbit(checkTokens.client_key, checkTokens.client_secret, oauth2=True, access_token=AccessToken, refresh_token=RefreshToken)
-	timeSeriesSteps = authd_client.time_series('activities/steps',period='1d')
-	print "steps: " + timeSeriesSteps['activities-steps'][0]['value']
+	activitySummary = authd_client.activities()['summary'] #Use for steps, floors, distance, active minutes, calories
+	activityGoals = authd_client.activities_daily_goal() #Goals for the above
+	print "steps: %s" %activitySummary['steps']
+	print "mins asleep: %s" %authd_client.sleep()['summary']['totalMinutesAsleep']
+	print authd_client.heart()
 except ValueError as err:
 	print err
