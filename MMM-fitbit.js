@@ -42,12 +42,12 @@ Module.register('MMM-fitbit',{
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "DATA"){
 			resource = payload['resource'];
-			Log.log("Writing " + resource)
 			this.userData[resource] = payload['values']['data'];
-			this.goals[resource] = payload['values']['goal']
+			this.goals[resource] = payload['values']['goal'];
+			Log.log("Writing " + resource + " (data/goal): " + this.userData[resource] + "/" + this.goals[resource]);
 		}
 		if (notification === "UPDATE") {
-			Log.log('Updating Dom')
+			Log.log('Updating Dom');
 			this.updateDom();
 		}
 	},

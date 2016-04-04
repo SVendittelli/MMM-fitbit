@@ -6,8 +6,8 @@ MagicMirror Module for fitbit. First time users follow setup instructions, if yo
 
 Dependencies
 ---
-* [python-shell](https://www.npmjs.com/package/python-shell) (npm install python-shell)
-* [python-fitbit](https://github.com/orcasgit/python-fitbit) (sudo pip install -r fitbit/requirements.txt)
+* [python-shell](https://www.npmjs.com/package/python-shell) --- `npm install python-shell`
+* [python-fitbit](https://github.com/orcasgit/python-fitbit) --- sudo pip install -r python/fitbit/requirements.txt`
 
 Setup
 ---

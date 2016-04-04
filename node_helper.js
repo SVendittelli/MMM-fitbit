@@ -31,6 +31,7 @@ module.exports = NodeHelper.create({
 		
 		pyshell.end(function (err) {
 			if (err) throw err;
+			self.sendSocketNotification('UPDATE', 'Finished getting data');
 			console.log('Finished getting data');
 		});
 	},
