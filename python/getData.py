@@ -43,7 +43,5 @@ if __name__ == "__main__":
 		print_data('activeMinutes',activeMinutes,activityGoals['activeMinutes'])
 		print_data('sleep',totalMinutesAsleep,480)
 		print_data('heart',heartTimeSeries['activities-heart'][0]['value']['restingHeartRate'],60)
-		
-		activitySummary['boobs']
 	except KeyError as err:
 		print_data(str(err).strip("'"),0,0)
