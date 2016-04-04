@@ -1,7 +1,7 @@
 /* global Module */
 
 /* Magic Mirror
- * Module: fitbit
+ * Module: MMM-fitbit
  *
  * By Sam Vendittelli
  * MIT Licensed.
@@ -15,7 +15,7 @@ Module.register('MMM-fitbit',{
 		caloriesOut: 0,
 		distance: 0,
 		activeMinutes: 0,
-		sleep: '00:00',
+		sleep: 0,
 		heart: 0
 	},
 	
@@ -25,7 +25,7 @@ Module.register('MMM-fitbit',{
 		caloriesOut: 2000,
 		distance: 5,
 		activeMinutes: 30,
-		sleep: 0,
+		sleep: 480,
 		heart: 0
 	},
 	
@@ -61,24 +61,15 @@ Module.register('MMM-fitbit',{
 		// SOME BLACK MAGIC I DON'T KNOW!
 	},
 	
-	// Override dom generator.
-	getDom: function() {
-		// Create Wrappers
-		var wrapper = document.createElement("div");
-		
-		wrapper.appendChild(this.UIElementWithBar('steps',true));
-		wrapper.appendChild(this.UIElementWithBar('floors',true));
-		wrapper.appendChild(this.UIElementWithBar('distance',true,'mi'));
-		wrapper.appendChild(this.UIElementWithBar('activeMinutes',true,'mins'));
-		wrapper.appendChild(this.UIElementWithBar('caloriesOut',true));
-		wrapper.appendChild(this.UIElementWithBar('sleep',false));
-		wrapper.appendChild(this.UIElementWithBar('heart',false,'bpm'));
-		return wrapper;
-	},
-	
-	// To add commas to the step count
+	// To add commas to the step can calorie count
 	numberWithCommas: function(number) {
 		return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	},
+	
+	minsToHourMin: function(number) {
+		hours = Math.floor(number / 60);
+		minutes = number % 60;
+		return ("00" + hours.toString()).slice(-2) + ":" + ("00" + minutes.toString()).slice(-2);
 	},
 	
 	progressBar: function(resource) {
@@ -109,7 +100,13 @@ Module.register('MMM-fitbit',{
 		
 		// Text to display
 		userData.className = 'normal medium';
-		userData.innerHTML = this.numberWithCommas(this.userData[resource]);
+		if (resource == 'steps' || resource == 'caloriesOut') {
+			userData.innerHTML = this.numberWithCommas(this.userData[resource]);
+		} else if (resource == 'sleep') {
+			userData.innerHTML = this.minsToHourMin(this.userData[resource]);
+		} else {
+			userData.innerHTML = this.userData[resource];
+		};
 		suff.className = "dimmed small"
 		suff.innerHTML = suffix;
 		
@@ -147,5 +144,19 @@ Module.register('MMM-fitbit',{
 		
 		return wrapper;
 	},
+	
+	// Override dom generator.
+	getDom: function() {
+		// Create Wrappers
+		var wrapper = document.createElement("div");
+		
+		wrapper.appendChild(this.UIElementWithBar('steps',true));
+		wrapper.appendChild(this.UIElementWithBar('floors',true));
+		wrapper.appendChild(this.UIElementWithBar('distance',true,'mi'));
+		wrapper.appendChild(this.UIElementWithBar('activeMinutes',true,'mins'));
+		wrapper.appendChild(this.UIElementWithBar('caloriesOut',true));
+		wrapper.appendChild(this.UIElementWithBar('sleep',false));
+		wrapper.appendChild(this.UIElementWithBar('heart',false,'bpm'));
+		return wrapper;
+	},
 });
-

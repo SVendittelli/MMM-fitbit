@@ -31,9 +31,7 @@ module.exports = NodeHelper.create({
 		
 		pyshell.end(function (err) {
 			if (err) throw err;
-			
-			self.sendSocketNotification('UPDATE', 'Data recieved.');
-			console.log('Finished running.');
+			console.log('Finished getting data');
 		});
 	},
 	
@@ -45,7 +43,7 @@ module.exports = NodeHelper.create({
 			this.setCreds(payload.client_id,payload.client_key,payload.client_secret);
 		};
 		if (notification === 'RUN') {
-			console.log('Run request recieved.');
+			console.log('Initial run request recieved.');
 			this.getData();
 		};
 	},
