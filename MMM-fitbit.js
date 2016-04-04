@@ -36,15 +36,26 @@ Module.register('MMM-fitbit',{
 			client_key: '',
 			client_secret: ''
 		},
+		resources: [
+			'steps',
+			'floors',
+			'caloriesOut',
+			'distance',
+			'activeMinutes',
+			'sleep',
+			'heart'
+		]
 	},
 	
 	// Override socket notification handler.
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "DATA"){
 			resource = payload['resource'];
-			this.userData[resource] = payload['values']['data'];
-			this.goals[resource] = payload['values']['goal'];
-			Log.log("Writing " + resource + " (data/goal): " + this.userData[resource] + "/" + this.goals[resource]);
+			if (this.inResources(resource)) {
+				this.userData[resource] = payload['values']['data'];
+				this.goals[resource] = payload['values']['goal'];
+				Log.log("Writing " + resource + " (data/goal): " + this.userData[resource] + "/" + this.goals[resource]);
+			}
 		}
 		if (notification === "UPDATE") {
 			Log.log('Updating Dom');
@@ -59,6 +70,10 @@ Module.register('MMM-fitbit',{
 		
 		// Schedule update interval.
 		// SOME BLACK MAGIC I DON'T KNOW!
+	},
+	
+	inResources: function(resource) {
+		return this.config.resources.indexOf(resource) > -1;
 	},
 	
 	// To add commas to the step can calorie count
@@ -80,14 +95,14 @@ Module.register('MMM-fitbit',{
 		}
 	},
 	
-	UIElementWithBar: function(resource,withBar,suffix) {
+	UIElementWithBar: function(resource) {
 		iconPath = '/img/' + resource + 'White.png';
 		// Create wrappers
 		var wrapper = document.createElement("div");
 		var icon = document.createElement("img");
 		var text = document.createElement("div");
 		var userData = document.createElement("div")
-		var suff = document.createElement("div");
+		var suffix = document.createElement("div");
 		var progress = document.createElement("div");
 		var bar = document.createElement("div");
 		
@@ -100,6 +115,7 @@ Module.register('MMM-fitbit',{
 		
 		// Text to display
 		userData.className = 'normal medium';
+		suffix.className = "dimmed small"
 		if (resource == 'steps' || resource == 'caloriesOut') {
 			userData.innerHTML = this.numberWithCommas(this.userData[resource]);
 		} else if (resource == 'sleep') {
@@ -107,12 +123,23 @@ Module.register('MMM-fitbit',{
 		} else {
 			userData.innerHTML = this.userData[resource];
 		};
-		suff.className = "dimmed small"
-		suff.innerHTML = suffix;
+		switch(resource) {
+			case 'distance':
+				suffix.innerHTML = 'mi';
+				break;
+			case 'activeMinutes':
+				suffix.innerHTML = 'mins';
+				break;
+			case 'heart':
+				suffix.innerHTML = 'bpm';
+				break;
+			default:
+				suffix.innerHTML = '';
+		}
 		
 		// Make text on the same line
 		userData.style.display = 'inline-block';
-		suff.style.display = 'inline-block';
+		suffix.style.display = 'inline-block';
 		
 		// Progress bar
 		progress.style.position = 'relative';
@@ -125,15 +152,15 @@ Module.register('MMM-fitbit',{
 		bar.style.height = '100%';
 		bar.style.backgroundColor = 'lightgrey';
 		
-		if (withBar) {
+		if (resource !== 'heart') {
 			progress.appendChild(bar);
 		}
 		
 		// Put them all together
 		wrapper.appendChild(icon);
 		text.appendChild(userData);
-		if (suffix !== undefined) {
-			text.appendChild(suff);
+		if (resource === 'distance' || resource === 'activeMinutes' || resource === 'heart') {
+			text.appendChild(suffix);
 		}
 		wrapper.appendChild(text);
 		wrapper.appendChild(progress);
@@ -150,13 +177,10 @@ Module.register('MMM-fitbit',{
 		// Create Wrappers
 		var wrapper = document.createElement("div");
 		
-		wrapper.appendChild(this.UIElementWithBar('steps',true));
-		wrapper.appendChild(this.UIElementWithBar('floors',true));
-		wrapper.appendChild(this.UIElementWithBar('distance',true,'mi'));
-		wrapper.appendChild(this.UIElementWithBar('activeMinutes',true,'mins'));
-		wrapper.appendChild(this.UIElementWithBar('caloriesOut',true));
-		wrapper.appendChild(this.UIElementWithBar('sleep',false));
-		wrapper.appendChild(this.UIElementWithBar('heart',false,'bpm'));
+		for (resource in this.config.resources) {
+			wrapper.appendChild(this.UIElementWithBar(this.config.resources[resource]));
+		}
+		
 		return wrapper;
 	},
 });
