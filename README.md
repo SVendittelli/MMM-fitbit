@@ -6,8 +6,8 @@ MagicMirror Module for fitbit. First time users follow setup instructions, if yo
 
 Dependencies
 ---
-* [python-shell](https://www.npmjs.com/package/python-shell) (npm install python-shell)
-* [python-fitbit](https://github.com/orcasgit/python-fitbit) (sudo pip install -r fitbit/requirements.txt)
+* [python-shell](https://www.npmjs.com/package/python-shell) --- `npm install python-shell`
+* [python-fitbit](https://github.com/orcasgit/python-fitbit) --- sudo pip install -r python/fitbit/requirements.txt`
 
 Setup
 ---
@@ -22,12 +22,12 @@ Setup
         * "Client (Consumer) Secret" --- (client_secret)
         * "Client (Consumer) Key" --- (client_key)
     * (You can access these again later via manage my apps at the same link as above)
-* Install dependancies (if you haven't already)
-* Run setup.py in the python directory. You can either:
+* Install dependancies (run these in MMM-fitbit directory)
+* Run setupFitbit.py in the python directory. You can either:
     * Pass it your client_id and client_secret as arguments
-    * Run it without arguments and have it read from credentials.ini (*only* use this if you have already setup the module but need a fresh set of tokens)
+    * Run it without arguments and have it read from credentials.ini (you can use this if you have already setup the module but need a fresh set of tokens)
     * Run it without arguments and enter your client_id and client_secret when prompted
-* Login to fitbit (if you are not already) and allow access to all (if you do not some features may not work, but you may revoke app access and  rerun `setup.py` to change these)
+* Login to fitbit (if you are not already) and allow access to all (if you do not some features may not work, but you may revoke app access and rerun `setupFitbit.py` to change these)
 * Add the example config to your config (entering relavent credentials)
 * Start your MagicMirror!
 

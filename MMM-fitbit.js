@@ -1,7 +1,7 @@
 /* global Module */
 
 /* Magic Mirror
- * Module: fitbit
+ * Module: MMM-fitbit
  *
  * By Sam Vendittelli
  * MIT Licensed.
@@ -15,7 +15,7 @@ Module.register('MMM-fitbit',{
 		caloriesOut: 0,
 		distance: 0,
 		activeMinutes: 0,
-		sleep: '00:00',
+		sleep: 0,
 		heart: 0
 	},
 	
@@ -25,7 +25,7 @@ Module.register('MMM-fitbit',{
 		caloriesOut: 2000,
 		distance: 5,
 		activeMinutes: 30,
-		sleep: 0,
+		sleep: 480,
 		heart: 0
 	},
 	
@@ -36,23 +36,30 @@ Module.register('MMM-fitbit',{
 			client_key: '',
 			client_secret: ''
 		},
+		resources: [
+			'steps',
+			'floors',
+			'caloriesOut',
+			'distance',
+			'activeMinutes',
+			'sleep',
+			'heart'
+		]
 	},
 	
 	// Override socket notification handler.
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "DATA"){
 			resource = payload['resource'];
-			Log.log("Writing " + resource)
-			this.userData[resource] = payload['values']['data'];
-			this.goals[resource] = payload['values']['goal']
+			if (this.inResources(resource)) {
+				this.userData[resource] = payload['values']['data'];
+				this.goals[resource] = payload['values']['goal'];
+				Log.log("Writing " + resource + " (data/goal): " + this.userData[resource] + "/" + this.goals[resource]);
+			}
+		}
+		if (notification === "UPDATE") {
+			Log.log('Updating Dom');
 			this.updateDom();
-			/*
-			if (payload['resource'] === "steps") {
-				Log.log("Writing steps")
-				this.userData.steps = payload['values']['data'];
-				this.goals.steps = payload['values']['goal']
-				this.updateDom();
-			}*/
 		}
 	},
 	
@@ -62,53 +69,22 @@ Module.register('MMM-fitbit',{
 		this.sendSocketNotification('RUN', 'intial');
 		
 		// Schedule update interval.
-		var self = this;
-		setInterval(function() {
-			self.sendSocketNotification('RUN', 'refresh');
-			self.updateDom();
-		}, 15*60*1000);
+		// SOME BLACK MAGIC I DON'T KNOW!
 	},
 	
-	// Override dom generator.
-	getDom: function() {
-		// Create Wrappers
-		var wrapper = document.createElement("div");
-		var feet = document.createElement("img");
-		var steps = document.createElement("div");
-		var progress = document.createElement("div");
-		var bar = document.createElement("div");
-		
-		// Feet image
-		feet.style.opacity = "0.6";
-		feet.src = 'modules/' + this.name + '/img/shoeNeg.png';
-		feet.height = '35';
-		
-		// Step count
-		steps.className = "normal medium";
-		steps.innerHTML = this.numberWithCommas(this.userData.steps);
-		
-		// Progress bar
-		progress.style.position = 'relative';
-		progress.style.width = '80px';
-		progress.style.height = '5px';
-		progress.style.backgroundColor = 'grey';
-		
-		bar.style.position = 'absolute';
-    	bar.style.width = this.progressBar('steps') + '%';
-    	bar.style.height = '100%';
-    	bar.style.backgroundColor = 'lightgrey';
-		
-		progress.appendChild(bar);
-		
-		wrapper.appendChild(feet);
-		wrapper.appendChild(steps);
-		wrapper.appendChild(progress);
-		return wrapper;
+	inResources: function(resource) {
+		return this.config.resources.indexOf(resource) > -1;
 	},
 	
-	// To add commas to the step count
+	// To add commas to the step can calorie count
 	numberWithCommas: function(number) {
 		return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	},
+	
+	minsToHourMin: function(number) {
+		hours = Math.floor(number / 60);
+		minutes = number % 60;
+		return ("00" + hours.toString()).slice(-2) + ":" + ("00" + minutes.toString()).slice(-2);
 	},
 	
 	progressBar: function(resource) {
@@ -117,6 +93,94 @@ Module.register('MMM-fitbit',{
 		} else {
 			return Math.round(Number(this.userData[resource]) / this.goals[resource] * 100)
 		}
-	}
+	},
+	
+	UIElementWithBar: function(resource) {
+		iconPath = '/img/' + resource + 'White.png';
+		// Create wrappers
+		var wrapper = document.createElement("div");
+		var icon = document.createElement("img");
+		var text = document.createElement("div");
+		var userData = document.createElement("div")
+		var suffix = document.createElement("div");
+		var progress = document.createElement("div");
+		var bar = document.createElement("div");
+		
+		// Icon
+		icon.style.opacity = "0.6";
+		icon.style.marginTop = '-5px';
+		icon.style.marginBottom = '-5px';
+		icon.src = 'modules/' + this.name + iconPath;
+		icon.height = '40';
+		
+		// Text to display
+		userData.className = 'normal medium';
+		suffix.className = "dimmed small"
+		if (resource == 'steps' || resource == 'caloriesOut') {
+			userData.innerHTML = this.numberWithCommas(this.userData[resource]);
+		} else if (resource == 'sleep') {
+			userData.innerHTML = this.minsToHourMin(this.userData[resource]);
+		} else {
+			userData.innerHTML = this.userData[resource];
+		};
+		switch(resource) {
+			case 'distance':
+				suffix.innerHTML = 'mi';
+				break;
+			case 'activeMinutes':
+				suffix.innerHTML = 'mins';
+				break;
+			case 'heart':
+				suffix.innerHTML = 'bpm';
+				break;
+			default:
+				suffix.innerHTML = '';
+		}
+		
+		// Make text on the same line
+		userData.style.display = 'inline-block';
+		suffix.style.display = 'inline-block';
+		
+		// Progress bar
+		progress.style.position = 'relative';
+		progress.style.width = '75px';
+		progress.style.height = '5px';
+		progress.style.backgroundColor = 'grey';
+		
+		bar.style.position = 'absolute';
+		bar.style.width = this.progressBar(resource) + '%';
+		bar.style.height = '100%';
+		bar.style.backgroundColor = 'lightgrey';
+		
+		if (resource !== 'heart') {
+			progress.appendChild(bar);
+		}
+		
+		// Put them all together
+		wrapper.appendChild(icon);
+		text.appendChild(userData);
+		if (resource === 'distance' || resource === 'activeMinutes' || resource === 'heart') {
+			text.appendChild(suffix);
+		}
+		wrapper.appendChild(text);
+		wrapper.appendChild(progress);
+		
+		wrapper.style.display = 'inline-block';
+		wrapper.style.paddingLeft = '5px';
+		wrapper.style.paddingRight = '5px';
+		
+		return wrapper;
+	},
+	
+	// Override dom generator.
+	getDom: function() {
+		// Create Wrappers
+		var wrapper = document.createElement("div");
+		
+		for (resource in this.config.resources) {
+			wrapper.appendChild(this.UIElementWithBar(this.config.resources[resource]));
+		}
+		
+		return wrapper;
+	},
 });
-

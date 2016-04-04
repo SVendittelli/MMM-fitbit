@@ -1,8 +1,7 @@
 TODO
 ==
-* Get goals for steps.
 * Update data every 15 minutes.
-* Make getData.py
+* More formatting
 * _Cleanup the code_
 
 ## Sample config:
@@ -15,7 +14,15 @@ TODO
 			client_id:
 			client_key:
 			client_secret:
-			data: ['steps','floors']
+			resources: [
+				'steps',
+				'floors',
+				'caloriesOut',
+				'distance',
+				'activeMinutes',
+				'sleep',
+				'heart'
+			],
 		}
 	]
 },
@@ -28,7 +35,7 @@ Files
 * `node_helper.js`
 
 ## Python
-* `setup.py` - file to get first access and refresh tokens
+* `setupFitbit.py` - file to get first access and refresh tokens
 * `iniHandler.py` - reads and writes `.ini` files
 * `authHandler.py` - file to update tokens
 * `getData.py` - file to return data
@@ -45,10 +52,10 @@ Supported Data
 * Total distance
 * Sleep (api missing goals)
 * Resting heartrate
+* Active minutes
 
 **WIP**:
-* Active minutes?
-* Battery Levels?
-* Alarms?
-* Lifetime stats?
+* Battery Levels? (need device details, ask user for device?)
+* Alarms? (see above)
+* Lifetime stats? (interesting but doesn't fit with others)
 * Friends leaderboard (api buggy, waiting on fix)

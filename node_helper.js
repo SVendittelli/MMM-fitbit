@@ -5,6 +5,19 @@ PythonShell.defaultOptions = { mode: 'json', scriptPath: 'modules/MMM-fitbit/pyt
 
 module.exports = NodeHelper.create({
 	
+	// Subclass socketNotificationReceived received.
+	socketNotificationReceived: function(notification, payload) {
+		if (notification === 'SET CREDS') {
+			console.log('Set credential request recieved.');
+			console.log(payload);
+			this.setCreds(payload.client_id,payload.client_key,payload.client_secret);
+		};
+		if (notification === 'RUN') {
+			console.log('Initial run request recieved.');
+			this.getData();
+		};
+	},
+	
 	setCreds: function (id,key,secret) {
 		var options = {
 			args: [id, key, secret]
@@ -31,20 +44,8 @@ module.exports = NodeHelper.create({
 		
 		pyshell.end(function (err) {
 			if (err) throw err;
-			console.log('Finished running.');
+			self.sendSocketNotification('UPDATE', 'Finished getting data');
+			console.log('Finished getting data');
 		});
-	},
-	
-	// Subclass socketNotificationReceived received.
-	socketNotificationReceived: function(notification, payload) {
-		if (notification === 'SET CREDS') {
-			console.log('Set credential request recieved.');
-			console.log(payload)
-			this.setCreds(payload.client_id,payload.client_key,payload.client_secret);
-		};
-		if (notification === 'RUN') {
-			console.log('Run request recieved.');
-			this.getData();
-		};
 	},
 });
