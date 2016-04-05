@@ -1,6 +1,5 @@
 TODO
 ==
-* Update data every 15 minutes.
 * More formatting
 * _Cleanup the code_
 

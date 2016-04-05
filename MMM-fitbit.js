@@ -66,10 +66,17 @@ Module.register('MMM-fitbit',{
 	start: function() {
 		Log.info('Starting module: ' + this.name);
 		this.sendSocketNotification('SET CREDS',this.config.credentials)
-		this.sendSocketNotification('RUN', 'intial');
+		this.sendSocketNotification('GET DATA', 'intial');
 		
 		// Schedule update interval.
-		// SOME BLACK MAGIC I DON'T KNOW!
+		var self = this;
+		setInterval(function() {
+			self.updateData();
+		}, 60*60*1000);
+	},
+	
+	updateData: function() {
+		this.sendSocketNotification('GET DATA', 'Update');
 	},
 	
 	inResources: function(resource) {

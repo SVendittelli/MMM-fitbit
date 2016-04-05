@@ -1,6 +1,6 @@
 MMM-fitbit
 ===
-MagicMirror Module for fitbit. First time users follow setup instructions, if your tokens get lost run `setup.py` again without arguments and accept reading from `credentials.ini`.
+Module for getting fitbit data. First time users follow setup instructions, if your tokens get lost run `setup.py` again without arguments and accept reading from `credentials.ini`.
 
 **WIP**: Currently only provides step count. Plans to expand greatly.
 
