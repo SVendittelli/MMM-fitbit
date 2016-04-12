@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import fitbit
 import json
-from iniHandler import print_data, ReadCredentials, ReadTokens
+from iniHandler import print_data, print_json, ReadCredentials, ReadTokens
 from authHandler import *
 
 if __name__ == "__main__":
@@ -19,7 +19,8 @@ if __name__ == "__main__":
 		AccessToken, RefreshToken = ReadTokens()
 		#Make the API call
 		APICallOK, TokensOK, APIResponse = MakeAPICall(FitbitURL, AccessToken, RefreshToken)
-	
+		
+		print_json('status',APIResponse)
 		if not TokensOK:
 			sys.exit(1)
 	
@@ -44,4 +45,4 @@ if __name__ == "__main__":
 		print_data('sleep',totalMinutesAsleep,480)
 		print_data('heart',heartTimeSeries['activities-heart'][0]['value']['restingHeartRate'],60)
 	except KeyError as err:
-		print_data(str(err).strip("'"),0,0)
+		print_data(str(err).strip("'"),0,1)

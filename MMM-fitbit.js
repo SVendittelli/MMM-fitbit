@@ -116,7 +116,7 @@ Module.register('MMM-fitbit',{
 		// Icon
 		icon.style.opacity = "0.6";
 		icon.style.marginTop = '-5px';
-		icon.style.marginBottom = '-5px';
+		icon.style.marginBottom = '-25px';
 		icon.src = 'modules/' + this.name + iconPath;
 		icon.height = '40';
 		

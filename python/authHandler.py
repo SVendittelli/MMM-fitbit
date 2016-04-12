@@ -17,7 +17,9 @@ client_id, client_key, client_secret = ReadCredentials()
 TokenURL = "https://api.fitbit.com/oauth2/token"
 
 #Some reponces defining API error handling responses
+Authorised = "Tokens valid"
 TokenRefreshedOK = "Token refreshed OK"
+Reauthorise = "Invalid token, reauthorise fitbit API"
 ErrorInAPI = "Error when making API call that I couldn't handle"
 
 #Make a HTTP POST to get new tokens
@@ -78,17 +80,18 @@ def MakeAPICall(InURL,AccToken,RefToken):
 		
 		#Return values for successful request, tokens good, and the data recieved
 		print_json('status', 'API call okay')
-		return True, True, FullResponse
+		return True, True, Authorised
 	#Catch errors, e.g. A 401 error that signifies the need for a new access token
 	except urllib2.URLError as err:
 		HTTPErrorMessage = err.read()
-		print_json('error','Making api call')
 		print_json('error', err.code, json.loads(HTTPErrorMessage))
 		#See what the error was
 		if (err.code == 401) and (HTTPErrorMessage.find("expired_token") > 0):
 			GetNewAccessToken(RefToken)
 			print_json('status', 'Can run again')
 			return False, True, TokenRefreshedOK
+		if (err.code == 401) and (HTTPErrorMessage.find("invalid_token") > 0):
+			return False, False, Reauthorise
 		#Return that this didn't work, allowing the calling function to handle it
 		print_json('status', 'API call failed')
 		return False, False, ErrorInAPI
