@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 import sys
 import os
-import ConfigParser
 import json
+if (sys.version_info > (3,0)):
+	import configparser as ConfigParser
+else:
+	import ConfigParser
 
 iniDirectory = './' + os.path.dirname(os.path.relpath(os.path.realpath(__file__))) + '/'
 credentialsFile = 'credentials.ini'

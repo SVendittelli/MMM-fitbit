@@ -75,18 +75,20 @@ class OAuth2Server:
 
 
 if __name__ == '__main__':
+	try: input = raw_input
+	except NameError: pass
 	
 	if not (len(sys.argv) == 3):
-		responce = raw_input("Get credentials from credentials.ini? (Y/N)\n").upper()
+		responce = input("Get credentials from credentials.ini? (Y/N)\n").upper()
 		
 		if responce == "Y":
 			id, key, secret = ReadCredentials()
 		elif responce == "N":
-			responce = raw_input("Would you like to enter them manually now? (Y/N)\n").upper()
+			responce = input("Would you like to enter them manually now? (Y/N)\n").upper()
 			
 			if responce == "Y":
-				id = raw_input("Enter client id:\n")
-				secret = raw_input("Enter client secret:\n")
+				id = input("Enter client id:\n")
+				secret = input("Enter client secret:\n")
 			elif responce == "N":
 				print("Try again giving arguments: client id and client secret.")
 				sys.exit(1)

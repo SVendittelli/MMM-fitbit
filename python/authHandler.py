@@ -2,8 +2,8 @@
 #I adapted this code from Geek Dad:
 #(http://pdwhomeautomation.blogspot.co.uk/2015/03/using-fitbit-api-on-raspberry-pi-with.html)
 import base64
-import urllib2
 import urllib
+import urllib2
 import json
 import os
 import sys
