@@ -42,7 +42,16 @@ Example config
 			client_id: <client_id>,
 			client_key: <client_key>,
 			client_secret: <client_secret>,
-		}
+		},
+		resources: [
+			'steps',
+			'floors',
+			'caloriesOut',
+			'distance',
+			'activeMinutes',
+			'sleep',
+			'heart'
+		]
 	]
 },
 ````
