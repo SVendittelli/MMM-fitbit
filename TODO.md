@@ -1,6 +1,6 @@
 TODO
 ==
-* More formatting
+* Formatting for regions other than central ones
 * _Cleanup the code_
 
 ## Sample config:
@@ -13,35 +13,38 @@ TODO
 			client_id:
 			client_key:
 			client_secret:
-			resources: [
-				'steps',
-				'floors',
-				'caloriesOut',
-				'distance',
-				'activeMinutes',
-				'sleep',
-				'heart'
-			],
-		}
+		},
+		resources: [
+			'steps',
+			'floors',
+			'caloriesOut',
+			'distance',
+			'activeMinutes',
+			'sleep',
+			'heart'
+		]
 	]
 },
 ````
 
 Files
 --
-## Javascript
+### Javascript
 * `MMM-fitbit.js`
 * `node_helper.js`
 
-## Python
+### Python
 * `setupFitbit.py` - file to get first access and refresh tokens
 * `iniHandler.py` - reads and writes `.ini` files
 * `authHandler.py` - file to update tokens
 * `getData.py` - file to return data
 
-## .ini
+### .ini
 * `credentials.ini`
 * `tokens.ini`
+
+### CSS
+* MMM-fitbit.css
 
 Supported Data
 --
