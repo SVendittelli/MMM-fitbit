@@ -1,0 +1,19 @@
+.MMM-fitbit .fitbiticon {
+	opacity: 0.6;
+	margin-top: -5px;
+	margin-bottom: -25px;
+	height: 40px;
+}
+
+.MMM-fitbit .progbarbkg {
+	position: relative;
+	width: 75px;
+	height: 5px;
+	background-color: grey;
+}
+
+.MMM-fitbit .progbar {
+	position: absolute;
+	height: 100%;
+	background-color: lightgrey;
+}

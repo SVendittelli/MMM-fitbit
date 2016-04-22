@@ -47,6 +47,11 @@ Module.register('MMM-fitbit',{
 		]
 	},
 	
+	// Define required scripts.
+	getStyles: function() {
+		return ["MMM-fitbit.css"];
+	},
+	
 	// Override socket notification handler.
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "DATA"){
@@ -63,6 +68,7 @@ Module.register('MMM-fitbit',{
 		}
 	},
 	
+	// Initialisation
 	start: function() {
 		Log.info('Starting module: ' + this.name);
 		this.sendSocketNotification('SET CREDS',this.config.credentials)
@@ -75,25 +81,29 @@ Module.register('MMM-fitbit',{
 		}, 60*60*1000);
 	},
 	
+	// Updates the data from fitbit
 	updateData: function() {
 		this.sendSocketNotification('GET DATA', 'Update');
 	},
 	
+	// Checks whether the user wants to lookup a resourse type
 	inResources: function(resource) {
 		return this.config.resources.indexOf(resource) > -1;
 	},
 	
-	// To add commas to the step can calorie count
+	// To add commas to the step and calorie count
 	numberWithCommas: function(number) {
 		return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	},
 	
+	// Converts minutes into HH:MM
 	minsToHourMin: function(number) {
 		hours = Math.floor(number / 60);
 		minutes = number % 60;
 		return ("00" + hours.toString()).slice(-2) + ":" + ("00" + minutes.toString()).slice(-2);
 	},
 	
+	// WIdth of the progress bar
 	progressBar: function(resource) {
 		if (this.userData[resource] >= this.goals[resource]) {
 			return 100;
@@ -102,7 +112,8 @@ Module.register('MMM-fitbit',{
 		}
 	},
 	
-	UIElementWithBar: function(resource) {
+	// Make each resource element for the UI
+	UIElement: function(resource) {
 		iconPath = '/img/' + resource + 'White.png';
 		// Create wrappers
 		var wrapper = document.createElement("div");
@@ -114,11 +125,8 @@ Module.register('MMM-fitbit',{
 		var bar = document.createElement("div");
 		
 		// Icon
-		icon.style.opacity = "0.6";
-		icon.style.marginTop = '-5px';
-		icon.style.marginBottom = '-25px';
+		icon.className = 'fitbiticon';
 		icon.src = 'modules/' + this.name + iconPath;
-		icon.height = '40';
 		
 		// Text to display
 		userData.className = 'normal medium';
@@ -149,15 +157,10 @@ Module.register('MMM-fitbit',{
 		suffix.style.display = 'inline-block';
 		
 		// Progress bar
-		progress.style.position = 'relative';
-		progress.style.width = '75px';
-		progress.style.height = '5px';
-		progress.style.backgroundColor = 'grey';
+		progress.className = 'progbarbkg';
 		
-		bar.style.position = 'absolute';
+		bar.className = 'progbar';
 		bar.style.width = this.progressBar(resource) + '%';
-		bar.style.height = '100%';
-		bar.style.backgroundColor = 'lightgrey';
 		
 		if (resource !== 'heart') {
 			progress.appendChild(bar);
@@ -166,7 +169,7 @@ Module.register('MMM-fitbit',{
 		// Put them all together
 		wrapper.appendChild(icon);
 		text.appendChild(userData);
-		if (resource === 'distance' || resource === 'activeMinutes' || resource === 'heart') {
+		if (['distance','activeMinutes','heart'].indexOf(resource) > -1) {
 			text.appendChild(suffix);
 		}
 		wrapper.appendChild(text);
@@ -185,7 +188,7 @@ Module.register('MMM-fitbit',{
 		var wrapper = document.createElement("div");
 		
 		for (resource in this.config.resources) {
-			wrapper.appendChild(this.UIElementWithBar(this.config.resources[resource]));
+			wrapper.appendChild(this.UIElement(this.config.resources[resource]));
 		}
 		
 		return wrapper;
