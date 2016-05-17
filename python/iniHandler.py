@@ -46,7 +46,6 @@ def ReadCredentials():
 		#Open file and read credentials
 		credentialParser.read(iniDirectory + credentialsFile)
 		client_id = credentialParser.get('Credentials', 'C_ID')
-		client_key = credentialParser.get('Credentials', 'C_KEY')
 		client_secret = credentialParser.get('Credentials', 'C_SECRET')
 	except ConfigParser.NoSectionError:
 		#If the credentials file is not correctly formatted
@@ -55,18 +54,17 @@ def ReadCredentials():
 	else:
 		#Return credentials
 		print_json("status", "Read of %s successful." %credentialsFile)
-		return client_id, client_key, client_secret
+		return client_id, client_secret
 	
-def WriteCredentials(id,key,secret):
+def WriteCredentials(id,secret):
 	print_json("status", "Writing credentials to %s" %credentialsFile)
-	print_json("status", "Writing id: %s, key: %s, and secret: %s" %(id, key, secret))
+	print_json("status", "Writing id: %s and secret: %s" %(id, secret))
 	
 	credentialParser.read(iniDirectory + credentialsFile)
 	
 	try:
 		#Write the credentials to credentials.ini
 		credentialParser.set('Credentials', 'C_ID', id)
-		credentialParser.set('Credentials', 'C_KEY', key)
 		credentialParser.set('Credentials', 'C_SECRET', secret)
 		with open(iniDirectory + credentialsFile, 'wb') as iniFile:
 			credentialParser.write(iniFile)
@@ -76,7 +74,7 @@ def WriteCredentials(id,key,secret):
 		credentialParser.add_section('Credentials')
 		with open(iniDirectory + credentialsFile, 'wb') as iniFile:
 			credentialParser.write(iniFile)
-		WriteCredentials(id,key,secret)
+		WriteCredentials(id,secret)
 	else:
 		print_json("status", "Credentials write successful")
 		

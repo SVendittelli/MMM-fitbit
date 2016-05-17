@@ -11,7 +11,7 @@ import sys
 from iniHandler import print_json, ReadCredentials, WriteTokens
 
 #Get credentials from file
-client_id, client_key, client_secret = ReadCredentials()
+client_id, client_secret = ReadCredentials()
 
 #URL to refresh the access token
 TokenURL = "https://api.fitbit.com/oauth2/token"

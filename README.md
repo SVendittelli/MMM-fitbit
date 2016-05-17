@@ -20,7 +20,6 @@ Setup
     * Note your:
         * "OAuth 2.0 Client ID" --- (client_id)
         * "Client (Consumer) Secret" --- (client_secret)
-        * "Client (Consumer) Key" --- (client_key)
     * (You can access these again later via manage my apps at the same link as above)
 * Install dependancies (run these in MMM-fitbit directory)
 * Run setupFitbit.py in the python directory. You can either:
@@ -40,7 +39,6 @@ Example config
 	config: [
 		credentials: {
 			client_id: <client_id>,
-			client_key: <client_key>,
 			client_secret: <client_secret>,
 		},
 		resources: [

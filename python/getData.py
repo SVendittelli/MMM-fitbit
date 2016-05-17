@@ -11,7 +11,7 @@ if __name__ == "__main__":
 	FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"
 
 	#Get credentials
-	ClientID, ClientKey, ClientSecret = ReadCredentials()
+	ClientID, ClientSecret = ReadCredentials()
 
 	APICallOK = False
 	while not APICallOK:
@@ -25,7 +25,7 @@ if __name__ == "__main__":
 			sys.exit(1)
 	
 	#Create authorised client and grab step count from one day of steps
-	authdClient = fitbit.Fitbit(ClientKey, ClientSecret, oauth2=True, access_token=AccessToken, refresh_token=RefreshToken)
+	authdClient = fitbit.Fitbit(ClientID, ClientSecret, oauth2=True, access_token=AccessToken, refresh_token=RefreshToken)
 	activityList = authdClient.activities()
 	try:
 		activitySummary = activityList['summary'] #Use for steps, floors, calories. Adapt for distance, active minutes
