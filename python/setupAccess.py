@@ -82,7 +82,7 @@ if __name__ == '__main__':
 		responce = input("Get credentials from credentials.ini? (Y/N)\n").upper()
 		
 		if responce == "Y":
-			id, key, secret = ReadCredentials()
+			id, secret = ReadCredentials()
 		elif responce == "N":
 			responce = input("Would you like to enter them manually now? (Y/N)\n").upper()
 			

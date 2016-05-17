@@ -123,4 +123,4 @@ def WriteTokens(AccToken,RefToken):
 		print_json("status", "Write of %s successful." %tokensFile)
 
 if __name__ == "__main__":
-	WriteCredentials(sys.argv[1],sys.argv[2],sys.argv[3])
+	WriteCredentials(sys.argv[1],sys.argv[2])

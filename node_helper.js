@@ -15,7 +15,7 @@ module.exports = NodeHelper.create({
 		if (notification === 'SET CREDS') {
 			console.log('Set credential request recieved.');
 			console.log(payload);
-			this.setCreds(payload.client_id,payload.client_key,payload.client_secret);
+			this.setCreds(payload.client_id,payload.client_secret);
 		};
 		if (notification === 'GET DATA') {
 			console.log('Initial run request recieved.');
@@ -23,11 +23,11 @@ module.exports = NodeHelper.create({
 		};
 	},
 	
-	setCreds: function (id,key,secret) {
+	setCreds: function (id,secret) {
 		var options = {
 			mode: 'json',
 			scriptPath: 'modules/MMM-fitbit/python',
-			args: [id, key, secret]
+			args: [id, secret]
 		}
 		PythonShell.run('iniHandler.py', options, function (err, results) {
 			if (err) throw err;
