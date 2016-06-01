@@ -25,7 +25,6 @@ module.exports = NodeHelper.create({
 	
 	setCreds: function (id,secret) {
 		var options = {
-			uid: 0,
 			mode: 'json',
 			scriptPath: 'modules/MMM-fitbit/python',
 			args: [id, secret]
@@ -41,7 +40,7 @@ module.exports = NodeHelper.create({
 		const self = this;
 		const fileName = 'getData.py';
 		console.log('Running ' + fileName);
-		const fitbitPyShell = new PythonShell(fileName, {mode: 'json', scriptPath: 'modules/MMM-fitbit/python', uid: 0});
+		const fitbitPyShell = new PythonShell(fileName, {mode: 'json', scriptPath: 'modules/MMM-fitbit/python'});
 		
 		fitbitPyShell.on('message', function (message) {
 			if (message['type'] == 'data') {
