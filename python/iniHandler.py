@@ -7,7 +7,7 @@ if (sys.version_info > (3,0)):
 else:
 	import ConfigParser
 
-iniDirectory = './' + os.path.dirname(os.path.relpath(os.path.realpath(__file__))) + '/'
+iniDirectory = os.path.dirname(os.path.realpath(__file__)) + '/'
 credentialsFile = 'credentials.ini'
 credentialParser = ConfigParser.SafeConfigParser()
 tokensFile = 'tokens.ini'

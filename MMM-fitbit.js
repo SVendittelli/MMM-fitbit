@@ -64,7 +64,7 @@ Module.register('MMM-fitbit',{
 		}
 		if (notification === "UPDATE") {
 			Log.log('Updating Dom');
-			this.updateDom();
+			this.updateDom(this.fadeSpeed);
 		}
 	},
 	
@@ -73,6 +73,8 @@ Module.register('MMM-fitbit',{
 		Log.info('Starting module: ' + this.name);
 		this.sendSocketNotification('SET CREDS',this.config.credentials)
 		this.sendSocketNotification('GET DATA', 'intial');
+		
+		this.fadeSpeed = 500;
 		
 		// Schedule update interval.
 		var self = this;

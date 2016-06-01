@@ -34,7 +34,7 @@ Files
 * `node_helper.js`
 
 ### Python
-* `setupFitbit.py` - file to get first access and refresh tokens
+* `setupAccess.py` - file to get first access and refresh tokens
 * `iniHandler.py` - reads and writes `.ini` files
 * `authHandler.py` - file to update tokens
 * `getData.py` - file to return data
