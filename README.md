@@ -2,6 +2,8 @@ MMM-fitbit
 ===
 [MagicMirror](https://github.com/MichMich/MagicMirror) Module for getting fitbit data. First time users follow setup instructions, if your tokens get lost run `setupAccess.py` again without arguments and accept reading from `credentials.ini`.
 
+**_WARNING_**: you must start your magic mirror with `sudo npm start`. I am surrently working on a fix for this.
+
 Dependencies
 ---
 * [python-shell](https://www.npmjs.com/package/python-shell) --- `npm install python-shell`
@@ -20,11 +22,11 @@ Setup
         * "Client (Consumer) Secret" --- (client_secret)
     * (You can access these again later via manage my apps at the same link as above)
 * Install dependancies (run these in MMM-fitbit directory)
-* Run setupAccess.py in the python directory. You can either:
+* Run `sudo python setupAccess.py` in the python directory. You can either:
     * Pass it your client_id and client_secret as arguments
     * Run it without arguments and have it read from credentials.ini (you can use this if you have already setup the module but need a fresh set of tokens)
     * Run it without arguments and enter your client_id and client_secret when prompted
-* Login to fitbit (if you are not already) and allow access to all (if you do not some features may not work, but you may revoke app access and rerun `setupAccess.py` to change these)
+* Login to fitbit (if you are not already) and allow access to all (if you do not some features may not work, but you may revoke app access and rerun `sudo python setupAccess.py` to change these)
 * Add the example config to your config (entering relavent credentials)
 * Start your MagicMirror!
 
