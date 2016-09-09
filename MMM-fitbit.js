@@ -44,7 +44,7 @@ Module.register('MMM-fitbit',{
 			'sleep',
 			'heart'
 		],
-		update_interval: 60*60
+		update_interval: 60*60*1000
 	},
 	
 	// Define required scripts.
@@ -79,8 +79,9 @@ Module.register('MMM-fitbit',{
 		// Schedule update interval.
 		var self = this;
 		setInterval(function() {
-			self.updateData();
-		}, this.update_interval*1000);
+			//self.updateData();
+			Log.log('Updated!');
+		}, this.update_interval);
 	},
 	
 	// Updates the data from fitbit
