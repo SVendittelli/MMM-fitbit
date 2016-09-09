@@ -54,7 +54,7 @@ Config
 			'sleep',
 			'heart'
 		],
-		update_interval: 60*60*1000
+		update_interval: 60
 	]
 },
 ````
@@ -63,7 +63,7 @@ Config
 	* (Required) `client_id`: From https://dev.fitbit.com/
 	* (Required) `client_secret`: From https://dev.fitbit.com/
 * (Required) `resources`: List of resources to display on Mirror. May take any combination of `'steps', 'floors', 'caloriesOut', 'distance', 'activeMinutes', 'sleep', 'heart'`
-* (Optional) `update_interval` - (default value of `60*60*1000`): in the amount of time in miliseconds waited before fetching new fitbit data. This must not be done too often otherwise fitbit will not send new tokens.
+* (Optional) `update_interval` - (default value of `60`): in the amount of time in minutes to wait before fetching new fitbit data. This must not be done too often otherwise fitbit will not send new tokens and an uncaught exception will be thrown. This happens after approximately 150 requests in an hour, so updates should be no more frequent than once every minute for safety.
 
 TODO
 ---
