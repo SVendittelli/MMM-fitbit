@@ -2,7 +2,7 @@ MMM-fitbit
 ===
 [MagicMirror](https://github.com/MichMich/MagicMirror) Module for getting fitbit data. First time users follow setup instructions, if your tokens get lost run `setupAccess.py` again without arguments and accept reading from `credentials.ini`.
 
-**_WARNING_**: you must start your magic mirror with `sudo npm start`. I am surrently working on a fix for this.
+**_WARNING_**: you must start your magic mirror with `sudo npm start`. I am currently working on a fix for this.
 
 Dependencies
 ---
@@ -30,8 +30,9 @@ Setup
 * Add the example config to your config (entering relavent credentials)
 * Start your MagicMirror!
 
-Example config
+Config
 ---
+### Example config
 ````javascript
 {
 	module: 'MMM-fitbit',
@@ -49,10 +50,17 @@ Example config
 			'activeMinutes',
 			'sleep',
 			'heart'
-		]
+		],
+		update_interval: 60*60
 	]
 },
 ````
+### Explanation
+* (Required) `credentials`:
+	* (Required) `client_id`: From https://dev.fitbit.com/
+	* (Required) `client_secret`: From https://dev.fitbit.com/
+* (Required) `resources`: List of resources to display on Mirror. May take any combination of `'steps', 'floors', 'caloriesOut', 'distance', 'activeMinutes', 'sleep', 'heart'`
+* (Optional) `update_interval` - (default value of `60*60`): in the amount of time in seconds waited before fetching new fitbit data. This must not be done too often otherwise fitbit will not send new tokens.
 
 TODO
 ---

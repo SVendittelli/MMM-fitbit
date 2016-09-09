@@ -44,7 +44,8 @@ Module.register('MMM-fitbit',{
 			'activeMinutes',
 			'sleep',
 			'heart'
-		]
+		],
+		update_interval: 60*60
 	},
 	
 	// Define required scripts.
@@ -80,7 +81,7 @@ Module.register('MMM-fitbit',{
 		var self = this;
 		setInterval(function() {
 			self.updateData();
-		}, 60*60*1000);
+		}, update_interval*1000);
 	},
 	
 	// Updates the data from fitbit
