@@ -1,5 +1,6 @@
 TODO
 ==
+* Fix need for super user privileges
 * Formatting for regions other than central ones
 * _Cleanup the code_
 
