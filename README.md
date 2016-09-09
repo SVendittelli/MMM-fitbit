@@ -11,6 +11,7 @@ Dependencies
 
 Setup
 ---
+* As with all modules, use `git clone <this url>` in the `modules` directory to download the module
 * Goto [fitbit](https://dev.fitbit.com/) to register a new app (sign in with your fitbit account)
     * Give your app a catchy name and description
     * Your personal website, organisation, and organisation website can be whatever you like
@@ -21,10 +22,12 @@ Setup
         * "OAuth 2.0 Client ID" --- (client_id)
         * "Client (Consumer) Secret" --- (client_secret)
     * (You can access these again later via manage my apps at the same link as above)
-* Install dependancies (run these in MMM-fitbit directory)
-* Run `sudo python setupAccess.py` in the python directory. You can either:
+* Navigate to `MMM-fitbit` in the modules directory
+* Install dependancies using the listed commands
+* Navigate to the `python` directory in `MMM-fitbit`
+* Run `sudo python setupAccess.py`. You must either:
     * Pass it your client_id and client_secret as arguments
-    * Run it without arguments and have it read from credentials.ini (you can use this if you have already setup the module but need a fresh set of tokens)
+    * Run it without arguments and have it read from `credentials.ini` (you can use this if you have already setup the module but need a fresh set of tokens)
     * Run it without arguments and enter your client_id and client_secret when prompted
 * Login to fitbit (if you are not already) and allow access to all (if you do not some features may not work, but you may revoke app access and rerun `sudo python setupAccess.py` to change these)
 * Add the example config to your config (entering relavent credentials)
