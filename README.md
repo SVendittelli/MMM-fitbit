@@ -25,6 +25,7 @@ Setup
 * Navigate to `MMM-fitbit` in the modules directory
 * Install dependancies using the listed commands
 * Navigate to the `python` directory in `MMM-fitbit`
+* Create blank files 'tokens.ini' and 'credentials.ini`
 * Run `sudo python setupAccess.py`. You must either:
     * Pass it your client_id and client_secret as arguments
     * Run it without arguments and have it read from `credentials.ini` (you can use this if you have already setup the module but need a fresh set of tokens)
