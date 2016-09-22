@@ -33,7 +33,6 @@ Module.register('MMM-fitbit',{
 	defaults: {
 		credentials: {
 			client_id: '',
-			client_key: '',
 			client_secret: ''
 		},
 		resources: [
@@ -44,7 +43,8 @@ Module.register('MMM-fitbit',{
 			'activeMinutes',
 			'sleep',
 			'heart'
-		]
+		],
+		update_interval: 60
 	},
 	
 	// Define required scripts.
@@ -80,7 +80,7 @@ Module.register('MMM-fitbit',{
 		var self = this;
 		setInterval(function() {
 			self.updateData();
-		}, 60*60*1000);
+		}, this.config.update_interval*60*1000);
 	},
 	
 	// Updates the data from fitbit

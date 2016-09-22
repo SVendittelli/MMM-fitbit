@@ -57,6 +57,11 @@ def ReadCredentials():
 		return client_id, client_secret
 	
 def WriteCredentials(id,secret):
+	#Check if credentials.ini exists
+	if not fileExists(iniDirectory, credentialsFile):
+		print_json('error', '%s does not exist' %credentialsFile)
+		sys.exit(1)
+	
 	print_json("status", "Writing credentials to %s" %credentialsFile)
 	print_json("status", "Writing id: %s and secret: %s" %(id, secret))
 	
@@ -101,6 +106,11 @@ def ReadTokens():
 		return AccToken, RefToken
 
 def WriteTokens(AccToken,RefToken):
+	#Check if tokens.ini exists
+	if not fileExists(iniDirectory, tokensFile):
+		print_json('error', '%s does not exist' %tokensFile)
+		sys.exit(1)
+	
 	print_json("status", "Writing tokens to %s" %tokensFile)
 	print_json("status", "Writing access token: %s and refresh token: %s" %(AccToken, RefToken))
 	
