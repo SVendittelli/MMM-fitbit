@@ -1,6 +1,6 @@
 MMM-fitbit
 ===
-MMM-fitibt is a module for the [MagicMirror](https://github.com/MichMich/MagicMirror). After authorising your modle, it will get your step count and various other stats from the fitbit servers. First time users follow setup instructions, if your tokens get lost run `setupAccess.py` again without arguments and accept reading from `credentials.ini`.
+[MMM-fitbit](https://forum.magicmirror.builders/topic/6/fitbit) is a module for the [MagicMirror](https://github.com/MichMich/MagicMirror). After authorising your modle, it will get your step count and various other stats from the fitbit servers. First time users follow setup instructions, if your tokens get lost run `setupAccess.py` again without arguments and accept reading from `credentials.ini`.
 
 Features
 ---
@@ -82,6 +82,14 @@ The following can be configured:
 | `resources` | _Required_ | List of resources to display on Mirror. May take any combination of: <ul><li>`'steps'`,</li><li>`'floors'`,</li><li>`'caloriesOut'`,</li><li>`'distance'`,</li><li>`'activeMinutes'`,</li><li>`'sleep'`,</li><li>`'heart'`.</li></ul> |
 | `update_interval` | _Optional_ | The amount of time in minutes to wait before fetching new fitbit data. This must not be done too often otherwise fitbit will not send new tokens and an uncaught exception will be thrown. This happens after approximately 150 requests in an hour, so updates should be no more frequent than once every minute for safety. <br> **Default:** 60.
 
+Support
+---
+If you have problems setting up the module they can be discussed on the [MagicMirror Forum](https://forum.magicmirror.builders/topic/214/fitbit). If you find a bug I am always open to pull requests!
+
 TODO
 ---
 See [here](TODO.md).
+
+Licence
+---
+This project is Licenced under the MIT licence.
