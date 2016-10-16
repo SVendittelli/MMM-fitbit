@@ -1,51 +1,29 @@
 TODO
-==
-* Fix need for super user privileges
-* Formatting for regions other than central ones
-* _Cleanup the code_
-
-## Sample config:
-````javascript
-{
-	module: 'MMM-fitbit',
-	position: 'top_center',
-	config: [
-		credentials: {
-			client_id:
-			client_key:
-			client_secret:
-		},
-		resources: [
-			'steps',
-			'floors',
-			'caloriesOut',
-			'distance',
-			'activeMinutes',
-			'sleep',
-			'heart'
-		]
-	]
-},
-````
+===
+List
+---
+- [x] Fix need for super user privileges
+- [ ] Formatting for regions other than central ones
+- [ ] _Cleanup the code_
 
 Files
---
+---
 ### Javascript
-* `MMM-fitbit.js`
-* `node_helper.js`
+* [`MMM-fitbit.js`](MMM-fitbit.js)
+* [`node_helper.js`](node_helper.js)
 
 ### Python
-* `setupAccess.py` - file to get first access and refresh tokens
-* `iniHandler.py` - reads and writes `.ini` files
-* `authHandler.py` - file to update tokens
-* `getData.py` - file to return data
+* [`setupAccess.py`](python/setupAccess.py) - file to get first access and refresh tokens
+* [`iniHandler.py`](python/iniHandler.py) - reads and writes `.ini` files
+* [`authHandler.py`](python/authHandler.py) - file to update tokens
+* [`getData.py`](python/getData.py) - file to return data
 
 ### .ini
 * `credentials.ini`
 * `tokens.ini`
 
 ### CSS
-* MMM-fitbit.css
+* [`MMM-fitbit.css`](MMM-fitbit.css)
 
 Supported Data
 --
@@ -53,7 +31,7 @@ Supported Data
 * Floors
 * Calories
 * Total distance
-* Sleep (api missing goals)
+* Sleep (API missing goals)
 * Resting heartrate
 * Active minutes
 
@@ -61,4 +39,4 @@ Supported Data
 * Battery Levels? (need device details, ask user for device?)
 * Alarms? (see above)
 * Lifetime stats? (interesting but doesn't fit with others)
-* Friends leaderboard (api buggy, waiting on fix)
+* Friends leaderboard (API buggy, waiting on fix)
