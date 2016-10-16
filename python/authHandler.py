@@ -8,7 +8,7 @@ import json
 import os
 import sys
 
-from iniHandler import print_json, ReadCredentials, WriteTokens
+from iniHandler import PrintJSON, ReadCredentials, WriteTokens
 
 #Get credentials from file
 client_id, client_secret = ReadCredentials()
@@ -24,7 +24,7 @@ ErrorInAPI = "Error when making API call that I couldn't handle"
 
 #Make a HTTP POST to get new tokens
 def GetNewAccessToken(RefToken):
-	print_json('status','Getting a new access token')
+	PrintJSON('status','Getting a new access token')
 	
 	#Form the data payload
 	BodyText = {'grant_type' : 'refresh_token',
@@ -57,16 +57,16 @@ def GetNewAccessToken(RefToken):
 		#Write the access token to the ini file
 		WriteTokens(NewAccessToken,NewRefreshToken)
 		
-		print_json('status', 'Tokens refreshed')
+		PrintJSON('status', 'Tokens refreshed')
 	except urllib2.URLError as err:
-		print_json('error', 'Error getting new access token')
-		print_json('error', err.code, json.loads(err.read()))
+		PrintJSON('error', 'Error getting new access token')
+		PrintJSON('error', err.code, json.loads(err.read()))
 		sys.exit(1)
 
 #This makes an API call. It also catches errors and tries to deal with them
 def MakeAPICall(InURL,AccToken,RefToken):
 	#Start forming the request
-	print_json('status', 'Making API call')
+	PrintJSON('status', 'Making API call')
 	req = urllib2.Request(InURL)
 	
 	#Add the access token in the header
@@ -79,19 +79,19 @@ def MakeAPICall(InURL,AccToken,RefToken):
 		FullResponse = response.read()
 		
 		#Return values for successful request, tokens good, and the data recieved
-		print_json('status', 'API call okay')
+		PrintJSON('status', 'API call okay')
 		return True, True, Authorised
 	#Catch errors, e.g. A 401 error that signifies the need for a new access token
 	except urllib2.URLError as err:
 		HTTPErrorMessage = err.read()
-		print_json('error', err.code, json.loads(HTTPErrorMessage))
+		PrintJSON('error', err.code, json.loads(HTTPErrorMessage))
 		#See what the error was
 		if (err.code == 401) and (HTTPErrorMessage.find("expired_token") > 0):
 			GetNewAccessToken(RefToken)
-			print_json('status', 'Can run again')
+			PrintJSON('status', 'Can run again')
 			return False, True, TokenRefreshedOK
 		if (err.code == 401) and (HTTPErrorMessage.find("invalid_token") > 0):
 			return False, False, Reauthorise
 		#Return that this didn't work, allowing the calling function to handle it
-		print_json('status', 'API call failed')
+		PrintJSON('status', 'API call failed')
 		return False, False, ErrorInAPI

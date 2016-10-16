@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import fitbit
 import json
-from iniHandler import print_data, print_json, ReadCredentials, ReadTokens
+from iniHandler import PrintData, PrintJSON, ReadCredentials, ReadTokens
 from authHandler import *
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 		#Make the API call
 		APICallOK, TokensOK, APIResponse = MakeAPICall(FitbitURL, AccessToken, RefreshToken)
 		
-		print_json('status',APIResponse)
+		PrintJSON('status',APIResponse)
 		if not TokensOK:
 			sys.exit(1)
 	
@@ -38,11 +38,11 @@ if __name__ == "__main__":
 		activeMinutes = activitySummary['fairlyActiveMinutes'] + activitySummary['veryActiveMinutes']
 		
 		for resource in ResourceTypes:
-			print_data(resource,activitySummary[resource],activityGoals[resource])
+			PrintData(resource,activitySummary[resource],activityGoals[resource])
 		
-		print_data('distance',activitySummary['distances'][0]['distance'],activityGoals['distance'])
-		print_data('activeMinutes',activeMinutes,activityGoals['activeMinutes'])
-		print_data('sleep',totalMinutesAsleep,480)
-		print_data('heart',heartTimeSeries['activities-heart'][0]['value']['restingHeartRate'],60)
+		PrintData('distance',activitySummary['distances'][0]['distance'],activityGoals['distance'])
+		PrintData('activeMinutes',activeMinutes,activityGoals['activeMinutes'])
+		PrintData('sleep',totalMinutesAsleep,480)
+		PrintData('heart',heartTimeSeries['activities-heart'][0]['value']['restingHeartRate'],60)
 	except KeyError as err:
-		print_data(str(err).strip("'"),0,1)
+		PrintData(str(err).strip("'"),0,1)
