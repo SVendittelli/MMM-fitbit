@@ -24,11 +24,11 @@ Setup
 * Install dependancies using the listed commands
 * Navigate to the `python` directory in `MMM-fitbit`
 * Create blank files `tokens.ini` and `credentials.ini` or duplicate their `.sample` files
-* Run `sudo python setupAccess.py`. You must either:
+* Via the command line on your Pi (**NOT via SSH**), run `sudo python setupAccess.py`. You must either:
     * Pass it your client_id and client_secret as arguments
     * Run it without arguments and have it read from `credentials.ini` (you can use this if you have already setup the module but need a fresh set of tokens)
     * Run it without arguments and enter your client_id and client_secret when prompted
-* Login to fitbit (if you are not already) and allow access to all (if you do not some features may not work, but you may revoke app access and rerun `sudo python setupAccess.py` to change these)
+* Login using your fitbit credentials (if you are not already) and allow access to all options (if you do not some features may not work, but you may revoke app access and rerun `sudo python setupAccess.py` to change these)
 * Add the example config to your config (entering relavent credentials)
 * Start your MagicMirror!
 
