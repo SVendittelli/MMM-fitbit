@@ -7,6 +7,7 @@ import urllib2
 import json
 import os
 import sys
+import requests
 
 from iniHandler import print_json, ReadCredentials, WriteTokens
 
@@ -35,7 +36,8 @@ def GetNewAccessToken(RefToken):
 	
 	#Start the request
 	tokenreq = urllib2.Request(TokenURL,BodyURLEncoded)
-	
+	print TokenURL
+	print BodyURLEncoded
 	#Add the headers, first we base64 encode the client id and client secret with a : inbetween and create the authorisation header
 	tokenreq.add_header('Authorization', 'Basic ' + base64.b64encode(client_id + ":" + client_secret))
 	tokenreq.add_header('Content-Type', 'application/x-www-form-urlencoded')
@@ -43,10 +45,8 @@ def GetNewAccessToken(RefToken):
 	#Fire off the request
 	try:
 		tokenresponse = urllib2.urlopen(tokenreq)
-		
 		#See what we got back. If it's this part of the code it was OK
 		FullResponse = tokenresponse.read()
-		
 		#Use JSON to extract tokens
 		ResponseJSON = json.loads(FullResponse)
 		

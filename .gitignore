@@ -4,3 +4,5 @@ python/fitbit/test.py
 *.log
 *.pyc
 *.ini
+
+node_modules/
