@@ -20,14 +20,14 @@ class OAuth2Server:
         """ Initialize the FitbitOauth2Client """
         self.redirect_uri = redirect_uri
         self.success_html = """
-			<style>
-			h1 {text-align:center;}
-			h3 {text-align:center;}
-			</style>
+            <style>
+            h1 {text-align:center;}
+            h3 {text-align:center;}
+            </style>
             <h1>You are now authorised to access the Fitbit API!</h1>
             <br/><h3>You can close this window</h3>"""
         self.failure_html = """
-			<style> h1 {text-align:center;} </style>
+            <style> h1 {text-align:center;} </style>
             <h1>ERROR: %s</h1><br/><h3>You can close this window</h3>%s"""
         self.oauth = FitbitOauth2Client(client_id, client_secret)
 
@@ -75,45 +75,48 @@ class OAuth2Server:
 
 
 if __name__ == '__main__':
-	try: input = raw_input
-	except NameError: pass
-	
-	if not (len(sys.argv) == 3):
-		responce = input("Get credentials from credentials.ini? (Y/N)\n").upper()
-		
-		if responce == "Y":
-			id, secret = ReadCredentials()
-		elif responce == "N":
-			responce = input("Would you like to enter them manually now? (Y/N)\n").upper()
-			
-			if responce == "Y":
-				id = input("Enter client id:\n")
-				secret = input("Enter client secret:\n")
-			elif responce == "N":
-				print("Try again giving arguments: client id and client secret.")
-				sys.exit(1)
-			else:
-				print("Invalid input.")
-				sys.exit(1)
-			
-		else:
-			print("Invalid input.")
-			sys.exit(1)
-		
-	elif (len(sys.argv) == 3):
-		id, secret = sys.argv[1:]
-	else:
-		print("Try again giving arguments: client id and client secret.")
-		sys.exit(1)
+    try: input = raw_input
+    except NameError: pass
+    
+    if not (len(sys.argv) == 3):
+        responce = input("Get credentials from credentials.ini? (Y/N)\n").upper()
+        
+        if responce == "Y":
+            id, secret = ReadCredentials()
+        elif responce == "N":
+            responce = input("Would you like to enter them manually now? (Y/N)\n").upper()
+            
+            if responce == "Y":
+                id = input("Enter client id:\n")
+                secret = input("Enter client secret:\n")
+            elif responce == "N":
+                print("Try again giving arguments: client id and client secret.")
+                sys.exit(1)
+            else:
+                print("Invalid input.")
+                sys.exit(1)
+            
+        else:
+            print("Invalid input.")
+            sys.exit(1)
+        
+    elif (len(sys.argv) == 3):
+        id, secret = sys.argv[1:]
+    else:
+        print("Try again giving arguments: client id and client secret.")
+        sys.exit(1)
 
-	server = OAuth2Server(id,secret)
-	server.browser_authorize()
-	
-	acc_tok = server.oauth.token['access_token']
-	ref_tok = server.oauth.token['refresh_token']
-	
-	print('FULL RESULTS = %s' % server.oauth.token)
-	print('ACCESS_TOKEN = %s' % acc_tok)
-	print('REFRESH_TOKEN = %s' % ref_tok)
-	
-	WriteTokens(acc_tok,ref_tok)
+    server = OAuth2Server(id,secret)
+    server.browser_authorize()
+    
+    print(server.oauth.session)
+
+    acc_tok = server.oauth.session.token['access_token']
+    ref_tok = server.oauth.session.token['refresh_token']
+    expires_at = server.oauth.session.token['expires_at']
+    
+    print('FULL RESULTS = %s' % server.oauth.session.token)
+    print('ACCESS_TOKEN = %s' % acc_tok)
+    print('REFRESH_TOKEN = %s' % ref_tok)
+    
+    WriteTokens(acc_tok,ref_tok,expires_at)

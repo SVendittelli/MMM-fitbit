@@ -96,6 +96,7 @@ def ReadTokens():
 		tokenParser.read(iniDirectory + tokensFile)
 		AccToken = tokenParser.get('Tokens', 'ACC_TOK')
 		RefToken = tokenParser.get('Tokens', 'REF_TOK')
+		Expires = float(tokenParser.get('Tokens', 'EXPIRES_AT'))
 	except ConfigParser.NoSectionError:
 		#If the token file is not correctly formatted
 		print_json("error","Cannot read %s" %tokensFile)
@@ -103,9 +104,9 @@ def ReadTokens():
 	else:
 		#Return tokens
 		print_json("status", "Read of %s successful." %tokensFile)
-		return AccToken, RefToken
+		return AccToken, RefToken, Expires
 
-def WriteTokens(AccToken,RefToken):
+def WriteTokens(AccToken,RefToken,Expires=None):
 	#Check if tokens.ini exists
 	if not fileExists(iniDirectory, tokensFile):
 		print_json('error', '%s does not exist' %tokensFile)
@@ -120,6 +121,8 @@ def WriteTokens(AccToken,RefToken):
 		#Write the access and refresh tokens tokens.ini
 		tokenParser.set('Tokens','REF_TOK',RefToken)
 		tokenParser.set('Tokens','ACC_TOK',AccToken)
+		if Expires:
+			tokenParser.set('Tokens','EXPIRES_AT',str(Expires))
 		with open(iniDirectory + tokensFile, 'wb') as iniFile:
 			tokenParser.write(iniFile)
 	except ConfigParser.NoSectionError:
@@ -128,7 +131,7 @@ def WriteTokens(AccToken,RefToken):
 		tokenParser.add_section('Tokens')
 		with open(iniDirectory + tokensFile, 'wb') as iniFile:
 			tokenParser.write(iniFile)
-		WriteTokens(AccToken,RefToken)
+		WriteTokens(AccToken,RefToken,Expires)
 	else:
 		print_json("status", "Write of %s successful." %tokensFile)
 
