@@ -39,7 +39,7 @@ Config
 {
 	module: 'MMM-fitbit',
 	position: 'top_center',
-	config: [
+	config: {
 		credentials: {
 			client_id: <client_id>,
 			client_secret: <client_secret>,
@@ -54,7 +54,7 @@ Config
 			'heart'
 		],
 		update_interval: 60
-	]
+	}
 },
 ````
 ### Explanation
