@@ -1,6 +1,8 @@
 MMM-Fitbit2
 ===
-[MagicMirror](https://github.com/MichMich/MagicMirror) Module for getting fitbit data. First time users follow setup instructions, if your tokens get lost run `setupAccess.py` again without arguments and accept reading from `credentials.ini`.
+[MagicMirror](https://github.com/MichMich/MagicMirror) Module for displaying Fitbit data.
+
+![](screenshot.png)
 
 Dependencies
 ---
@@ -10,7 +12,7 @@ Dependencies
 Setup
 ---
 * As with all modules, use `git clone <this url>` in the `modules` directory to download the module
-* Goto [fitbit](https://dev.fitbit.com/) to register a new app (sign in with your fitbit account)
+* Go to [Fitbit](https://dev.fitbit.com/) to register a new app (sign in with your Fitbit account)
     * Give your app a catchy name and description
     * Your personal website, organisation, and organisation website can be whatever you like
     * Check browser and personal for OAuth settings
@@ -29,8 +31,8 @@ Setup
     * Run it without arguments and have it read from `credentials.ini` (you can use this if you have already setup the module but need a fresh set of tokens)
     * Run it without arguments and enter your client_id and client_secret when prompted
     * **IMPORTANT NOTE** MagicMirror² can not be running when you run the `setupAccess.py` script since it uses the same port: `8080`. After running setup, you can restart MM².
-* Login using your fitbit credentials (if you are not already) and allow access to all options (if you do not some features may not work, but you may revoke app access and rerun `sudo python setupAccess.py` to change these)
-* Add the example config to your config (entering relavent credentials)
+* Log in using your Fitbit credentials (if you are not already) and allow access to all options (if you do not some features may not work, but you may revoke app access and re-run `sudo python setupAccess.py` to change these).
+* Add the example config to your config (entering relevant credentials)
 * Start your MagicMirror!
 
 Config
@@ -63,7 +65,7 @@ Config
 	* (Required) `client_id`: From https://dev.fitbit.com/
 	* (Required) `client_secret`: From https://dev.fitbit.com/
 * (Required) `resources`: List of resources to display on Mirror. May take any combination of `'steps', 'floors', 'caloriesOut', 'distance', 'activeMinutes', 'sleep', 'heart'`
-* (Optional) `update_interval` - (default value of `60`): in the amount of time in minutes to wait before fetching new fitbit data. This must not be done too often otherwise fitbit will not send new tokens and an uncaught exception will be thrown. This happens after approximately 150 requests in an hour, so updates should be no more frequent than once every minute for safety.
+* (Optional) `update_interval` - (default value of `60`): in the amount of time in minutes to wait before fetching new Fitbit data. This must not be done too often otherwise Fitbit will not send new tokens and an uncaught exception will be thrown. This happens after approximately 150 requests in an hour, so updates should be no more frequent than once every minute for safety.
 
 TODO
 ---
