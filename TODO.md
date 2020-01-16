@@ -7,7 +7,6 @@ TODO
 	* Make setup steps clearer
 	* Make it clear that multiple API calls are made on each refresh
 * MIT LICENSE.md
-* Fix iniHandler saving tokens
 
 * Get goals from API; don't hard-code
 * _Clean up the code_
@@ -28,6 +27,7 @@ TODO
 * Fix the need for super user privileges
 * Fix "img/weight.png"
 * Use Python 3
+	* Fix iniHandler saving tokens
 
 ## Low priority
 * Formatting for regions other than central ones
