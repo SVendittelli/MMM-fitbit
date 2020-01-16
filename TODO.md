@@ -2,6 +2,7 @@ TODO
 ==
 
 ## High priority
+* Rewrite README to make steps clearer
 * Fix "img/weight.png"
 * Get goals from API; don't hard-code
 * Finish completing information shown on Fitbit dashboard

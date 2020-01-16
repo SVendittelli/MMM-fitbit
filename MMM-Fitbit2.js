@@ -3,7 +3,8 @@
 /* Magic Mirror
  * Module: MMM-Fitbit2
  *
- * By Sam Vendittelli
+ * Forked from MMM-fitbit by Sam Vendittelli
+ * MMM-Fitbit2 modifications by Mike Roberts
  * MIT Licensed.
  */
 
