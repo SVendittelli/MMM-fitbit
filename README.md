@@ -16,8 +16,8 @@ This extends SVendittelli's original [MMM-fitbit](https://github.com/SVendittell
 
 Dependencies
 ---
-* [python-shell](https://www.npmjs.com/package/python-shell) --- `npm install python-shell@0.5.0`
-* [python-fitbit](https://github.com/orcasgit/python-fitbit) --- `sudo pip install -r python/fitbit/requirements.txt`
+* [python-shell](https://www.npmjs.com/package/python-shell)
+* [python-fitbit](https://github.com/orcasgit/python-fitbit)
 
 Setup
 ---
@@ -40,8 +40,8 @@ cd ~/MagicMirror # or whatever your path to Magic Mirror is
 cd modules
 git clone https://github.com/m-roberts/MMM-Fitbit2
 cd MMM-Fitbit2
-npm install python-shell@0.5.0
-sudo pip install -r python/fitbit/requirements.txt
+npm install python-shell@0.5.0  # Requires this version to work - see https://github.com/SVendittelli/MMM-fitbit/issues/23#issuecomment-464319931
+pip install --user -r python/fitbit/requirements.txt
 cd python
 cp tokens.ini.sample tokens.ini
 cp credentials.ini.sample credentials.ini
@@ -51,7 +51,7 @@ cp credentials.ini.sample credentials.ini
 # Stop MagicMirror before this next step - it won't work!
 pm2 stop MagicMirror
 
-sudo python setupAccess.py
+python setupAccess.py
 
 # A web browser will open - log in using your Fitbit username and password, if you are not logged in already, and allow access to all options
 

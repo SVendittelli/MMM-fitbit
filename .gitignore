@@ -7,4 +7,6 @@ python/fitbit/test.py
 *.pyc
 *.ini
 
+__pycache__/
+
 node_modules/
