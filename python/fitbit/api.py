@@ -9,13 +9,12 @@ except ImportError:
     # Python 2.x
     from urllib import urlencode
 
-from requests_oauthlib import OAuth2, OAuth2Session
-from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
-from fitbit.exceptions import (BadResponse, DeleteError, HTTPBadRequest,
-                               HTTPUnauthorized, HTTPForbidden,
-                               HTTPServerError, HTTPConflict, HTTPNotFound,
-                               HTTPTooManyRequests)
-from fitbit.utils import curry
+from requests.auth import HTTPBasicAuth
+from requests_oauthlib import OAuth2Session
+
+from . import exceptions
+from .compliance import fitbit_compliance_fix
+from .utils import curry
 
 
 class FitbitOauth2Client(object):
@@ -28,9 +27,9 @@ class FitbitOauth2Client(object):
     access_token_url = request_token_url
     refresh_token_url = request_token_url
 
-    def __init__(self, client_id, client_secret,
-                 access_token=None, refresh_token=None,
-                 *args, **kwargs):
+    def __init__(self, client_id, client_secret, access_token=None,
+            refresh_token=None, expires_at=None, refresh_cb=None,
+            redirect_uri=None, *args, **kwargs):
         """
         Create a FitbitOauth2Client object. Specify the first 7 parameters if
         you have them to access user data. Specify just the first 2 parameters
@@ -40,72 +39,65 @@ class FitbitOauth2Client(object):
             - access_token, refresh_token are obtained after the user grants permission
         """
 
-        self.session = requests.Session()
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.token = {
-            'access_token': access_token,
-            'refresh_token': refresh_token
-        }
-        self.oauth = OAuth2Session(client_id)
+        self.client_id, self.client_secret = client_id, client_secret
+        token = {}
+        if access_token and refresh_token:
+            token.update({
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            })
+        if expires_at:
+            token['expires_at'] = expires_at
+        self.session = fitbit_compliance_fix(OAuth2Session(
+            client_id,
+            auto_refresh_url=self.refresh_token_url,
+            token_updater=refresh_cb,
+            token=token,
+            redirect_uri=redirect_uri,
+        ))
+        self.timeout = kwargs.get("timeout", None)
 
     def _request(self, method, url, **kwargs):
         """
         A simple wrapper around requests.
         """
-        return self.session.request(method, url, **kwargs)
+        if self.timeout is not None and 'timeout' not in kwargs:
+            kwargs['timeout'] = self.timeout
 
-    def make_request(self, url, data={}, method=None, **kwargs):
+        try:
+            response = self.session.request(method, url, **kwargs)
+
+            # If our current token has no expires_at, or something manages to slip
+            # through that check
+            if response.status_code == 401:
+                d = json.loads(response.content.decode('utf8'))
+                if d['errors'][0]['errorType'] == 'expired_token':
+                    self.refresh_token()
+                    response = self.session.request(method, url, **kwargs)
+
+            return response
+        except requests.Timeout as e:
+            raise exceptions.Timeout(*e.args)
+
+    def make_request(self, url, data=None, method=None, **kwargs):
         """
         Builds and makes the OAuth2 Request, catches errors
 
-        https://wiki.fitbit.com/display/API/API+Response+Format+And+Errors
+        https://dev.fitbit.com/docs/oauth2/#authorization-errors
         """
-        if not method:
-            method = 'POST' if data else 'GET'
+        data = data or {}
+        method = method or ('POST' if data else 'GET')
+        response = self._request(
+            method,
+            url,
+            data=data,
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            **kwargs
+        )
 
-        try:
-            auth = OAuth2(client_id=self.client_id, token=self.token)
-            response = self._request(
-                method, url, data=data, auth=auth, **kwargs)
-        except (HTTPUnauthorized, TokenExpiredError) as e:
-            self.refresh_token()
-            auth = OAuth2(client_id=self.client_id, token=self.token)
-            response = self._request(
-                method, url, data=data, auth=auth, **kwargs)
+        exceptions.detect_and_raise_error(response)
 
-        # yet another token expiration check
-        # (the above try/except only applies if the expired token was obtained
-        # using the current instance of the class this is a a general case)
-        if response.status_code == 401:
-            d = json.loads(response.content.decode('utf8'))
-            try:
-                if(d['errors'][0]['errorType'] == 'expired_token' and
-                        d['errors'][0]['message'].find('Access token expired:') == 0):
-                    self.refresh_token()
-                    auth = OAuth2(client_id=self.client_id, token=self.token)
-                    response = self._request(
-                        method, url, data=data, auth=auth, **kwargs)
-            except:
-                pass
-
-        if response.status_code == 401:
-            raise HTTPUnauthorized(response)
-        elif response.status_code == 403:
-            raise HTTPForbidden(response)
-        elif response.status_code == 404:
-            raise HTTPNotFound(response)
-        elif response.status_code == 409:
-            raise HTTPConflict(response)
-        elif response.status_code == 429:
-            exc = HTTPTooManyRequests(response)
-            exc.retry_after_secs = int(response.headers['Retry-After'])
-            raise exc
-
-        elif response.status_code >= 500:
-            raise HTTPServerError(response)
-        elif response.status_code >= 400:
-            raise HTTPBadRequest(response)
         return response
 
     def authorize_token_url(self, scope=None, redirect_uri=None, **kwargs):
@@ -114,59 +106,59 @@ class FitbitOauth2Client(object):
         URL, open their browser to it, or tell them to copy the URL into their
         browser.
             - scope: pemissions that that are being requested [default ask all]
-            - redirect_uri: url to which the reponse will posted
-                            required only if your app does not have one
-            for more info see https://wiki.fitbit.com/display/API/OAuth+2.0
+            - redirect_uri: url to which the reponse will posted. required here
+              unless you specify only one Callback URL on the fitbit app or
+              you already passed it to the constructor
+            for more info see https://dev.fitbit.com/docs/oauth2/
         """
 
-        # the scope parameter is caussing some issues when refreshing tokens
-        # so not saving it
-        old_scope = self.oauth.scope
-        old_redirect = self.oauth.redirect_uri
-        if scope:
-            self.oauth.scope = scope
-        else:
-            self.oauth.scope = [
-                "activity", "nutrition", "heartrate", "location", "nutrition",
-                "profile", "settings", "sleep", "social", "weight"
-            ]
+        self.session.scope = scope or [
+            "activity",
+            "nutrition",
+            "heartrate",
+            "location",
+            "nutrition",
+            "profile",
+            "settings",
+            "sleep",
+            "social",
+            "weight",
+        ]
 
         if redirect_uri:
-            self.oauth.redirect_uri = redirect_uri
+            self.session.redirect_uri = redirect_uri
 
-        out = self.oauth.authorization_url(self.authorization_url, **kwargs)
-        self.oauth.scope = old_scope
-        self.oauth.redirect_uri = old_redirect
-        return(out)
+        return self.session.authorization_url(self.authorization_url, **kwargs)
 
-    def fetch_access_token(self, code, redirect_uri):
+    def fetch_access_token(self, code, redirect_uri=None):
+
         """Step 2: Given the code from fitbit from step 1, call
         fitbit again and returns an access token object. Extract the needed
         information from that and save it to use in future API calls.
         the token is internally saved
         """
-        auth = OAuth2Session(self.client_id, redirect_uri=redirect_uri)
-        self.token = auth.fetch_token(
+        if redirect_uri:
+            self.session.redirect_uri = redirect_uri
+        return self.session.fetch_token(
             self.access_token_url,
             username=self.client_id,
             password=self.client_secret,
             code=code)
 
-        return self.token
-
     def refresh_token(self):
         """Step 3: obtains a new access_token from the the refresh token
-        obtained in step 2.
-        the token is internally saved
+        obtained in step 2. Only do the refresh if there is `token_updater(),`
+        which saves the token.
         """
-        self.token = self.oauth.refresh_token(
-            self.refresh_token_url,
-            refresh_token=self.token['refresh_token'],
-            auth=requests.auth.HTTPBasicAuth(
-                self.client_id, self.client_secret)
-        )
+        token = {}
+        if self.session.token_updater:
+            token = self.session.refresh_token(
+                self.refresh_token_url,
+                auth=HTTPBasicAuth(self.client_id, self.client_secret)
+            )
+            self.session.token_updater(token)
 
-        return self.token
+        return token
 
 
 class Fitbit(object):
@@ -175,8 +167,7 @@ class Fitbit(object):
 
     API_ENDPOINT = "https://api.fitbit.com"
     API_VERSION = 1
-    WEEK_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY',
-                 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
+    WEEK_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     PERIODS = ['1d', '7d', '30d', '1w', '1m', '3m', '6m', '1y', 'max']
 
     RESOURCE_LIST = [
@@ -217,8 +208,7 @@ class Fitbit(object):
                     self._DELETE_COLLECTION_RESOURCE, resource))
 
         for qualifier in Fitbit.QUALIFIERS:
-            setattr(self, '%s_activities' % qualifier, curry(
-                self.activity_stats, qualifier=qualifier))
+            setattr(self, '%s_activities' % qualifier, curry(self.activity_stats, qualifier=qualifier))
             setattr(self, '%s_foods' % qualifier, curry(self._food_stats,
                                                         qualifier=qualifier))
 
@@ -238,11 +228,11 @@ class Fitbit(object):
             if response.status_code == 204:
                 return True
             else:
-                raise DeleteError(response)
+                raise exceptions.DeleteError(response)
         try:
             rep = json.loads(response.content.decode('utf8'))
         except ValueError:
-            raise BadResponse
+            raise exceptions.BadResponse
 
         return rep
 
@@ -256,10 +246,9 @@ class Fitbit(object):
             This is not the same format that the GET comes back in, GET requests
             are wrapped in {'user': <dict of user data>}
 
-        https://wiki.fitbit.com/display/API/API-Get-User-Info
+        https://dev.fitbit.com/docs/user/
         """
-        url = "{0}/{1}/user/{2}/profile.json".format(
-            *self._get_common_args(user_id))
+        url = "{0}/{1}/user/{2}/profile.json".format(*self._get_common_args(user_id))
         return self.make_request(url)
 
     def user_profile_update(self, data):
@@ -271,7 +260,7 @@ class Fitbit(object):
             This is not the same format that the GET comes back in, GET requests
             are wrapped in {'user': <dict of user data>}
 
-        https://wiki.fitbit.com/display/API/API-Update-User-Info
+        https://dev.fitbit.com/docs/user/#update-profile
         """
         url = "{0}/{1}/user/-/profile.json".format(*self._get_common_args())
         return self.make_request(url, data)
@@ -309,7 +298,7 @@ class Fitbit(object):
             heart(date=None, user_id=None, data=None)
             bp(date=None, user_id=None, data=None)
 
-        * https://wiki.fitbit.com/display/API/Fitbit+Resource+Access+API
+        * https://dev.fitbit.com/docs/
         """
 
         if not date:
@@ -362,7 +351,7 @@ class Fitbit(object):
         return self.make_request(url, data=data)
 
     def _filter_nones(self, data):
-        def filter_nones(item): return item[1] is not None
+        filter_nones = lambda item: item[1] is not None
         filtered_kwargs = list(filter(filter_nones, data.items()))
         return {} if not filtered_kwargs else dict(filtered_kwargs)
 
@@ -370,8 +359,8 @@ class Fitbit(object):
         """
         Implements the following APIs
 
-        * https://wiki.fitbit.com/display/API/API-Get-Body-Fat
-        * https://wiki.fitbit.com/display/API/API-Update-Fat-Goal
+        * https://dev.fitbit.com/docs/body/#get-body-goals
+        * https://dev.fitbit.com/docs/body/#update-body-fat-goal
 
         Pass no arguments to get the body fat goal. Pass a ``fat`` argument
         to update the body fat goal.
@@ -385,8 +374,8 @@ class Fitbit(object):
         """
         Implements the following APIs
 
-        * https://wiki.fitbit.com/display/API/API-Get-Body-Weight-Goal
-        * https://wiki.fitbit.com/display/API/API-Update-Weight-Goal
+        * https://dev.fitbit.com/docs/body/#get-body-goals
+        * https://dev.fitbit.com/docs/body/#update-weight-goal
 
         Pass no arguments to get the body weight goal. Pass ``start_date``,
         ``start_weight`` and optionally ``weight`` to set the weight goal.
@@ -409,10 +398,10 @@ class Fitbit(object):
     def activities_daily_goal(self, calories_out=None, active_minutes=None,
                               floors=None, distance=None, steps=None):
         """
-        Implements the following APIs
+        Implements the following APIs for period equal to daily
 
-        https://wiki.fitbit.com/display/API/API-Get-Activity-Daily-Goals
-        https://wiki.fitbit.com/display/API/API-Update-Activity-Daily-Goals
+        https://dev.fitbit.com/docs/activity/#get-activity-goals
+        https://dev.fitbit.com/docs/activity/#update-activity-goals
 
         Pass no arguments to get the daily activities goal. Pass any one of
         the optional arguments to set that component of the daily activities
@@ -436,10 +425,10 @@ class Fitbit(object):
 
     def activities_weekly_goal(self, distance=None, floors=None, steps=None):
         """
-        Implements the following APIs
+        Implements the following APIs for period equal to weekly
 
-        https://wiki.fitbit.com/display/API/API-Get-Activity-Weekly-Goals
-        https://wiki.fitbit.com/display/API/API-Update-Activity-Weekly-Goals
+        https://dev.fitbit.com/docs/activity/#get-activity-goals
+        https://dev.fitbit.com/docs/activity/#update-activity-goals
 
         Pass no arguments to get the weekly activities goal. Pass any one of
         the optional arguments to set that component of the weekly activities
@@ -458,8 +447,8 @@ class Fitbit(object):
         """
         Implements the following APIs
 
-        https://wiki.fitbit.com/display/API/API-Get-Food-Goals
-        https://wiki.fitbit.com/display/API/API-Update-Food-Goals
+        https://dev.fitbit.com/docs/food-logging/#get-food-goals
+        https://dev.fitbit.com/docs/food-logging/#update-food-goal
 
         Pass no arguments to get the food goal. Pass at least ``calories`` or
         ``intensity`` and optionally ``personalized`` to update the food goal.
@@ -479,8 +468,8 @@ class Fitbit(object):
         """
         Implements the following APIs
 
-        https://wiki.fitbit.com/display/API/API-Get-Water-Goal
-        https://wiki.fitbit.com/display/API/API-Update-Water-Goal
+        https://dev.fitbit.com/docs/food-logging/#get-water-goal
+        https://dev.fitbit.com/docs/food-logging/#update-water-goal
 
         Pass no arguments to get the water goal. Pass ``target`` to update it.
 
@@ -493,18 +482,21 @@ class Fitbit(object):
     def time_series(self, resource, user_id=None, base_date='today',
                     period=None, end_date=None):
         """
-        The time series is a LOT of methods, (documented at url below) so they
+        The time series is a LOT of methods, (documented at urls below) so they
         don't get their own method. They all follow the same patterns, and
         return similar formats.
 
         Taking liberty, this assumes a base_date of today, the current user,
         and a 1d period.
 
-        https://wiki.fitbit.com/display/API/API-Get-Time-Series
+        https://dev.fitbit.com/docs/activity/#activity-time-series
+        https://dev.fitbit.com/docs/body/#body-time-series
+        https://dev.fitbit.com/docs/food-logging/#food-or-water-time-series
+        https://dev.fitbit.com/docs/heart-rate/#heart-rate-time-series
+        https://dev.fitbit.com/docs/sleep/#sleep-time-series
         """
         if period and end_date:
-            raise TypeError(
-                "Either end_date or period can be specified, not both")
+            raise TypeError("Either end_date or period can be specified, not both")
 
         if end_date:
             end = self._get_date_string(end_date)
@@ -526,29 +518,26 @@ class Fitbit(object):
         """
         The intraday time series extends the functionality of the regular time series, but returning data at a
         more granular level for a single day, defaulting to 1 minute intervals. To access this feature, one must
-        send an email to api@fitbit.com and request to have access to the Partner API
-        (see https://wiki.fitbit.com/display/API/Fitbit+Partner+API). For details on the resources available, see:
+        fill out the Private Support form here (see https://dev.fitbit.com/docs/help/).
+        For details on the resources available and more information on how to get access, see:
 
-        https://wiki.fitbit.com/display/API/API-Get-Intraday-Time-Series
+        https://dev.fitbit.com/docs/activity/#get-activity-intraday-time-series
         """
 
         # Check that the time range is valid
-        def time_test(t): return not (
-            t is None or isinstance(t, str) and not t)
+        time_test = lambda t: not (t is None or isinstance(t, str) and not t)
         time_map = list(map(time_test, [start_time, end_time]))
         if not all(time_map) and any(time_map):
-            raise TypeError(
-                'You must provide both the end and start time or neither')
+            raise TypeError('You must provide both the end and start time or neither')
 
         """
         Per
-        https://wiki.fitbit.com/display/API/API-Get-Intraday-Time-Series
+        https://dev.fitbit.com/docs/activity/#get-activity-intraday-time-series
         the detail-level is now (OAuth 2.0 ):
         either "1min" or "15min" (optional). "1sec" for heart rate.
         """
         if not detail_level in ['1sec', '1min', '15min']:
-            raise ValueError(
-                "Period must be either '1sec', '1min', or '15min'")
+            raise ValueError("Period must be either '1sec', '1min', or '15min'")
 
         url = "{0}/{1}/user/-/{resource}/date/{base_date}/1d/{detail_level}".format(
             *self._get_common_args(),
@@ -571,10 +560,10 @@ class Fitbit(object):
 
     def activity_stats(self, user_id=None, qualifier=''):
         """
-        * https://wiki.fitbit.com/display/API/API-Get-Activity-Stats
-        * https://wiki.fitbit.com/display/API/API-Get-Favorite-Activities
-        * https://wiki.fitbit.com/display/API/API-Get-Recent-Activities
-        * https://wiki.fitbit.com/display/API/API-Get-Frequent-Activities
+        * https://dev.fitbit.com/docs/activity/#activity-types
+        * https://dev.fitbit.com/docs/activity/#get-favorite-activities
+        * https://dev.fitbit.com/docs/activity/#get-recent-activity-types
+        * https://dev.fitbit.com/docs/activity/#get-frequent-activities
 
         This implements the following methods::
 
@@ -605,9 +594,9 @@ class Fitbit(object):
             favorite_foods(user_id=None, qualifier='')
             frequent_foods(user_id=None, qualifier='')
 
-        * https://wiki.fitbit.com/display/API/API-Get-Recent-Foods
-        * https://wiki.fitbit.com/display/API/API-Get-Frequent-Foods
-        * https://wiki.fitbit.com/display/API/API-Get-Favorite-Foods
+        * https://dev.fitbit.com/docs/food-logging/#get-favorite-foods
+        * https://dev.fitbit.com/docs/food-logging/#get-frequent-foods
+        * https://dev.fitbit.com/docs/food-logging/#get-recent-foods
         """
         url = "{0}/{1}/user/{2}/foods/log/{qualifier}.json".format(
             *self._get_common_args(user_id),
@@ -617,7 +606,7 @@ class Fitbit(object):
 
     def add_favorite_activity(self, activity_id):
         """
-        https://wiki.fitbit.com/display/API/API-Add-Favorite-Activity
+        https://dev.fitbit.com/docs/activity/#add-favorite-activity
         """
         url = "{0}/{1}/user/-/activities/favorite/{activity_id}.json".format(
             *self._get_common_args(),
@@ -627,14 +616,14 @@ class Fitbit(object):
 
     def log_activity(self, data):
         """
-        https://wiki.fitbit.com/display/API/API-Log-Activity
+        https://dev.fitbit.com/docs/activity/#log-activity
         """
         url = "{0}/{1}/user/-/activities.json".format(*self._get_common_args())
         return self.make_request(url, data=data)
 
     def delete_favorite_activity(self, activity_id):
         """
-        https://wiki.fitbit.com/display/API/API-Delete-Favorite-Activity
+        https://dev.fitbit.com/docs/activity/#delete-favorite-activity
         """
         url = "{0}/{1}/user/-/activities/favorite/{activity_id}.json".format(
             *self._get_common_args(),
@@ -644,7 +633,7 @@ class Fitbit(object):
 
     def add_favorite_food(self, food_id):
         """
-        https://wiki.fitbit.com/display/API/API-Add-Favorite-Food
+        https://dev.fitbit.com/docs/food-logging/#add-favorite-food
         """
         url = "{0}/{1}/user/-/foods/log/favorite/{food_id}.json".format(
             *self._get_common_args(),
@@ -654,7 +643,7 @@ class Fitbit(object):
 
     def delete_favorite_food(self, food_id):
         """
-        https://wiki.fitbit.com/display/API/API-Delete-Favorite-Food
+        https://dev.fitbit.com/docs/food-logging/#delete-favorite-food
         """
         url = "{0}/{1}/user/-/foods/log/favorite/{food_id}.json".format(
             *self._get_common_args(),
@@ -664,28 +653,28 @@ class Fitbit(object):
 
     def create_food(self, data):
         """
-        https://wiki.fitbit.com/display/API/API-Create-Food
+        https://dev.fitbit.com/docs/food-logging/#create-food
         """
         url = "{0}/{1}/user/-/foods.json".format(*self._get_common_args())
         return self.make_request(url, data=data)
 
     def get_meals(self):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Meals
+        https://dev.fitbit.com/docs/food-logging/#get-meals
         """
         url = "{0}/{1}/user/-/meals.json".format(*self._get_common_args())
         return self.make_request(url)
 
     def get_devices(self):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Devices
+        https://dev.fitbit.com/docs/devices/#get-devices
         """
         url = "{0}/{1}/user/-/devices.json".format(*self._get_common_args())
         return self.make_request(url)
 
     def get_alarms(self, device_id):
         """
-        https://wiki.fitbit.com/display/API/API-Devices-Get-Alarms
+        https://dev.fitbit.com/docs/devices/#get-alarms
         """
         url = "{0}/{1}/user/-/devices/tracker/{device_id}/alarms.json".format(
             *self._get_common_args(),
@@ -697,7 +686,7 @@ class Fitbit(object):
                   enabled=True, label=None, snooze_length=None,
                   snooze_count=None, vibe='DEFAULT'):
         """
-        https://wiki.fitbit.com/display/API/API-Devices-Add-Alarm
+        https://dev.fitbit.com/docs/devices/#add-alarm
         alarm_time should be a timezone aware datetime object.
         """
         url = "{0}/{1}/user/-/devices/tracker/{device_id}/alarms.json".format(
@@ -710,8 +699,7 @@ class Fitbit(object):
             raise ValueError("Week days needs to be a list")
         for day in week_days:
             if day not in self.WEEK_DAYS:
-                raise ValueError(
-                    "Incorrect week day %s. see WEEK_DAY_LIST." % day)
+                raise ValueError("Incorrect week day %s. see WEEK_DAY_LIST." % day)
         data = {
             'time': alarm_time,
             'weekDays': week_days,
@@ -731,7 +719,7 @@ class Fitbit(object):
     def update_alarm(self, device_id, alarm_id, alarm_time, week_days, recurring=False, enabled=True, label=None,
                      snooze_length=None, snooze_count=None, vibe='DEFAULT'):
         """
-        https://wiki.fitbit.com/display/API/API-Devices-Update-Alarm
+        https://dev.fitbit.com/docs/devices/#update-alarm
         alarm_time should be a timezone aware datetime object.
         """
         # TODO Refactor with create_alarm. Tons of overlap.
@@ -740,8 +728,7 @@ class Fitbit(object):
             raise ValueError("Week days needs to be a list")
         for day in week_days:
             if day not in self.WEEK_DAYS:
-                raise ValueError(
-                    "Incorrect week day %s. see WEEK_DAY_LIST." % day)
+                raise ValueError("Incorrect week day %s. see WEEK_DAY_LIST." % day)
         url = "{0}/{1}/user/-/devices/tracker/{device_id}/alarms/{alarm_id}.json".format(
             *self._get_common_args(),
             device_id=device_id,
@@ -767,7 +754,7 @@ class Fitbit(object):
 
     def delete_alarm(self, device_id, alarm_id):
         """
-        https://wiki.fitbit.com/display/API/API-Devices-Delete-Alarm
+        https://dev.fitbit.com/docs/devices/#delete-alarm
         """
         url = "{0}/{1}/user/-/devices/tracker/{device_id}/alarms/{alarm_id}.json".format(
             *self._get_common_args(),
@@ -778,7 +765,7 @@ class Fitbit(object):
 
     def get_sleep(self, date):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Sleep
+        https://dev.fitbit.com/docs/sleep/#get-sleep-logs
         date should be a datetime.date object.
         """
         url = "{0}/{1}/user/-/sleep/date/{year}-{month}-{day}.json".format(
@@ -791,7 +778,7 @@ class Fitbit(object):
 
     def log_sleep(self, start_time, duration):
         """
-        https://wiki.fitbit.com/display/API/API-Log-Sleep
+        https://dev.fitbit.com/docs/sleep/#log-sleep
         start time should be a datetime object. We will be using the year, month, day, hour, and minute.
         """
         data = {
@@ -804,14 +791,14 @@ class Fitbit(object):
 
     def activities_list(self):
         """
-        https://wiki.fitbit.com/display/API/API-Browse-Activities
+        https://dev.fitbit.com/docs/activity/#browse-activity-types
         """
         url = "{0}/{1}/activities.json".format(*self._get_common_args())
         return self.make_request(url)
 
     def activity_detail(self, activity_id):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Activity
+        https://dev.fitbit.com/docs/activity/#get-activity-type
         """
         url = "{0}/{1}/activities/{activity_id}.json".format(
             *self._get_common_args(),
@@ -821,7 +808,7 @@ class Fitbit(object):
 
     def search_foods(self, query):
         """
-        https://wiki.fitbit.com/display/API/API-Search-Foods
+        https://dev.fitbit.com/docs/food-logging/#search-foods
         """
         url = "{0}/{1}/foods/search.json?{encoded_query}".format(
             *self._get_common_args(),
@@ -831,7 +818,7 @@ class Fitbit(object):
 
     def food_detail(self, food_id):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Food
+        https://dev.fitbit.com/docs/food-logging/#get-food
         """
         url = "{0}/{1}/foods/{food_id}.json".format(
             *self._get_common_args(),
@@ -841,14 +828,14 @@ class Fitbit(object):
 
     def food_units(self):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Food-Units
+        https://dev.fitbit.com/docs/food-logging/#get-food-units
         """
         url = "{0}/{1}/foods/units.json".format(*self._get_common_args())
         return self.make_request(url)
 
     def get_bodyweight(self, base_date=None, user_id=None, period=None, end_date=None):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Body-Weight
+        https://dev.fitbit.com/docs/body/#get-weight-logs
         base_date should be a datetime.date object (defaults to today),
         period can be '1d', '7d', '30d', '1w', '1m', '3m', '6m', '1y', 'max' or None
         end_date should be a datetime.date object, or None.
@@ -859,7 +846,7 @@ class Fitbit(object):
 
     def get_bodyfat(self, base_date=None, user_id=None, period=None, end_date=None):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Body-fat
+        https://dev.fitbit.com/docs/body/#get-body-fat-logs
         base_date should be a datetime.date object (defaults to today),
         period can be '1d', '7d', '30d', '1w', '1m', '3m', '6m', '1y', 'max' or None
         end_date should be a datetime.date object, or None.
@@ -874,8 +861,7 @@ class Fitbit(object):
             base_date = datetime.date.today()
 
         if period and end_date:
-            raise TypeError(
-                "Either end_date or period can be specified, not both")
+            raise TypeError("Either end_date or period can be specified, not both")
 
         base_date_string = self._get_date_string(base_date)
 
@@ -897,15 +883,14 @@ class Fitbit(object):
 
     def get_friends(self, user_id=None):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Friends
+        https://dev.fitbit.com/docs/friends/#get-friends
         """
-        url = "{0}/{1}/user/{2}/friends.json".format(
-            *self._get_common_args(user_id))
+        url = "{0}/{1}/user/{2}/friends.json".format(*self._get_common_args(user_id))
         return self.make_request(url)
 
     def get_friends_leaderboard(self, period):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Friends-Leaderboard
+        https://dev.fitbit.com/docs/friends/#get-friends-leaderboard
         """
         if not period in ['7d', '30d']:
             raise ValueError("Period must be one of '7d', '30d'")
@@ -917,29 +902,28 @@ class Fitbit(object):
 
     def invite_friend(self, data):
         """
-        https://wiki.fitbit.com/display/API/API-Create-Invite
+        https://dev.fitbit.com/docs/friends/#invite-friend
         """
-        url = "{0}/{1}/user/-/friends/invitations.json".format(
-            *self._get_common_args())
+        url = "{0}/{1}/user/-/friends/invitations.json".format(*self._get_common_args())
         return self.make_request(url, data=data)
 
     def invite_friend_by_email(self, email):
         """
         Convenience Method for
-        https://wiki.fitbit.com/display/API/API-Create-Invite
+        https://dev.fitbit.com/docs/friends/#invite-friend
         """
         return self.invite_friend({'invitedUserEmail': email})
 
     def invite_friend_by_userid(self, user_id):
         """
         Convenience Method for
-        https://wiki.fitbit.com/display/API/API-Create-Invite
+        https://dev.fitbit.com/docs/friends/#invite-friend
         """
         return self.invite_friend({'invitedUserId': user_id})
 
     def respond_to_invite(self, other_user_id, accept=True):
         """
-        https://wiki.fitbit.com/display/API/API-Accept-Invite
+        https://dev.fitbit.com/docs/friends/#respond-to-friend-invitation
         """
         url = "{0}/{1}/user/-/friends/invitations/{user_id}.json".format(
             *self._get_common_args(),
@@ -962,16 +946,15 @@ class Fitbit(object):
 
     def get_badges(self, user_id=None):
         """
-        https://wiki.fitbit.com/display/API/API-Get-Badges
+        https://dev.fitbit.com/docs/friends/#badges
         """
-        url = "{0}/{1}/user/{2}/badges.json".format(
-            *self._get_common_args(user_id))
+        url = "{0}/{1}/user/{2}/badges.json".format(*self._get_common_args(user_id))
         return self.make_request(url)
 
     def subscription(self, subscription_id, subscriber_id, collection=None,
                      method='POST'):
         """
-        https://wiki.fitbit.com/display/API/Fitbit+Subscriptions+API
+        https://dev.fitbit.com/docs/subscriptions/
         """
         base_url = "{0}/{1}/user/-{collection}/apiSubscriptions/{end_string}.json"
         kwargs = {'collection': '', 'end_string': subscription_id}
@@ -988,7 +971,7 @@ class Fitbit(object):
 
     def list_subscriptions(self, collection=''):
         """
-        https://wiki.fitbit.com/display/API/Fitbit+Subscriptions+API
+        https://dev.fitbit.com/docs/subscriptions/#getting-a-list-of-subscriptions
         """
         url = "{0}/{1}/user/-{collection}/apiSubscriptions.json".format(
             *self._get_common_args(),
