@@ -7,7 +7,7 @@ TODO
 ## Sample config:
 ````javascript
 {
-	module: 'MMM-fitbit',
+	module: 'MMM-Fitbit2',
 	position: 'top_center',
 	config: [
 		credentials: {
@@ -31,7 +31,7 @@ TODO
 Files
 --
 ### Javascript
-* `MMM-fitbit.js`
+* `MMM-Fitbit2.js`
 * `node_helper.js`
 
 ### Python
@@ -45,7 +45,7 @@ Files
 * `tokens.ini`
 
 ### CSS
-* MMM-fitbit.css
+* MMM-Fitbit2.css
 
 Supported Data
 --

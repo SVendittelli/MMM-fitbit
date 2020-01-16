@@ -1,4 +1,4 @@
-MMM-fitbit
+MMM-Fitbit2
 ===
 [MagicMirror](https://github.com/MichMich/MagicMirror) Module for getting fitbit data. First time users follow setup instructions, if your tokens get lost run `setupAccess.py` again without arguments and accept reading from `credentials.ini`.
 
@@ -20,9 +20,9 @@ Setup
         * "OAuth 2.0 Client ID" --- (client_id)
         * "Client (Consumer) Secret" --- (client_secret)
     * (You can access these again later via manage my apps at the same link as above)
-* Navigate to `MMM-fitbit` in the modules directory
+* Navigate to `MMM-Fitbit2` in the modules directory
 * Install dependancies using the listed commands
-* Navigate to the `python` directory in `MMM-fitbit`
+* Navigate to the `python` directory in `MMM-Fitbit2`
 * Create blank files `tokens.ini` and `credentials.ini` or duplicate their `.sample` files
 * Via the command line on your Pi (**NOT via SSH**), run `sudo python setupAccess.py`. You must either:
     * Pass it your client_id and client_secret as arguments
@@ -37,7 +37,7 @@ Config
 ### Example config
 ````javascript
 {
-	module: 'MMM-fitbit',
+	module: 'MMM-Fitbit2',
 	position: 'top_center',
 	config: {
 		credentials: {

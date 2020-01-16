@@ -14,6 +14,7 @@ from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenEr
 from requests_oauthlib import OAuth2Session
 from iniHandler import ReadCredentials, WriteTokens
 
+
 class OAuth2Server:
     def __init__(self, client_id, client_secret,
                  redirect_uri='http://127.0.0.1:8080/'):
@@ -75,45 +76,49 @@ class OAuth2Server:
 
 
 if __name__ == '__main__':
-	try: input = raw_input
-	except NameError: pass
-	
-	if not (len(sys.argv) == 3):
-		responce = input("Get credentials from credentials.ini? (Y/N)\n").upper()
-		
-		if responce == "Y":
-			id, secret = ReadCredentials()
-		elif responce == "N":
-			responce = input("Would you like to enter them manually now? (Y/N)\n").upper()
-			
-			if responce == "Y":
-				id = input("Enter client id:\n")
-				secret = input("Enter client secret:\n")
-			elif responce == "N":
-				print("Try again giving arguments: client id and client secret.")
-				sys.exit(1)
-			else:
-				print("Invalid input.")
-				sys.exit(1)
-			
-		else:
-			print("Invalid input.")
-			sys.exit(1)
-		
-	elif (len(sys.argv) == 3):
-		id, secret = sys.argv[1:]
-	else:
-		print("Try again giving arguments: client id and client secret.")
-		sys.exit(1)
+    try:
+        input = raw_input
+    except NameError:
+        pass
 
-	server = OAuth2Server(id,secret)
-	server.browser_authorize()
-	
-	acc_tok = server.oauth.token['access_token']
-	ref_tok = server.oauth.token['refresh_token']
-	
-	print('FULL RESULTS = %s' % server.oauth.token)
-	print('ACCESS_TOKEN = %s' % acc_tok)
-	print('REFRESH_TOKEN = %s' % ref_tok)
-	
-	WriteTokens(acc_tok,ref_tok)
+    if not (len(sys.argv) == 3):
+        responce = input(
+            "Get credentials from credentials.ini? (Y/N)\n").upper()
+
+        if responce == "Y":
+            id, secret = ReadCredentials()
+        elif responce == "N":
+            responce = input(
+                "Would you like to enter them manually now? (Y/N)\n").upper()
+
+            if responce == "Y":
+                id = input("Enter client id:\n")
+                secret = input("Enter client secret:\n")
+            elif responce == "N":
+                print("Try again giving arguments: client id and client secret.")
+                sys.exit(1)
+            else:
+                print("Invalid input.")
+                sys.exit(1)
+
+        else:
+            print("Invalid input.")
+            sys.exit(1)
+
+    elif (len(sys.argv) == 3):
+        id, secret = sys.argv[1:]
+    else:
+        print("Try again giving arguments: client id and client secret.")
+        sys.exit(1)
+
+    server = OAuth2Server(id, secret)
+    server.browser_authorize()
+
+    acc_tok = server.oauth.token['access_token']
+    ref_tok = server.oauth.token['refresh_token']
+
+    print('FULL RESULTS = %s' % server.oauth.token)
+    print('ACCESS_TOKEN = %s' % acc_tok)
+    print('REFRESH_TOKEN = %s' % ref_tok)
+
+    WriteTokens(acc_tok, ref_tok)

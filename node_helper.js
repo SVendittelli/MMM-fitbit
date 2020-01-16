@@ -1,5 +1,5 @@
 /* Magic Mirror
- * Node Helper: MMM-fitbit
+ * Node Helper: MMM-Fitbit2
  *
  * By Michael Teeuw http://michaelteeuw.nl
  * MIT Licensed.
@@ -9,7 +9,7 @@ var NodeHelper = require('node_helper');
 var PythonShell = require('python-shell');
 
 module.exports = NodeHelper.create({
-	
+
 	// Subclass socketNotificationReceived received.
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === 'SET CREDS') {
@@ -22,11 +22,11 @@ module.exports = NodeHelper.create({
 			this.getData();
 		};
 	},
-	
+
 	setCreds: function (id,secret) {
 		var options = {
 			mode: 'json',
-			scriptPath: 'modules/MMM-fitbit/python',
+			scriptPath: 'modules/MMM-Fitbit2/python',
 			args: [id, secret]
 		}
 		PythonShell.run('iniHandler.py', options, function (err, results) {
@@ -35,19 +35,19 @@ module.exports = NodeHelper.create({
 			console.log('results: %j', results);
 		});
 	},
-	
+
 	getData: function () {
 		const self = this;
 		const fileName = 'getData.py';
 		console.log('Running ' + fileName);
-		const fitbitPyShell = new PythonShell(fileName, {mode: 'json', scriptPath: 'modules/MMM-fitbit/python'});
-		
+		const fitbitPyShell = new PythonShell(fileName, {mode: 'json', scriptPath: 'modules/MMM-Fitbit2/python'});
+
 		fitbitPyShell.on('message', function (message) {
 			if (message['type'] == 'data') {
 				self.sendSocketNotification('DATA', message);
 			}
 		});
-		
+
 		fitbitPyShell.end(function (err) {
 			if (err) throw err;
 			self.sendSocketNotification('UPDATE', 'Finished getting data');
