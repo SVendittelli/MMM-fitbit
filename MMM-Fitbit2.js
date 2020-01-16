@@ -152,13 +152,19 @@ Module.register('MMM-Fitbit2',{
 		}
         switch(resource) {
 			case 'distance':
-				suffix.innerHTML = 'mi';
+				suffix.innerHTML = 'km';
 				break;
 			case 'activeMinutes':
 				suffix.innerHTML = 'mins';
 				break;
 			case 'restingHeart':
 				suffix.innerHTML = 'bpm';
+				break;
+			case 'water':
+				suffix.innerHTML = 'ml';
+			case 'weight':
+				suffix.innerHTML = 'kg';
+				break;
 				break;
 			default:
 				suffix.innerHTML = '';
