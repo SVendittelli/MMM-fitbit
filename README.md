@@ -4,7 +4,7 @@ MMM-fitbit
 
 Dependencies
 ---
-* [python-shell](https://www.npmjs.com/package/python-shell) --- `npm install python-shell`
+* [python-shell](https://www.npmjs.com/package/python-shell) --- `npm install python-shell@0.5.0`
 * [python-fitbit](https://github.com/orcasgit/python-fitbit) --- `sudo pip install -r python/fitbit/requirements.txt`
 
 Setup
