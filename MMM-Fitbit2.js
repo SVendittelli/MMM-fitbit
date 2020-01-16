@@ -126,31 +126,31 @@ Module.register('MMM-Fitbit2',{
 
 	// Make each resource element for the UI
 	UIElement: function(resource) {
-        iconPath = '/img/' + resource + 'White.png';
-        // Create wrappers
-        var wrapper = document.createElement("div");
-        var icon = document.createElement("img");
-        var text = document.createElement("div");
-        var userData = document.createElement("div");
-        var suffix = document.createElement("div");
-        var progress = document.createElement("div");
-        var bar = document.createElement("div");
+		iconPath = '/img/' + resource + 'White.png';
+		// Create wrappers
+		var wrapper = document.createElement("div");
+		var icon = document.createElement("img");
+		var text = document.createElement("div");
+		var userData = document.createElement("div");
+		var suffix = document.createElement("div");
+		var progress = document.createElement("div");
+		var bar = document.createElement("div");
 
-        // Icon
-        icon.className = 'fitbiticon';
-        icon.src = 'modules/' + this.name + iconPath;
+		// Icon
+		icon.className = 'fitbiticon';
+		icon.src = 'modules/' + this.name + iconPath;
 
-        // Text to display
-        userData.className = 'normal medium';
-        suffix.className = "dimmed small";
-        if (resource == 'steps' || resource == 'caloriesOut') {
+		// Text to display
+		userData.className = 'normal medium';
+		suffix.className = "dimmed small";
+		if (resource == 'steps' || resource == 'caloriesOut') {
 			userData.innerHTML = this.numberWithCommas(this.userData[resource]);
 		} else if (resource == 'sleep') {
 			userData.innerHTML = this.minsToHourMin(this.userData[resource]);
 		} else {
 			userData.innerHTML = this.userData[resource];
 		}
-        switch(resource) {
+		switch(resource) {
 			case 'steps':
 				suffix.innerHTML = 'steps';
 				break;
@@ -182,35 +182,35 @@ Module.register('MMM-Fitbit2',{
 				suffix.innerHTML = '';
 		}
 
-        // Make text on the same line
-        userData.style.display = 'inline-block';
-        suffix.style.display = 'inline-block';
+		// Make text on the same line
+		userData.style.display = 'inline-block';
+		suffix.style.display = 'inline-block';
 
-        // Progress bar
-        progress.className = 'progbarbkg';
+		// Progress bar
+		progress.className = 'progbarbkg';
 
-        bar.className = 'progbar';
-        bar.style.width = this.progressBar(resource) + '%';
+		bar.className = 'progbar';
+		bar.style.width = this.progressBar(resource) + '%';
 
-        if (resource !== 'restingHeart') {
+		if (resource !== 'restingHeart') {
 			progress.appendChild(bar);
 		}
 
-        // Put them all together
-        wrapper.appendChild(icon);
-        text.appendChild(userData);
-        if (suffix.innerHTML != '') {
+		// Put them all together
+		wrapper.appendChild(icon);
+		text.appendChild(userData);
+		if (suffix.innerHTML != '') {
 			text.appendChild(suffix);
 		}
-        wrapper.appendChild(text);
-        wrapper.appendChild(progress);
+		wrapper.appendChild(text);
+		wrapper.appendChild(progress);
 
-        wrapper.style.display = 'inline-block';
-        wrapper.style.paddingLeft = '5px';
-        wrapper.style.paddingRight = '5px';
+		wrapper.style.display = 'inline-block';
+		wrapper.style.paddingLeft = '5px';
+		wrapper.style.paddingRight = '5px';
 
-        return wrapper;
-    },
+		return wrapper;
+	},
 
 	// Override dom generator.
 	getDom: function() {
