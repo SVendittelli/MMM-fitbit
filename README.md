@@ -1,6 +1,10 @@
 MMM-Fitbit2
 ===
-[MagicMirror](https://github.com/MichMich/MagicMirror) Module for displaying Fitbit data.
+[MagicMirror](https://github.com/MichMich/MagicMirror) Module for displaying Fitbit data, retrieved from Fitbit API (https://api.fitbit.com).
+
+Note: this requires that you set up your own "Fitbit app" to generate OAuth 2 credentials for accessing your data from Fitbit.
+
+### Current Development Status: Work In Progress
 
 ![](screenshot.png)
 
