@@ -143,7 +143,7 @@ Module.register('MMM-Fitbit2',{
 		// Text to display
 		userData.className = 'normal medium';
 		suffix.className = "dimmed small";
-		if (resource == 'steps' || resource == 'caloriesOut') {
+		if (resource == 'steps' || resource == 'caloriesOut' || resource == 'caloriesIn') {
 			userData.innerHTML = this.numberWithCommas(this.userData[resource]);
 		} else if (resource == 'sleep') {
 			userData.innerHTML = this.minsToHourMin(this.userData[resource]);
