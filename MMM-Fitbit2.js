@@ -174,7 +174,7 @@ Module.register('MMM-Fitbit2',{
         bar.className = 'progbar';
         bar.style.width = this.progressBar(resource) + '%';
 
-        if (resource !== 'heart') {
+        if (resource !== 'restingHeart') {
 			progress.appendChild(bar);
 		}
 

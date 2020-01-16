@@ -65,7 +65,7 @@ Config
 						'floors',
 						'restingHeart',
 						'water',
-						'caloriesIn'
+						'caloriesIn',
 						'sleep',
 						'weight'
 
