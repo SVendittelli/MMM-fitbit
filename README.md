@@ -1,12 +1,18 @@
 MMM-Fitbit2
 ===
-[MagicMirror](https://github.com/MichMich/MagicMirror) Module for displaying Fitbit data, retrieved from Fitbit API (https://api.fitbit.com).
+### _Current Development Status: Work In Progress_
 
-Note: this requires that you set up your own "Fitbit app" to generate OAuth 2 credentials for accessing your data from Fitbit.
-
-### Current Development Status: Work In Progress
+[MagicMirror](https://github.com/MichMich/MagicMirror) Module for displaying Fitbit data, retrieved from Fitbit API ([https://api.fitbit.com](https://dev.fitbit.com/build/reference/web-api/)).
 
 ![](screenshot.png)
+
+**Note: this module requires that you set up your own "Fitbit app" using a free Fitbit account, in order to generate OAuth 2.0 credentials for accessing your data from Fitbit.**
+
+This module extends upon SVendittelli's original [MMM-fitbit](https://github.com/SVendittelli/MMM-fitbit) module and intends to build on top of the following changes that were incorporated from the efforts of others who forked the original repository:
+
+* adding weight data ([engeld's fork](https://github.com/engeld/MMM-fitbit))
+* updating python-fitbit to 0.3.0 ([shbatm's fork](https://github.com/shbatm/MMM-fitbit))
+* automatic re-authorisation when tokens have expired ([shbatm's fork](https://github.com/shbatm/MMM-fitbit))
 
 Dependencies
 ---
@@ -41,7 +47,7 @@ Setup
 
 Config
 ---
-### Example config
+### Example
 ````javascript
 {
 		module: 'MMM-Fitbit2',
@@ -72,6 +78,36 @@ Config
 	* (Required) `client_secret`: From https://dev.fitbit.com/
 * (Required) `resources`: List of resources to display on Mirror. May take any combination of `'steps', 'floors', 'caloriesOut', 'distance', 'activeMinutes', 'sleep', 'heart'`
 * (Optional) `update_interval` - (default value of `60`): in the amount of time in minutes to wait before fetching new Fitbit data. This must not be done too often otherwise Fitbit will not send new tokens and an uncaught exception will be thrown. This happens after approximately 150 requests in an hour, so updates should be no more frequent than once every minute for safety.
+
+Files
+--
+### Javascript
+* `MMM-Fitbit2.js`
+* `node_helper.js`
+
+### Python
+* `setupAccess.py` - file to get first access and refresh tokens
+* `iniHandler.py` - reads and writes `.ini` files
+* `getData.py` - file to return data
+
+### .ini
+* `credentials.ini`
+* `tokens.ini`
+
+### CSS
+* MMM-Fitbit2.css
+
+Currently Supported Data
+--
+* Steps
+* Calories
+* Total Distance
+* Active Minutes
+* Floors
+* Resting Heart Rate
+* Sleep
+* Weight
+
 
 TODO
 ---
