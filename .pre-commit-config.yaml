@@ -25,3 +25,8 @@ repos:
     rev: v1.4.4
     hooks:
     -   id: autopep8
+
+-   repo: https://github.com/pre-commit/mirrors-fixmyjs
+    rev: v2.0.0
+    hooks:
+    -   id: fixmyjs

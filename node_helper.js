@@ -12,16 +12,16 @@ module.exports = NodeHelper.create({
 
 	// Subclass socketNotificationReceived received.
 	socketNotificationReceived: function(notification, payload) {
-		if (notification === 'SET CREDS') {
+        if (notification === 'SET CREDS') {
 			console.log('Set credential request recieved.');
 			console.log(payload);
 			this.setCreds(payload.client_id,payload.client_secret);
-		};
-		if (notification === 'GET DATA') {
+		}
+        if (notification === 'GET DATA') {
 			console.log('Initial run request recieved.');
 			this.getData();
-		};
-	},
+		}
+    },
 
 	setCreds: function (id,secret) {
 		var options = {
@@ -30,7 +30,9 @@ module.exports = NodeHelper.create({
 			args: [id, secret]
 		}
 		PythonShell.run('iniHandler.py', options, function (err, results) {
-			if (err) throw err;
+			if (err) {
+                throw err;
+            }
 			// results is an array consisting of messages collected during execution
 			console.log('results: %j', results);
 		});
@@ -43,13 +45,15 @@ module.exports = NodeHelper.create({
 		const fitbitPyShell = new PythonShell(fileName, {mode: 'json', scriptPath: 'modules/MMM-Fitbit2/python'});
 
 		fitbitPyShell.on('message', function (message) {
-			if (message['type'] == 'data') {
+			if (message.type == 'data') {
 				self.sendSocketNotification('DATA', message);
 			}
 		});
 
 		fitbitPyShell.end(function (err) {
-			if (err) throw err;
+			if (err) {
+                throw err;
+            }
 			self.sendSocketNotification('UPDATE', 'Finished getting data');
 			console.log('Finished getting data');
 		});
