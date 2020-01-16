@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import fitbit
+from fitbit.api import FitbitOauth2Client
 import json
-from iniHandler import print_data, print_json, ReadCredentials, ReadTokens
-from authHandler import *
+from iniHandler import print_data, print_json, ReadCredentials, ReadTokens, WriteTokens
 
 if __name__ == "__main__":
     ResourceTypes = ['steps', 'floors', 'caloriesOut']
@@ -12,22 +12,18 @@ if __name__ == "__main__":
 
     # Get credentials
     ClientID, ClientSecret = ReadCredentials()
+    AccessToken, RefreshToken, ExpiresAt = ReadTokens()
 
-    APICallOK = False
-    while not APICallOK:
-        # Get tokens
-        AccessToken, RefreshToken = ReadTokens()
-        # Make the API call
-        APICallOK, TokensOK, APIResponse = MakeAPICall(
-            FitbitURL, AccessToken, RefreshToken)
-
-        print_json('status', APIResponse)
-        if not TokensOK:
-            sys.exit(1)
+    def WriteTokenWrapper(token):
+        print_data(token, 0, 1)
+        acc_tok = token['access_token']
+        ref_tok = token['refresh_token']
+        expires_at = token['expires_at']
+        WriteTokens(acc_tok, ref_tok, expires_at)
 
     # Create authorised client and grab step count from one day of steps
-    authdClient = fitbit.Fitbit(ClientID, ClientSecret, oauth2=True,
-                                access_token=AccessToken, refresh_token=RefreshToken)
+    authdClient = fitbit.Fitbit(ClientID, ClientSecret, oauth2=True, access_token=AccessToken, refresh_token=RefreshToken,
+                                expires_at=ExpiresAt, refresh_cb=WriteTokenWrapper, redirect_uri='http://127.0.0.1:8080/')
     activityList = authdClient.activities()
     try:
         # Use for steps, floors, calories. Adapt for distance, active minutes
