@@ -130,8 +130,8 @@ if __name__ == "__main__":
         # --------------
         print_data(
             resource='caloriesIn',
-            data=calories_in_current,
-            goal=calories_in_goal
+            data=max(calories_in_goal - calories_in_current, 0),
+            goal=0
         )
 
         #########
@@ -147,8 +147,8 @@ if __name__ == "__main__":
         # --------------
         print_data(
             resource='water',
-            data=water_consumed_today_ml,
-            goal=water_goal_today_ml
+            data=max(water_goal_today_ml - water_consumed_today_ml, 0),
+            goal=0
         )
 
     except KeyError as err:

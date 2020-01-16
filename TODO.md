@@ -15,6 +15,13 @@ TODO
 ## Medium priority
 * Add more complicated ways of representing progress
 	* Currently, only have value and goal, and it is assumed that progress % is value / goal
+	* e.g. "cals left to eat"
+	* e.g. "weight left to lose"
+	* e.g. "which hours were active"
+	* e.g. "histogram of heart activity"
+	* e.g. "how much I overate if I went over my goal"
+	* show additional information
+		* e.g. mins awake during sleep
 * Finish completing information shown on Fitbit dashboard
 	* Active hours during the day
 	* Sleep - start/end times, time awake
