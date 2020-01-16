@@ -151,17 +151,29 @@ Module.register('MMM-Fitbit2',{
 			userData.innerHTML = this.userData[resource];
 		}
         switch(resource) {
+			case 'steps':
+				suffix.innerHTML = 'steps';
+				break;
+			case 'caloriesOut':
+				suffix.innerHTML = 'cals';
+				break;
 			case 'distance':
 				suffix.innerHTML = 'km';
 				break;
 			case 'activeMinutes':
 				suffix.innerHTML = 'mins';
 				break;
+			case 'floors':
+				suffix.innerHTML = 'floors';
+				break;
 			case 'restingHeart':
 				suffix.innerHTML = 'bpm';
 				break;
 			case 'water':
 				suffix.innerHTML = 'ml';
+				break;
+			case 'caloriesIn':
+				suffix.innerHTML = 'cals';
 				break;
 			case 'weight':
 				suffix.innerHTML = 'kg';
@@ -187,7 +199,7 @@ Module.register('MMM-Fitbit2',{
         // Put them all together
         wrapper.appendChild(icon);
         text.appendChild(userData);
-        if (['distance','activeMinutes','heart'].indexOf(resource) > -1) {
+        if (suffix.innerHTML != '') {
 			text.appendChild(suffix);
 		}
         wrapper.appendChild(text);

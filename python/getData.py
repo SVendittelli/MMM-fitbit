@@ -133,7 +133,8 @@ if __name__ == "__main__":
         #########
         # WATER #
         #########
-        water_consumed_today_ml = water_time_series_data['foods-log-water'][0]['value']
+        water_consumed_today_ml = float(
+            water_time_series_data['foods-log-water'][0]['value'])
         water_goal_today_ml = water_goal_data['goal']['goal']
 
         water_remaining_today_ml = water_goal_today_ml - water_consumed_today_ml
