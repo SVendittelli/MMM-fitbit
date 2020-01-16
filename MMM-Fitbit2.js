@@ -9,27 +9,31 @@
  */
 
 Module.register('MMM-Fitbit2',{
-
 	userData: {
 		steps: 0,
-		floors: 0,
 		caloriesOut: 0,
 		distance: 0,
 		activeMinutes: 0,
+		floors: 0,
+		restingHeart: 0,
+		water: 0,
+		caloriesIn: 0,
 		sleep: 0,
-		weight: 0,
-		heart: 0
+		weight: 0
 	},
 
+	// Defaults
 	goals: {
 		steps: 10000,
-		floors: 10,
 		caloriesOut: 2000,
 		distance: 5,
 		activeMinutes: 30,
+		floors: 10,
+		restingHeart: 0,
+		water: 2000,
+		caloriesIn: 2000,
 		sleep: 480,
-		weight: 0,
-		heart: 0
+		weight: 0
 	},
 
 	// Default module config.
@@ -40,15 +44,17 @@ Module.register('MMM-Fitbit2',{
 		},
 		resources: [
 			'steps',
-			'floors',
 			'caloriesOut',
 			'distance',
 			'activeMinutes',
+			'floors',
+			'restingHeart',
+			'water',
+			'caloriesIn',
 			'sleep',
-			'weight',
-			'heart'
+			'weight'
 		],
-		update_interval: 60
+		update_interval: 10
 	},
 
 	// Define required scripts.
@@ -109,7 +115,7 @@ Module.register('MMM-Fitbit2',{
 		return ("00" + hours.toString()).slice(-2) + ":" + ("00" + minutes.toString()).slice(-2);
 	},
 
-	// WIdth of the progress bar
+	// Width of the progress bar
 	progressBar: function(resource) {
 		if (this.userData[resource] >= this.goals[resource]) {
 			return 100;

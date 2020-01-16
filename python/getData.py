@@ -3,11 +3,8 @@ import fitbit
 from fitbit.api import FitbitOauth2Client
 import json
 from iniHandler import print_data, print_json, ReadCredentials, ReadTokens, WriteTokens
-import math
 
 if __name__ == "__main__":
-    ResourceTypes = ['steps', 'floors', 'caloriesOut']
-
     # This is the Fitbit URL to use for the API call
     FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"
 
@@ -16,7 +13,11 @@ if __name__ == "__main__":
     AccessToken, RefreshToken, ExpiresAt = ReadTokens()
 
     def WriteTokenWrapper(token):
-        print_data(token, 0, 1)
+        print_data(
+            resource=token,
+            data=0,
+            goal=1
+        )
         acc_tok = token['access_token']
         ref_tok = token['refresh_token']
         expires_at = token['expires_at']
@@ -25,38 +26,134 @@ if __name__ == "__main__":
     # Create authorised client and grab step count from one day of steps
     authdClient = fitbit.Fitbit(ClientID, ClientSecret, oauth2=True, access_token=AccessToken, refresh_token=RefreshToken,
                                 expires_at=ExpiresAt, refresh_cb=WriteTokenWrapper, redirect_uri='http://127.0.0.1:8080/')
-    activityList = authdClient.activities()
+
+    # Poll API for data
+    # TODO: only poll for resources that are requested
+    activity_list = authdClient.activities()
+    sleep_data = authdClient.sleep()
+    sleep_goal_data = authdClient.get_sleep_goal()
+    heart_time_series_data = authdClient.time_series(
+        'activities/heart', period='1d')
+    weight_data = authdClient.get_bodyweight()
+    weight_goal_data = authdClient.body_weight_goal()
+
+    water_time_series_data = authdClient.time_series(
+        'foods/log/water', period='1d')
+
+    water_goal_data = authdClient.water_goal()
+
+    calories_in_time_series_data = authdClient.time_series(
+        'foods/log/caloriesIn', period='1d')
+
+    food_goal_data = authdClient.food_goal()
+
     try:
-        # Use for steps, floors, calories. Adapt for distance, active minutes
-        activitySummary = activityList['summary']
-        # Goals for steps, floors, calories, distance, active minutes
-        activityGoals = activityList['goals']
-        sleepSummary = authdClient.sleep()['summary']
-        heartTimeSeries = authdClient.time_series(
-            'activities/heart', period='1d')
-        totalMinutesAsleep = sleepSummary['totalMinutesAsleep']
+        ############
+        # ACTIVITY #
+        ############
+        activitySummary = activity_list['summary']
+        activityGoals = activity_list['goals']
+        # --------------
+        for resource in ['steps', 'floors', 'caloriesOut']:
+            print_data(
+                resource=resource,
+                data=activitySummary[resource],
+                goal=activityGoals[resource]
+            )
 
-        # [{u'weight': 154.3, u'bmi': 22.09, u'logId': 1528502399000, u'source': u'API', u'time': u'23:59:59', u'date': u'2018-06-08'}]
-        weight = authdClient.get_bodyweight()['weight']
-
-        fitbit_weight_lbs = weight[0]['weight']
-        fitbit_weight_kg = math.ceil(fitbit_weight_lbs * 0.45359237)
-
-        # Calculate active minutes
+        # These require more complicated parsing
         activeMinutes = activitySummary['fairlyActiveMinutes'] + \
             activitySummary['veryActiveMinutes']
-
-        for resource in ResourceTypes:
-            print_data(
-                resource, activitySummary[resource], activityGoals[resource])
-
         print_data(
-            'distance', activitySummary['distances'][0]['distance'], activityGoals['distance'])
-        print_data('activeMinutes', activeMinutes,
-                   activityGoals['activeMinutes'])
-        print_data('sleep', totalMinutesAsleep, 480)
+            resource='activeMinutes',
+            data=activeMinutes,
+            goal=activityGoals['activeMinutes']
+        )
+
+        distance = activitySummary['distances'][0]['distance']
         print_data(
-            'heart', heartTimeSeries['activities-heart'][0]['value']['restingHeartRate'], 60)
-        print_data('weight', fitbit_weight_kg, 75)
+            resource='distance',
+            data=distance,
+            goal=activityGoals['distance']
+        )
+
+        #########
+        # SLEEP #
+        #########
+        sleep_summary = sleep_data['summary']
+        total_minutes_asleep = sleep_summary['totalMinutesAsleep']
+        sleep_goal = sleep_goal_data['goal']['minDuration']
+        # --------------
+        print_data(
+            resource='sleep',
+            data=total_minutes_asleep,
+            goal=sleep_goal
+        )
+
+        #########
+        # HEART #
+        #########
+        heart_time_series_summary = heart_time_series_data['activities-heart']
+        resting_heart_rate = heart_time_series_summary[0]['value']['restingHeartRate']
+        # --------------
+        print_data(
+            resource='restingHeart',
+            data=resting_heart_rate,
+            goal=0
+        )
+
+        ##########
+        # WEIGHT #
+        ##########
+        weight = weight_data['weight']
+        weight_current_lbs = weight[0]['weight']
+        weight_current_kg = round(weight_current_lbs * 0.45359237, 1)
+
+        weight_start_lbs = weight_goal_data['goal']['startWeight']
+        weight_start_kg = round(weight_start_lbs * 0.45359237, 1)
+
+        weight_goal_lbs = weight_goal_data['goal']['weight']
+        weight_goal_kg = round(weight_goal_lbs * 0.45359237, 1)
+        # --------------
+        print_data(
+            resource='weight',
+            data=weight_current_kg,
+            goal=weight_goal_kg
+        )
+
+        ########
+        # FOOD #
+        ########
+        calories_in_current = sum(float(c['value'])
+                                  for c in calories_in_time_series_data['foods-log-caloriesIn'])
+        calories_in_goal = food_goal_data['goals']['calories']
+        # --------------
+        print_data(
+            resource='caloriesIn',
+            data=calories_in_current,
+            goal=calories_in_goal
+        )
+
+        #########
+        # WATER #
+        #########
+        water_consumed_today_fl_oz = float(
+            water_time_series_data['foods-log-water'][0]['value'])
+        water_consumed_today_ml = int(
+            round(water_consumed_today_fl_oz * 28.4131, 0))
+
+        water_goal_today_fl_oz = water_goal_data['goal']['goal']
+        water_goal_today_ml = int(round(water_goal_today_fl_oz * 28.4131, 0))
+        # --------------
+        print_data(
+            resource='water',
+            data=water_consumed_today_ml,
+            goal=water_goal_today_ml
+        )
+
     except KeyError as err:
-        print_data(str(err).strip("'"), 0, 1)
+        print_data(
+            resource=str(err).strip("'"),
+            data=0,
+            goal=1
+        )

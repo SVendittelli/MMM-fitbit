@@ -1,3 +1,4 @@
 [Tokens]
-acc_tok = <your access token>
-ref_tok = <your refresh token>
+acc_tok = <access token>
+ref_tok = <refresh token>
+expires_at = <access token expiry>

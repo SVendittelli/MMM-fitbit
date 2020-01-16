@@ -120,27 +120,36 @@ def WriteTokens(AccToken, RefToken, Expires=None):
         print_json('error', '%s does not exist' % tokensFile)
         sys.exit(1)
 
-    print_json("status", "Writing tokens to %s" % tokensFile)
-    print_json("status", "Writing access token: %s and refresh token: %s" %
-               (AccToken, RefToken))
+    print_json("status", "Writing token credentials to %s" % tokensFile)
 
     tokenParser.read(iniDirectory + tokensFile)
 
     try:
-        # Write the access and refresh tokens tokens.ini
+        # Write token credentials to tokens.ini
         tokenParser.set('Tokens', 'REF_TOK', RefToken)
         tokenParser.set('Tokens', 'ACC_TOK', AccToken)
+
         if Expires:
             tokenParser.set('Tokens', 'EXPIRES_AT', str(Expires))
+
+        print_json("status", "Items to write to file: %s" %
+                   tokenParser.items('Tokens'))
+
         with open(iniDirectory + tokensFile, 'wb') as iniFile:
             tokenParser.write(iniFile)
+
     except ConfigParser.NoSectionError:
-        # If the tokens file is incorrectly formatted
+
+        # Add section if the tokens file is incorrectly formatted
         print_json("error", "%s missing section 'Tokens'" % tokensFile)
         tokenParser.add_section('Tokens')
+
         with open(iniDirectory + tokensFile, 'wb') as iniFile:
             tokenParser.write(iniFile)
+
+        # Try again
         WriteTokens(AccToken, RefToken, Expires)
+
     else:
         print_json("status", "Write of %s successful." % tokensFile)
 

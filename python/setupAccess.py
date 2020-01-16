@@ -82,19 +82,19 @@ if __name__ == '__main__':
         pass
 
     if not (len(sys.argv) == 3):
-        responce = input(
+        response = input(
             "Get credentials from credentials.ini? (Y/N)\n").upper()
 
-        if responce == "Y":
+        if response == "Y":
             id, secret = ReadCredentials()
-        elif responce == "N":
-            responce = input(
+        elif response == "N":
+            response = input(
                 "Would you like to enter them manually now? (Y/N)\n").upper()
 
-            if responce == "Y":
+            if response == "Y":
                 id = input("Enter client id:\n")
                 secret = input("Enter client secret:\n")
-            elif responce == "N":
+            elif response == "N":
                 print("Try again giving arguments: client id and client secret.")
                 sys.exit(1)
             else:
@@ -114,14 +114,15 @@ if __name__ == '__main__':
     server = OAuth2Server(id, secret)
     server.browser_authorize()
 
-    print(server.oauth.session)
+    token_creds = server.oauth.session.token
 
-    acc_tok = server.oauth.session.token['access_token']
-    ref_tok = server.oauth.session.token['refresh_token']
-    expires_at = server.oauth.session.token['expires_at']
+    acc_tok = token_creds['access_token']
+    ref_tok = token_creds['refresh_token']
+    expires_at = token_creds['expires_at']
 
-    print('FULL RESULTS = %s' % server.oauth.session.token)
+    # print('FULL RESULTS = %s' % server.oauth.session.token)
     print('ACCESS_TOKEN = %s' % acc_tok)
     print('REFRESH_TOKEN = %s' % ref_tok)
+    print('EXPIRES_AT = %s' % expires_at)
 
     WriteTokens(acc_tok, ref_tok, expires_at)

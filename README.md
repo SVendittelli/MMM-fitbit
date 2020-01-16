@@ -8,7 +8,7 @@ MMM-Fitbit2
 
 **Note: this module requires that you set up your own "Fitbit app" using a free Fitbit account, in order to generate OAuth 2.0 credentials for accessing your data from Fitbit.**
 
-This module extends upon SVendittelli's original [MMM-fitbit](https://github.com/SVendittelli/MMM-fitbit) module and intends to build on top of the following changes that were incorporated from the efforts of others who forked the original repository:
+This extends upon SVendittelli's original [MMM-fitbit](https://github.com/SVendittelli/MMM-fitbit) module and intends to build on top of the following changes that were incorporated from the efforts of others who forked the original repository:
 
 * adding weight data ([engeld's fork](https://github.com/engeld/MMM-fitbit))
 * updating python-fitbit to 0.3.0 ([shbatm's fork](https://github.com/shbatm/MMM-fitbit))
@@ -63,11 +63,14 @@ Config
 						'distance',
 						'activeMinutes',
 						'floors',
-						'heart',
+						'restingHeart',
+						'water',
+						'caloriesIn'
 						'sleep',
 						'weight'
+
 				],
-				update_interval: 5
+				update_interval: 10
 		}
 },
 
@@ -98,16 +101,17 @@ Files
 * MMM-Fitbit2.css
 
 Currently Supported Data
---
-* Steps
-* Calories
-* Total Distance
-* Active Minutes
-* Floors
-* Resting Heart Rate
-* Sleep
-* Weight
-
+----
+* Steps Walked (compared to goal)
+* Calories Burned (compared to goal)
+* Total Distance Walked (compared to goal)
+* # of Active Minutes (compared to goal)
+* # of Floors Climbed (compared to goal)
+* Resting Heart Rate (average for the day)
+* Current Water Intake (compared to goal)
+* Calories Consumed (compared to goal)
+* Sleep Time (compared to goal)
+* Current Weight (last weigh-in)
 
 TODO
 ---

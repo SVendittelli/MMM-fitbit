@@ -771,6 +771,15 @@ class Fitbit(object):
         )
         return self.make_request(url, method="DELETE")
 
+    def get_sleep_goal(self):
+        """
+        https://dev.fitbit.com/build/reference/web-api/sleep/#sleep-goals
+        """
+        url = "{0}/{1}/user/-/sleep/goal.json".format(
+            *self._get_common_args()
+        )
+        return self.make_request(url)
+
     def get_sleep(self, date):
         """
         https://dev.fitbit.com/docs/sleep/#get-sleep-logs
