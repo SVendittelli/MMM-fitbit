@@ -16,6 +16,7 @@ Module.register('MMM-Fitbit2',{
 		distance: 0,
 		activeMinutes: 0,
 		sleep: 0,
+		weight: 0,
 		heart: 0
 	},
 
@@ -26,6 +27,7 @@ Module.register('MMM-Fitbit2',{
 		distance: 5,
 		activeMinutes: 30,
 		sleep: 480,
+		weight: 0,
 		heart: 0
 	},
 
@@ -42,6 +44,7 @@ Module.register('MMM-Fitbit2',{
 			'distance',
 			'activeMinutes',
 			'sleep',
+			'weight',
 			'heart'
 		],
 		update_interval: 60
