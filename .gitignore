@@ -1,3 +1,5 @@
+.DS_Store
+
 python/testing.py
 python/fitbit/test.py
 

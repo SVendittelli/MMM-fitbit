@@ -8,7 +8,7 @@ MMM-Fitbit2
 
 **Note: this module requires that you set up your own "Fitbit app" using a free Fitbit account, in order to generate OAuth 2.0 credentials for accessing your data from Fitbit.**
 
-This extends upon SVendittelli's original [MMM-fitbit](https://github.com/SVendittelli/MMM-fitbit) module and intends to build on top of the following changes that were incorporated from the efforts of others who forked the original repository:
+This extends SVendittelli's original [MMM-fitbit](https://github.com/SVendittelli/MMM-fitbit) module and intends to build on top of the following changes that were incorporated from the efforts of others who forked the original repository:
 
 * adding weight data ([engeld's fork](https://github.com/engeld/MMM-fitbit))
 * updating python-fitbit to 0.3.0 ([shbatm's fork](https://github.com/shbatm/MMM-fitbit))
@@ -21,29 +21,51 @@ Dependencies
 
 Setup
 ---
-* As with all modules, use `git clone <this url>` in the `modules` directory to download the module
-* Go to [Fitbit](https://dev.fitbit.com/) to register a new app (sign in with your Fitbit account)
+* Go to [Fitbit](https://dev.fitbit.com/apps/new/) and register a new app (sign in with your Fitbit account if needed).
 	* Give your app a catchy name and description
 	* Your personal website, organisation, and organisation website can be whatever you like
-	* Check browser and personal for OAuth settings
+	* Ensure that OAuth 2.0 Application Type is set to "personal"
 	* Callback URL **MUST BE** `http://127.0.0.1:8080/`
 	* Give your app read & write permissions (read-only untested)
-	* Note your:
-		* "OAuth 2.0 Client ID" --- (client_id)
-		* "Client (Consumer) Secret" --- (client_secret)
-	* (You can access these again later via manage my apps at the same link as above)
-* Navigate to `MMM-Fitbit2` in the modules directory
-* Install dependancies using the listed commands
-* Navigate to the `python` directory in `MMM-Fitbit2`
-* Create blank files `tokens.ini` and `credentials.ini` or duplicate their `.sample` files
-* Via the command line on your Pi (**NOT via SSH**), run `sudo python setupAccess.py`. You must either:
-	* Pass it your client_id and client_secret as arguments
-	* Run it without arguments and have it read from `credentials.ini` (you can use this if you have already setup the module but need a fresh set of tokens)
-	* Run it without arguments and enter your client_id and client_secret when prompted
-	* **IMPORTANT NOTE** MagicMirror² can not be running when you run the `setupAccess.py` script since it uses the same port: `8080`. After running setup, you can restart MM².
-* Log in using your Fitbit credentials (if you are not already) and allow access to all options (if you do not some features may not work, but you may revoke app access and re-run `sudo python setupAccess.py` to change these).
-* Add the example config to your config (entering relevant credentials)
-* Start your MagicMirror!
+	* Note your OAuth 2.0 credentials (you'll need them in a moment!)
+		* "OAuth 2.0 Client ID" --- (this is your `client_id`)
+		* "Client (Consumer) Secret" --- (this is your `client_secret`)
+			* You can access these again later via [Manage My Apps](https://dev.fitbit.com/apps)
+
+Installation
+---
+
+```
+cd ~/MagicMirror # or whatever your path to Magic Mirror is
+cd modules
+git clone https://github.com/m-roberts/MMM-Fitbit2
+cd MMM-Fitbit2
+npm install python-shell@0.5.0
+sudo pip install -r python/fitbit/requirements.txt
+cd python
+cp tokens.ini.sample tokens.ini
+cp credentials.ini.sample credentials.ini
+
+# Edit credentials.ini to include your personal client_id and client_secret
+
+# Stop MagicMirror before this next step - it won't work!
+pm2 stop MagicMirror
+
+sudo python setupAccess.py
+
+# A web browser will open - log in using your Fitbit username and password, if you are not logged in already, and allow access to all options
+
+# Close the window when instructed
+
+# Re-enable MagicMirror
+pm2 start MagicMirror
+
+# Add the example config below to your config file in ~/MagicMirror/config/config.json (oror whatever your path to Magic Mirror is)
+
+# Add your client_id and client_secret to the config file, and customise as you like
+
+# Start your MagicMirror!
+```
 
 Config
 ---
@@ -75,12 +97,13 @@ Config
 },
 
 ````
-### Explanation
-* (Required) `credentials`:
-	* (Required) `client_id`: From https://dev.fitbit.com/
-	* (Required) `client_secret`: From https://dev.fitbit.com/
-* (Required) `resources`: List of resources to display on Mirror. May take any combination of `'steps', 'floors', 'caloriesOut', 'distance', 'activeMinutes', 'sleep', 'heart'`
-* (Optional) `update_interval` - (default value of `60`): in the amount of time in minutes to wait before fetching new Fitbit data. This must not be done too often otherwise Fitbit will not send new tokens and an uncaught exception will be thrown. This happens after approximately 150 requests in an hour, so updates should be no more frequent than once every minute for safety.
+### Notice
+The Fitbit API explains:
+> You can make 150 API requests per hour for each user that has authorized your application to access their data. This rate limit is applied when you make an API request using the user's access token.
+
+The default configuration is designed to fetch new Fitbit data every 10 minutes. Depending on the number of resources that are selected, it is likely that multiple API requests are made each time that new Fitbit data is fetched.
+
+This must not be done too often otherwise the rate limit will be exceeded, and Fitbit will not send new tokens and an uncaught exception will be thrown. It is not recommended that a value of less than 10 be used, unless fewer resources are selected. Try setting this to a higher number if you are experiencing problems.
 
 Files
 --

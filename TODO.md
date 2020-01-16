@@ -2,13 +2,7 @@ TODO
 ==
 
 ## High priority
-* Only poll API for resources that are required
-* Rewrite README
-	* Make setup steps clearer
-	* Make it clear that multiple API calls are made on each refresh
-* MIT LICENSE.md
-
-* Get goals from API; don't hard-code
+* Find out if it's possible to set a different callback port for Fitbit authorisation to avoid needing to kill MagicMirror when getting credentials
 * _Clean up the code_
 
 ## Medium priority

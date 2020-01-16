@@ -81,8 +81,11 @@ Module.register('MMM-Fitbit2',{
 	// Initialisation
 	start: function() {
 		Log.info('Starting module: ' + this.name);
-		this.sendSocketNotification('SET CREDS',this.config.credentials)
-		this.sendSocketNotification('GET DATA', 'intial');
+		this.sendSocketNotification('SET CREDS', this.config.credentials)
+		get_data_payload = {}
+		get_data_payload.config = this.config.resources
+		get_data_payload.trigger = 'Initial'
+		this.sendSocketNotification('GET DATA', get_data_payload);
 
 		this.fadeSpeed = 500;
 
@@ -95,7 +98,10 @@ Module.register('MMM-Fitbit2',{
 
 	// Updates the data from fitbit
 	updateData: function() {
-		this.sendSocketNotification('GET DATA', 'Update');
+		get_data_payload = {}
+		get_data_payload.config = this.config.resources
+		get_data_payload.trigger = 'Update'
+		this.sendSocketNotification('GET DATA', get_data_payload);
 	},
 
 	// Checks whether the user wants to lookup a resourse type
@@ -132,7 +138,7 @@ Module.register('MMM-Fitbit2',{
 		var icon = document.createElement("img");
 		var text = document.createElement("div");
 		var userData = document.createElement("div");
-		var suffix = document.createElement("div");
+		var measurementUnit = document.createElement("div");
 		var progress = document.createElement("div");
 		var bar = document.createElement("div");
 
@@ -142,7 +148,7 @@ Module.register('MMM-Fitbit2',{
 
 		// Text to display
 		userData.className = 'normal medium';
-		suffix.className = "dimmed small";
+		measurementUnit.className = "dimmed small";
 		if (resource == 'steps' || resource == 'caloriesOut' || resource == 'caloriesIn') {
 			userData.innerHTML = this.numberWithCommas(this.userData[resource]);
 		} else if (resource == 'sleep') {
@@ -152,59 +158,57 @@ Module.register('MMM-Fitbit2',{
 		}
 		switch(resource) {
 			case 'steps':
-				suffix.innerHTML = 'steps';
+				measurementUnit.innerHTML = 'steps';
 				break;
 			case 'caloriesOut':
-				suffix.innerHTML = 'cals';
+				measurementUnit.innerHTML = 'cals';
 				break;
 			case 'distance':
-				suffix.innerHTML = 'km';
+				measurementUnit.innerHTML = 'km';
 				break;
 			case 'activeMinutes':
-				suffix.innerHTML = 'mins';
+				measurementUnit.innerHTML = 'mins';
 				break;
 			case 'floors':
-				suffix.innerHTML = 'floors';
+				measurementUnit.innerHTML = 'floors';
 				break;
 			case 'restingHeart':
-				suffix.innerHTML = 'bpm';
+				measurementUnit.innerHTML = 'bpm';
 				break;
 			case 'water':
-				suffix.innerHTML = 'ml';
+				measurementUnit.innerHTML = 'ml';
 				break;
 			case 'caloriesIn':
-				suffix.innerHTML = 'cals';
+				measurementUnit.innerHTML = 'cals';
+				break;
+			case 'sleep':
+				measurementUnit.innerHTML = 'zzz';
 				break;
 			case 'weight':
-				suffix.innerHTML = 'kg';
+				measurementUnit.innerHTML = 'kg';
 				break;
 			default:
-				suffix.innerHTML = '';
+				measurementUnit.innerHTML = '';
 		}
 
-		// Make text on the same line
-		userData.style.display = 'inline-block';
-		suffix.style.display = 'inline-block';
+		// Assemble text
+		text.appendChild(userData);
+		text.appendChild(measurementUnit);
 
-		// Progress bar
+		// Assemble progress bar
 		progress.className = 'progbarbkg';
 
 		bar.className = 'progbar';
 		bar.style.width = this.progressBar(resource) + '%';
 
-		if (resource !== 'restingHeart') {
-			progress.appendChild(bar);
-		}
+		progress.appendChild(bar);
 
 		// Put them all together
 		wrapper.appendChild(icon);
-		text.appendChild(userData);
-		if (suffix.innerHTML != '') {
-			text.appendChild(suffix);
-		}
 		wrapper.appendChild(text);
 		wrapper.appendChild(progress);
 
+		// Make each 'widget' align horizontally
 		wrapper.style.display = 'inline-block';
 		wrapper.style.paddingLeft = '5px';
 		wrapper.style.paddingRight = '5px';
