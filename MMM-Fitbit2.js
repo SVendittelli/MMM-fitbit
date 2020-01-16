@@ -157,7 +157,7 @@ Module.register('MMM-Fitbit2',{
 			case 'activeMinutes':
 				suffix.innerHTML = 'mins';
 				break;
-			case 'heart':
+			case 'restingHeart':
 				suffix.innerHTML = 'bpm';
 				break;
 			default:
