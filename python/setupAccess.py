@@ -21,14 +21,14 @@ class OAuth2Server:
         """ Initialize the FitbitOauth2Client """
         self.redirect_uri = redirect_uri
         self.success_html = """
-			<style>
-			h1 {text-align:center;}
-			h3 {text-align:center;}
-			</style>
+            <style>
+            h1 {text-align:center;}
+            h3 {text-align:center;}
+            </style>
             <h1>You are now authorised to access the Fitbit API!</h1>
             <br/><h3>You can close this window</h3>"""
         self.failure_html = """
-			<style> h1 {text-align:center;} </style>
+            <style> h1 {text-align:center;} </style>
             <h1>ERROR: %s</h1><br/><h3>You can close this window</h3>%s"""
         self.oauth = FitbitOauth2Client(client_id, client_secret)
 
@@ -114,11 +114,14 @@ if __name__ == '__main__':
     server = OAuth2Server(id, secret)
     server.browser_authorize()
 
-    acc_tok = server.oauth.token['access_token']
-    ref_tok = server.oauth.token['refresh_token']
+    print(server.oauth.session)
 
-    print('FULL RESULTS = %s' % server.oauth.token)
+    acc_tok = server.oauth.session.token['access_token']
+    ref_tok = server.oauth.session.token['refresh_token']
+    expires_at = server.oauth.session.token['expires_at']
+
+    print('FULL RESULTS = %s' % server.oauth.session.token)
     print('ACCESS_TOKEN = %s' % acc_tok)
     print('REFRESH_TOKEN = %s' % ref_tok)
 
-    WriteTokens(acc_tok, ref_tok)
+    WriteTokens(acc_tok, ref_tok, expires_at)
