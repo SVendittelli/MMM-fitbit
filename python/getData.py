@@ -24,7 +24,7 @@ if __name__ == "__main__":
         WriteTokens(acc_tok, ref_tok, expires_at)
 
     # Create authorised client and grab step count from one day of steps
-    authdClient = fitbit.Fitbit(ClientID, ClientSecret, oauth2=True, access_token=AccessToken, refresh_token=RefreshToken,
+    authdClient = fitbit.Fitbit(ClientID, ClientSecret, system="METRIC", oauth2=True, access_token=AccessToken, refresh_token=RefreshToken,
                                 expires_at=ExpiresAt, refresh_cb=WriteTokenWrapper, redirect_uri='http://127.0.0.1:8080/')
 
     # Poll API for data
@@ -106,14 +106,10 @@ if __name__ == "__main__":
         # WEIGHT #
         ##########
         weight = weight_data['weight']
-        weight_current_lbs = weight[0]['weight']
-        weight_current_kg = round(weight_current_lbs * 0.45359237, 1)
+        weight_current_kg = weight[0]['weight']
 
-        weight_start_lbs = weight_goal_data['goal']['startWeight']
-        weight_start_kg = round(weight_start_lbs * 0.45359237, 1)
-
-        weight_goal_lbs = weight_goal_data['goal']['weight']
-        weight_goal_kg = round(weight_goal_lbs * 0.45359237, 1)
+        weight_start_kg = weight_goal_data['goal']['startWeight']
+        weight_goal_kg = weight_goal_data['goal']['weight']
         # --------------
         print_data(
             resource='weight',
@@ -130,24 +126,21 @@ if __name__ == "__main__":
         # --------------
         print_data(
             resource='caloriesIn',
-            data=max(calories_in_goal - calories_in_current, 0),
+            data=max(int(calories_in_goal - calories_in_current), 0),
             goal=0
         )
 
         #########
         # WATER #
         #########
-        water_consumed_today_fl_oz = float(
-            water_time_series_data['foods-log-water'][0]['value'])
-        water_consumed_today_ml = int(
-            round(water_consumed_today_fl_oz * 28.4131, 0))
+        water_consumed_today_ml = water_time_series_data['foods-log-water'][0]['value']
+        water_goal_today_ml = water_goal_data['goal']['goal']
 
-        water_goal_today_fl_oz = water_goal_data['goal']['goal']
-        water_goal_today_ml = int(round(water_goal_today_fl_oz * 28.4131, 0))
+        water_remaining_today_ml = water_goal_today_ml - water_consumed_today_ml
         # --------------
         print_data(
             resource='water',
-            data=max(water_goal_today_ml - water_consumed_today_ml, 0),
+            data=max(int(round(water_remaining_today_ml)), 0),
             goal=0
         )
 
