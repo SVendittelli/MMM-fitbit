@@ -162,9 +162,9 @@ Module.register('MMM-Fitbit2',{
 				break;
 			case 'water':
 				suffix.innerHTML = 'ml';
+				break;
 			case 'weight':
 				suffix.innerHTML = 'kg';
-				break;
 				break;
 			default:
 				suffix.innerHTML = '';
