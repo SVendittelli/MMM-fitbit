@@ -2,9 +2,6 @@ TODO
 ==
 
 ## High priority
-* Check that nothing breaks if data is missing
-	* e.g. no weight data for 30 days
-	* e.g. no heart data for the day
 * Improve look
 	* Fix spacing and text, etc.
 		* Remove "zzz" from sleep, keep spacing
@@ -13,8 +10,12 @@ TODO
 		* Get water icons
 		* Get food icons
 		* Fix weight icons
+	* Update screenshot
 
 ## Medium priority
+* Check that nothing breaks if data is missing
+	* e.g. no weight data for 30 days
+	* e.g. no heart data for the day
 * Handle missing or corrupted ini files
 * Look into forking python-fitbit and add new features
 	* https://github.com/orcasgit/python-fitbit/pull/136/
