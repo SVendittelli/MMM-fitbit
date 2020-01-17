@@ -33,7 +33,7 @@ Dependencies
 * [python-shell](https://www.npmjs.com/package/python-shell/v/0.5.0)
 
 ### Python
-* [python-fitbit](https://github.com/orcasgit/python-fitbit)
+* [python-fitbit](https://github.com/orcasgit/python-fitbit/tree/5f345ff819e3508a5765e47c26be7b5a4b634425)
 
 Setup
 ---
