@@ -2,6 +2,7 @@ TODO
 ==
 
 ## High priority
+* Check that assumed list elements (such as [0]) are correct
 * Fix detecting expired tokens and refreshing
 	* Check for 'print(response.content)' when there is an expired token
 * Add better handling of KeyErrors
