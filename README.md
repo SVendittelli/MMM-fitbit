@@ -14,6 +14,19 @@ This extends SVendittelli's original [MMM-fitbit](https://github.com/SVendittell
 * updating python-fitbit to 0.3.0 ([shbatm's fork](https://github.com/shbatm/MMM-fitbit))
 * automatic re-authorisation when tokens have expired ([shbatm's fork](https://github.com/shbatm/MMM-fitbit))
 
+Currently Supported Data
+----
+* Steps Walked (compared to goal)
+* Calories Burned (compared to goal)
+* Total Distance Walked (compared to goal)
+* \# of Active Minutes (compared to goal)
+* \# of Floors Climbed (compared to goal)
+* Resting Heart Rate (average for the day)
+* Today's Remaining Water Intake (amount consumed subtracted from goal)
+* Today's Remaining Calories To Consume (amount consumed subtracted from goal)
+* Sleep Time (compared to goal)
+* Current Weight (last weigh-in, if within the last 30 days)
+
 Dependencies
 ---
 * [python-shell](https://www.npmjs.com/package/python-shell)
@@ -118,19 +131,6 @@ Files
 
 ### CSS
 * MMM-Fitbit2.css
-
-Currently Supported Data
-----
-* Steps Walked (compared to goal)
-* Calories Burned (compared to goal)
-* Total Distance Walked (compared to goal)
-* # of Active Minutes (compared to goal)
-* # of Floors Climbed (compared to goal)
-* Resting Heart Rate (average for the day)
-* Current Water Intake (compared to goal)
-* Calories Consumed (compared to goal)
-* Sleep Time (compared to goal)
-* Current Weight (last weigh-in)
 
 TODO
 ---
