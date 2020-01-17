@@ -7,6 +7,8 @@ TODO
 	* e.g. no heart data for the day
 * Improve look
 	* Fix spacing and text, etc.
+		* Remove "zzz" from sleep, keep spacing
+		* Give icons more room
 	* Icons
 		* Get water icons
 		* Get food icons

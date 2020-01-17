@@ -8,7 +8,7 @@
  * MIT Licensed.
  */
 
-Module.register('MMM-Fitbit2',{
+Module.register("MMM-Fitbit2",{
 	userData: {
 		steps: 0,
 		caloriesOut: 0,
@@ -39,20 +39,20 @@ Module.register('MMM-Fitbit2',{
 	// Default module config.
 	defaults: {
 		credentials: {
-			client_id: '',
-			client_secret: ''
+			client_id: "",
+			client_secret: ""
 		},
 		resources: [
-			'steps',
-			'caloriesOut',
-			'distance',
-			'activeMinutes',
-			'floors',
-			'restingHeart',
-			'water',
-			'caloriesIn',
-			'sleep',
-			'weight'
+			"steps",
+			"caloriesOut",
+			"distance",
+			"activeMinutes",
+			"floors",
+			"restingHeart",
+			"water",
+			"caloriesIn",
+			"sleep",
+			"weight"
 		],
 		update_interval: 10
 	},
@@ -73,19 +73,19 @@ Module.register('MMM-Fitbit2',{
 			}
 		}
 		if (notification === "UPDATE") {
-			Log.log('Updating Dom');
+			Log.log("Updating Dom");
 			this.updateDom(this.fadeSpeed);
 		}
 	},
 
 	// Initialisation
 	start: function() {
-		Log.info('Starting module: ' + this.name);
-		this.sendSocketNotification('SET CREDS', this.config.credentials)
+		Log.info("Starting module: " + this.name);
+		this.sendSocketNotification("SET CREDS", this.config.credentials)
 		get_data_payload = {}
 		get_data_payload.config = this.config.resources
-		get_data_payload.trigger = 'Initial'
-		this.sendSocketNotification('GET DATA', get_data_payload);
+		get_data_payload.trigger = "Initial"
+		this.sendSocketNotification("GET DATA", get_data_payload);
 
 		this.fadeSpeed = 500;
 
@@ -100,8 +100,8 @@ Module.register('MMM-Fitbit2',{
 	updateData: function() {
 		get_data_payload = {}
 		get_data_payload.config = this.config.resources
-		get_data_payload.trigger = 'Update'
-		this.sendSocketNotification('GET DATA', get_data_payload);
+		get_data_payload.trigger = "Update"
+		this.sendSocketNotification("GET DATA", get_data_payload);
 	},
 
 	// Checks whether the user wants to lookup a resourse type
@@ -132,7 +132,7 @@ Module.register('MMM-Fitbit2',{
 
 	// Make each resource element for the UI
 	UIElement: function(resource) {
-		iconPath = '/img/' + resource + 'White.png';
+		iconPath = "/img/" + resource + "White.png";
 		// Create wrappers
 		var wrapper = document.createElement("div");
 		var icon = document.createElement("img");
@@ -143,52 +143,52 @@ Module.register('MMM-Fitbit2',{
 		var bar = document.createElement("div");
 
 		// Icon
-		icon.className = 'fitbiticon';
-		icon.src = 'modules/' + this.name + iconPath;
+		icon.className = "fitbiticon";
+		icon.src = "modules/" + this.name + iconPath;
 
 		// Text to display
-		userData.className = 'normal medium';
+		userData.className = "normal medium";
 		measurementUnit.className = "dimmed small";
-		if (resource == 'steps' || resource == 'caloriesOut' || resource == 'caloriesIn') {
+		if (resource == "steps" || resource == "caloriesOut" || resource == "caloriesIn") {
 			userData.innerHTML = this.numberWithCommas(this.userData[resource]);
-		} else if (resource == 'sleep') {
+		} else if (resource == "sleep") {
 			userData.innerHTML = this.minsToHourMin(this.userData[resource]);
 		} else {
 			userData.innerHTML = this.userData[resource];
 		}
 		switch(resource) {
-			case 'steps':
-				measurementUnit.innerHTML = 'steps';
+			case "steps":
+				measurementUnit.innerHTML = "steps";
 				break;
-			case 'caloriesOut':
-				measurementUnit.innerHTML = 'cals';
+			case "caloriesOut":
+				measurementUnit.innerHTML = "cals";
 				break;
-			case 'distance':
-				measurementUnit.innerHTML = 'km';
+			case "distance":
+				measurementUnit.innerHTML = "km";
 				break;
-			case 'activeMinutes':
-				measurementUnit.innerHTML = 'mins';
+			case "activeMinutes":
+				measurementUnit.innerHTML = "mins";
 				break;
-			case 'floors':
-				measurementUnit.innerHTML = 'floors';
+			case "floors":
+				measurementUnit.innerHTML = "floors";
 				break;
-			case 'restingHeart':
-				measurementUnit.innerHTML = 'bpm';
+			case "restingHeart":
+				measurementUnit.innerHTML = "bpm";
 				break;
-			case 'water':
-				measurementUnit.innerHTML = 'ml';
+			case "water":
+				measurementUnit.innerHTML = "ml";
 				break;
-			case 'caloriesIn':
-				measurementUnit.innerHTML = 'cals';
+			case "caloriesIn":
+				measurementUnit.innerHTML = "cals";
 				break;
-			case 'sleep':
-				measurementUnit.innerHTML = 'zzz';
+			case "sleep":
+				measurementUnit.innerHTML = "zzz";
 				break;
-			case 'weight':
-				measurementUnit.innerHTML = 'kg';
+			case "weight":
+				measurementUnit.innerHTML = "kg";
 				break;
 			default:
-				measurementUnit.innerHTML = '';
+				measurementUnit.innerHTML = "";
 		}
 
 		// Assemble text
@@ -196,10 +196,10 @@ Module.register('MMM-Fitbit2',{
 		text.appendChild(measurementUnit);
 
 		// Assemble progress bar
-		progress.className = 'progbarbkg';
+		progress.className = "progbarbkg";
 
-		bar.className = 'progbar';
-		bar.style.width = this.progressBar(resource) + '%';
+		bar.className = "progbar";
+		bar.style.width = this.progressBar(resource) + "%";
 
 		progress.appendChild(bar);
 
@@ -208,10 +208,10 @@ Module.register('MMM-Fitbit2',{
 		wrapper.appendChild(text);
 		wrapper.appendChild(progress);
 
-		// Make each 'widget' align horizontally
-		wrapper.style.display = 'inline-block';
-		wrapper.style.paddingLeft = '5px';
-		wrapper.style.paddingRight = '5px';
+		// Make each "widget" align horizontally
+		wrapper.style.display = "inline-block";
+		wrapper.style.paddingLeft = "5px";
+		wrapper.style.paddingRight = "5px";
 
 		return wrapper;
 	},
