@@ -34,6 +34,7 @@ TODO
 	* Sleep - start/end times, time awake
 * Migrate to using Python 3
 	* Fix iniHandler saving tokens
+* Simpler dependency installation
 
 ## Low priority
 * Formatting for regions other than central ones

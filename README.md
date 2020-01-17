@@ -66,24 +66,26 @@ Config
 ### Example
 ````javascript
 {
-		module: 'MMM-Fitbit2',
-		position: 'top_center',
+		module: "MMM-Fitbit2",
+		position: "top_center",
 		config: {
 				credentials: {
-						client_id: <client_id>,
-						client_secret: <client_secret>,
+						// REPLACE THESE WITH YOUR OAUTH 2.0 CREDENTIALS
+						// Keep the quotes!
+						client_id: "<client_id>",
+						client_secret: "<client_secret>",
 				},
 				resources: [
-						'steps',
-						'caloriesOut',
-						'distance',
-						'activeMinutes',
-						'floors',
-						'restingHeart',
-						'water',
-						'caloriesIn',
-						'sleep',
-						'weight'
+						"steps",
+						"caloriesOut",
+						"distance",
+						"activeMinutes",
+						"floors",
+						"restingHeart",
+						"water",
+						"caloriesIn",
+						"sleep",
+						"weight"
 
 				],
 				update_interval: 10
