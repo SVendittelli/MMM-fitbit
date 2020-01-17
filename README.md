@@ -29,7 +29,10 @@ Currently Supported Data
 
 Dependencies
 ---
+### Javascript
 * [python-shell](https://www.npmjs.com/package/python-shell)
+
+### Python
 * [python-fitbit](https://github.com/orcasgit/python-fitbit)
 
 Setup
