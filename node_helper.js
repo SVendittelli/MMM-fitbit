@@ -12,37 +12,18 @@ module.exports = NodeHelper.create({
 
 	// Subclass socketNotificationReceived received.
 	socketNotificationReceived: function(notification, payload) {
-        if (notification === "SET CREDS") {
-			console.log("Set credential request recieved.");
-			console.log(payload);
-			this.setCreds(payload.client_id,payload.client_secret);
-		}
         if (notification === "GET DATA") {
-			console.log(payload);
-			console.log(payload.trigger + " request to get data received.");
+			console.log("MMM-Fitbit2: " + payload.trigger + " request to get data received");
 			this.getData(payload.config);
 		}
     },
 
-	setCreds: function (id, secret) {
-		var options = {
-			mode: "json",
-			scriptPath: "modules/MMM-Fitbit2/python",
-			args: [id, secret]
-		}
-		PythonShell.run("iniHandler.py", options, function (err, results) {
-			if (err) {
-                throw err;
-            }
-			// results is an array consisting of messages collected during execution
-			console.log("results: %j", results);
-		});
-	},
-
 	getData: function (resources) {
 		const self = this;
 		const fileName = "getData.py";
-		console.log("Running " + fileName);
+
+		console.log("MMM-Fitbit2: Data to receive: " + JSON.stringify(resources));
+		console.log("MMM-Fitbit2: START " + fileName);
 
 		const fitbitPyShell = new PythonShell(
 			fileName, {
@@ -56,8 +37,8 @@ module.exports = NodeHelper.create({
 		// Return response from API
 		fitbitPyShell.on("message", function (message) {
 			if (message.type == "data") {
-				console.log(JSON.stringify(message))
-				self.sendSocketNotification("DATA", message);
+				console.log("MMM-Fitbit2: Data received: " + JSON.stringify(message))
+				// self.sendSocketNotification("DATA", message);
 			}
 		});
 
@@ -65,8 +46,8 @@ module.exports = NodeHelper.create({
 			if (err) {
                 throw err;
             }
-			self.sendSocketNotification("UPDATE", "Finished getting data");
-			console.log("Finished getting data");
+			// self.sendSocketNotification("UPDATE", "Finished getting data from Fitbit API");
+			console.log("MMM-Fitbit2: END " + fileName);
 		});
 	},
 });

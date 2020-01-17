@@ -81,7 +81,6 @@ Module.register("MMM-Fitbit2",{
 	// Initialisation
 	start: function() {
 		Log.info("Starting module: " + this.name);
-		this.sendSocketNotification("SET CREDS", this.config.credentials)
 		get_data_payload = {}
 		get_data_payload.config = this.config.resources
 		get_data_payload.trigger = "Initial"
