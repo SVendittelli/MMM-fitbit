@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # addapted from gather_key_oauth2.py included with https://github.com/orcasgit/python-fitbit
 
+from iniHandler import ReadCredentials, WriteTokens
+from requests_oauthlib import OAuth2Session
+from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
+from fitbit.api import FitbitOauth2Client
+from base64 import b64encode
 import cherrypy
 import os
 import sys
@@ -9,11 +14,10 @@ import traceback
 import webbrowser
 import math
 
-from base64 import b64encode
-from fitbit.api import FitbitOauth2Client
-from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
-from requests_oauthlib import OAuth2Session
-from iniHandler import ReadCredentials, WriteTokens
+if (sys.version_info >= (3, 0)):
+    from urllib.parse import urlparse
+else:
+    from urlparse import urlparse
 
 
 class OAuth2Server:
@@ -41,6 +45,12 @@ class OAuth2Server:
         url, _ = self.oauth.authorize_token_url(redirect_uri=self.redirect_uri)
         # Open the web browser in a new thread for command-line browser support
         threading.Timer(1, webbrowser.open, args=(url,)).start()
+
+        # Same with redirect_uri hostname and port.
+        urlparams = urlparse(self.redirect_uri)
+        cherrypy.config.update({'server.socket_host': urlparams.hostname,
+                                'server.socket_port': urlparams.port})
+
         cherrypy.quickstart(self)
 
     @cherrypy.expose
