@@ -2,11 +2,16 @@ TODO
 ==
 
 ## High priority
-* Icons
-	* Get water icons
-	* Get food icons
-	* Fix weight icons
-* Find out if it's possible to set a different callback port for Fitbit authorisation to avoid needing to kill MagicMirror when getting credentials
+* Fix detecting expired tokens and refreshing
+	* Check for 'print(response.content)' when there is an expired token
+* Add better handling of KeyErrors
+	* Reduce assumed list elements (e.g. what if there is no weight data?)
+* Improve look
+	* Fix spacing and text, etc.
+	* Icons
+		* Get water icons
+		* Get food icons
+		* Fix weight icons
 
 ## Medium priority
 * Add more complicated ways of representing progress

@@ -7,6 +7,7 @@ import sys
 import threading
 import traceback
 import webbrowser
+import math
 
 from base64 import b64encode
 from fitbit.api import FitbitOauth2Client
@@ -17,7 +18,7 @@ from iniHandler import ReadCredentials, WriteTokens
 
 class OAuth2Server:
     def __init__(self, client_id, client_secret,
-                 redirect_uri='http://127.0.0.1:8080/'):
+                 redirect_uri='http://127.0.0.1:8888/'):
         """ Initialize the FitbitOauth2Client """
         self.redirect_uri = redirect_uri
         self.success_html = """
@@ -118,7 +119,7 @@ if __name__ == '__main__':
 
     acc_tok = token_creds['access_token']
     ref_tok = token_creds['refresh_token']
-    expires_at = token_creds['expires_at']
+    expires_at = int(math.floor(token_creds['expires_at']))
 
     # print('FULL RESULTS = %s' % server.oauth.session.token)
     print('ACCESS_TOKEN = %s' % acc_tok)

@@ -25,7 +25,7 @@ Setup
 	* Give your app a catchy name and description
 	* Your personal website, organisation, and organisation website can be whatever you like
 	* Ensure that OAuth 2.0 Application Type is set to "personal"
-	* Callback URL **MUST BE** `http://127.0.0.1:8080/`
+	* Callback URL **MUST BE** `http://127.0.0.1:8888/`
 	* Give your app read & write permissions (read-only untested)
 	* Note your OAuth 2.0 credentials (you'll need them in a moment!)
 		* "OAuth 2.0 Client ID" --- (this is your `client_id`)
@@ -48,17 +48,11 @@ cp credentials.ini.sample credentials.ini
 
 # Edit credentials.ini to include your personal client_id and client_secret
 
-# Stop MagicMirror before this next step - it won't work!
-pm2 stop MagicMirror
-
 python setupAccess.py
 
 # A web browser will open - log in using your Fitbit username and password, if you are not logged in already, and allow access to all options
 
 # Close the window when instructed
-
-# Re-enable MagicMirror
-pm2 start MagicMirror
 
 # Add the example config below to your config file in ~/MagicMirror/config/config.json (oror whatever your path to Magic Mirror is)
 
