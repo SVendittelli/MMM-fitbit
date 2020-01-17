@@ -38,6 +38,7 @@ TODO
 * Migrate to using Python 3
 	* Fix iniHandler saving tokens
 * Simpler dependency installation
+* Add tests
 
 ## Low priority
 * Formatting for regions other than central ones

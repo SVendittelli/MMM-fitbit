@@ -56,7 +56,7 @@ cd ~/MagicMirror # or whatever your path to Magic Mirror is
 cd modules
 git clone https://github.com/m-roberts/MMM-Fitbit2
 cd MMM-Fitbit2
-npm install python-shell@0.5.0  # Requires this version to work - see https://github.com/SVendittelli/MMM-fitbit/issues/23#issuecomment-464319931
+npm install
 pip install --user -r python/fitbit/requirements.txt
 cd python
 cp tokens.ini.sample tokens.ini
