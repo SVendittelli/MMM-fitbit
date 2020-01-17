@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
     acc_tok = token_creds['access_token']
     ref_tok = token_creds['refresh_token']
-    expires_at = int(math.floor(token_creds['expires_at']))
+    expires_at = int(token_creds['expires_at'])
 
     # print('FULL RESULTS = %s' % server.oauth.session.token)
     print('ACCESS_TOKEN = %s' % acc_tok)

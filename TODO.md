@@ -13,6 +13,7 @@ TODO
 		* Fix weight icons
 
 ## Medium priority
+* Handle missing or corrupted ini files
 * Look into forking python-fitbit and add new features
 	* https://github.com/orcasgit/python-fitbit/pull/136/
 	* https://github.com/orcasgit/python-fitbit/pull/64/

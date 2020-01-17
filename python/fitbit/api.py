@@ -67,8 +67,6 @@ class FitbitOauth2Client(object):
         try:
             response = self.session.request(method, url, **kwargs)
 
-            # print(response.content)
-
             # If our current token has no expires_at, or something manages to slip
             # through that check
             if response.status_code == 401:

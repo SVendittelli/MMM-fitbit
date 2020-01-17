@@ -19,7 +19,13 @@ tokensFile = "tokens.ini"
 tokenParser = ConfigParser()
 
 
+DEBUG = False
+
+
 def print_json(type, message, value=""):
+    if type == "debug" and not DEBUG:
+        return
+
     if value == "":
         # Convert output to json and print (node_helper reads from stdout)
         print(json.dumps({"type": type, "message": message}))
@@ -29,7 +35,10 @@ def print_json(type, message, value=""):
     sys.stdout.flush()
 
 
-def print_data(resource, data, goal):
+def print_data(resource, data, goal, debug=False):
+    if debug is True and not DEBUG:
+        return
+
     print(json.dumps({"type": "data", "resource": resource,
                       "values": {"data": data, "goal": goal}}))
     sys.stdout.flush()
@@ -37,20 +46,22 @@ def print_data(resource, data, goal):
 
 def fileExists(path, file):
     if os.path.isfile(path + file):
-        print_json("status", "'%s' exists" % file)
+        print_json("debug", "'%s' exists" % file)
         return True
     else:
-        print_json("status", "'%s' does not exist" % file)
+        print_json("debug", "'%s' does not exist" % file)
         return False
 
 
 def ReadCredentials():
+    print_json("status", "Attempting to read credentials")
+
     # Check if credentials.ini exists
     if not fileExists(iniDirectory, credentialsFile):
         print_json("error", "'%s' does not exist" % credentialsFile)
         sys.exit(1)
     # Reads app credentials from credentials.ini
-    print_json("status", "Reading from '%s'" % credentialsFile)
+    print_json("debug", "Reading from '%s'" % credentialsFile)
 
     try:
         # Open file and read credentials
@@ -63,17 +74,19 @@ def ReadCredentials():
         sys.exit(1)
     else:
         # Return credentials
-        print_json("status", "Read of '%s' successful." % credentialsFile)
+        print_json("status", "Credentials read successfully")
         return client_id, client_secret
 
 
 def WriteCredentials(id, secret):
+    print_json("status", "Attempting to write credentials")
+
     # Check if credentials.ini exists
     if not fileExists(iniDirectory, credentialsFile):
         print_json("error", "'%s' does not exist" % credentialsFile)
         sys.exit(1)
 
-    print_json("status", "Writing credentials to '%s'" % credentialsFile)
+    print_json("debug", "Writing credentials to '%s'" % credentialsFile)
     print_json("status", "Writing id: '%s' and secret: '%s'" % (id, secret))
 
     credentialParser.read(iniDirectory + credentialsFile)
@@ -92,16 +105,18 @@ def WriteCredentials(id, secret):
             credentialParser.write(iniFile)
         WriteCredentials(id, secret)
     else:
-        print_json("status", "Credentials write successful")
+        print_json("status", "Credentials written successfully")
 
 
 def ReadTokens():
+    print_json("status", "Attempting to read tokens")
+
     # Check if tokens.ini exists
     if not fileExists(iniDirectory, tokensFile):
         print_json("error", "'%s' does not exist" % tokensFile)
         sys.exit(1)
     # Reads tokens from tokens.ini
-    print_json("status", "Reading from '%s'" % tokensFile)
+    print_json("debug", "Reading from '%s'" % tokensFile)
 
     try:
         # Open file and read tokens
@@ -115,17 +130,19 @@ def ReadTokens():
         sys.exit(1)
     else:
         # Return tokens
-        print_json("status", "Read of '%s' successful." % tokensFile)
+        print_json("status", "Tokens read successfully")
         return AccToken, RefToken, Expires
 
 
 def WriteTokens(AccToken, RefToken, Expires=None):
+    print_json("status", "Attempting to write tokens")
+
     # Check if tokens.ini exists
     if not fileExists(iniDirectory, tokensFile):
         print_json("error", "'%s' does not exist" % tokensFile)
         sys.exit(1)
 
-    print_json("status", "Writing token credentials to '%s'" % tokensFile)
+    print_json("debug", "Writing token credentials to '%s'" % tokensFile)
 
     tokenParser.read(iniDirectory + tokensFile)
 
@@ -135,9 +152,9 @@ def WriteTokens(AccToken, RefToken, Expires=None):
         tokenParser.set("Tokens", "ACC_TOK", AccToken)
 
         if Expires:
-            tokenParser.set("Tokens", "EXPIRES_AT", str(Expires))
+            tokenParser.set("Tokens", "EXPIRES_AT", str(int(Expires)))
 
-        print_json("status", "Items to write to file: '%s'" %
+        print_json("debug", "Items to write to file: '%s'" %
                    tokenParser.items("Tokens"))
 
         with open(iniDirectory + tokensFile, "wb") as iniFile:
@@ -156,7 +173,7 @@ def WriteTokens(AccToken, RefToken, Expires=None):
         WriteTokens(AccToken, RefToken, Expires)
 
     else:
-        print_json("status", "Write of '%s' successful." % tokensFile)
+        print_json("status", "Tokens written successfully")
 
 
 if __name__ == "__main__":

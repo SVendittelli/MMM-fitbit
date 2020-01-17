@@ -51,22 +51,23 @@ if __name__ == "__main__":
     AccessToken, RefreshToken, ExpiresAt = ReadTokens()
 
     def WriteTokenWrapper(token):
-        print_json("status", "Refreshing tokens")
+        print_json("status", "Access token expired - refreshing tokens")
         print_data(
             resource=token,
             data=0,
-            goal=1
+            goal=1,
+            debug=True
         )
         acc_tok = token["access_token"]
         ref_tok = token["refresh_token"]
         expires_at = token["expires_at"]
         WriteTokens(acc_tok, ref_tok, expires_at)
 
-    print_json("status", "Creating authorised client")
+    print_json("debug", "Creating authorised client")
     authdClient = fitbit.Fitbit(ClientID, ClientSecret, system="METRIC", oauth2=True, access_token=AccessToken, refresh_token=RefreshToken,
                                 expires_at=ExpiresAt, refresh_cb=WriteTokenWrapper, redirect_uri="http://127.0.0.1:8888/")
 
-    print_json("status", "Polling API for data")
+    print_json("debug", "Polling API for data")
     #####################################################
     print_json("status", "API polling stage", "Activity")
     #####################################################
