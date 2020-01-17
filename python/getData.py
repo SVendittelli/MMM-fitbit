@@ -9,16 +9,20 @@ import select
 # All output must be printed in JSON format, as it is read in by node_helper.js
 
 
-def handle_key_error(key_error, resource=None):
-    print_json("error", str(key_error))
+def print_empty_resource(resource):
     # Print out resource value anyway. This will show as empty
     # in the module and allows other data to be fetched
+    print_data(
+        resource=resource,
+        data=0,
+        goal=1
+    )
+
+
+def handle_key_error(key_error, resource=None):
+    print_json("error", str(key_error))
     if resource is not None:
-        print_data(
-            resource=resource,
-            data=0,
-            goal=1
-        )
+        print_empty_resource(resource)
 
 
 if __name__ == "__main__":
@@ -110,13 +114,23 @@ if __name__ == "__main__":
 
         if len(resource_list) == 0 or "distance" in resource_list:
             try:
-                # TODO: verify [0] entry is correct!
-                distance = activity_summary["distances"][0]["distance"]
-                print_data(
-                    resource="distance",
-                    data=distance,
-                    goal=activity_goals["distance"]
-                )
+                distances_data = activity_summary["distances"]
+
+                # Get total distance
+                distance = None
+                for x in distances_data:
+                    if x["activity"] == "total":
+                        distance = x["distance"]
+                        break
+
+                if distance is None:
+                    print_empty_resource("distance")
+                else:
+                    print_data(
+                        resource="distance",
+                        data=distance,
+                        goal=activity_goals["distance"]
+                    )
             except KeyError as err:
                 handle_key_error(err, "distance")
 
@@ -147,45 +161,10 @@ if __name__ == "__main__":
         try:
             heart_time_series_data = authdClient.time_series(
                 "activities/heart", period="1d")
+            heart_summary_time_series = heart_time_series_data["activities-heart"]
 
-            heart_time_series_summary = heart_time_series_data["activities-heart"]
-            # TODO: verify [0] entry is correct!
-            resting_heart_rate_wrapper = heart_time_series_summary[0]["value"]
-            # TODO: figure out why sometimes this isn't included in response...
-            # {
-            #     'customHeartRateZones': [],
-            #     'heartRateZones': [
-            #         {
-            #             'caloriesOut': 754.7566,
-            #             'max': 96,
-            #             'min': 30,
-            #             'minutes': 497,
-            #             'name': 'Out of Range'
-            #         },
-            #         {
-            #             'caloriesOut': 0,
-            #             'max': 134,
-            #             'min': 96,
-            #             'minutes': 0,
-            #             'name': 'Fat Burn'
-            #         },
-            #         {
-            #             'caloriesOut': 0,
-            #             'max': 163,
-            #             'min': 134,
-            #             'minutes': 0,
-            #             'name': 'Cardio'
-            #         },
-            #         {
-            #             'caloriesOut': 0,
-            #             'max': 220,
-            #             'min': 163,
-            #             'minutes': 0,
-            #             'name': 'Peak'
-            #         }
-            #     ]
-            # }
-            resting_heart_rate = resting_heart_rate_wrapper["restingHeartRate"]
+            heart_summary_today = heart_summary_time_series[0]["value"]
+            resting_heart_rate = heart_summary_today["restingHeartRate"]
 
             # --------------
             print_data(
@@ -248,9 +227,11 @@ if __name__ == "__main__":
                 "foods/log/water", period="1d")
             water_goal_data = authdClient.water_goal()
 
-            # TODO: verify [0] entry is correct!
-            water_consumed_today_ml = float(
-                water_time_series_data["foods-log-water"][0]["value"])
+            water_summary_time_series = water_time_series_data["foods-log-water"]
+
+            water_summary_today = water_summary_time_series[0]["value"]
+
+            water_consumed_today_ml = float(water_summary_today)
             water_goal_today_ml = water_goal_data["goal"]["goal"]
 
             water_remaining_today_ml = water_goal_today_ml - water_consumed_today_ml

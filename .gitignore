@@ -5,7 +5,9 @@ python/fitbit/test.py
 
 *.log
 *.pyc
-*.ini
+*.ini*
+!*.ini.sample
+
 
 __pycache__/
 

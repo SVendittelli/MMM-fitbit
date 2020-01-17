@@ -2,11 +2,9 @@ TODO
 ==
 
 ## High priority
-* Check that assumed list elements (such as [0]) are correct
-* Fix detecting expired tokens and refreshing
-	* Check for 'print(response.content)' when there is an expired token
-* Add better handling of KeyErrors
-	* Reduce assumed list elements (e.g. what if there is no weight data?)
+* Check that nothing breaks if data is missing
+	* e.g. no weight data for 30 days
+	* e.g. no heart data for the day
 * Improve look
 	* Fix spacing and text, etc.
 	* Icons
@@ -15,6 +13,12 @@ TODO
 		* Fix weight icons
 
 ## Medium priority
+* Look into forking python-fitbit and add new features
+	* https://github.com/orcasgit/python-fitbit/pull/136/
+	* https://github.com/orcasgit/python-fitbit/pull/64/
+	* https://github.com/orcasgit/python-fitbit/pull/104/
+	* https://github.com/orcasgit/python-fitbit/pull/138/?
+	* https://github.com/orcasgit/python-fitbit/pull/146/?
 * Add more complicated ways of representing progress
 	* Currently, only have value and goal, and it is assumed that progress % is value / goal
 	* e.g. "cals left to eat"
