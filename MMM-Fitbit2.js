@@ -73,7 +73,7 @@ Module.register("MMM-Fitbit2",{
 			}
 		}
 		if (notification === "UPDATE") {
-			Log.log("Updating Dom");
+			Log.log("Updating DOM");
 			this.updateDom(this.fadeSpeed);
 		}
 	},
@@ -215,7 +215,7 @@ Module.register("MMM-Fitbit2",{
 		return wrapper;
 	},
 
-	// Override dom generator.
+	// Override DOM generator.
 	getDom: function() {
 		// Create Wrappers
 		var wrapper = document.createElement("div");

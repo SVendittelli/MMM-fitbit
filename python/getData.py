@@ -43,12 +43,8 @@ if __name__ == "__main__":
         if len(resource_list) > 0 else "All"
     print_json("status", "Resources to get", resource_list_str)
 
-    # This is the Fitbit URL to use for the API call
-    FitbitURL = "https://api.fitbit.com/1/user/-/profile.json"
-
-    # Get credentials
-    ClientID, ClientSecret = ReadCredentials()
-    AccessToken, RefreshToken, ExpiresAt = ReadTokens()
+    client_id, client_secret = ReadCredentials()
+    access_token, refresh_token, expires_at = ReadTokens()
 
     def WriteTokenWrapper(token):
         print_json("status", "Access token expired - refreshing tokens")
@@ -64,8 +60,8 @@ if __name__ == "__main__":
         WriteTokens(acc_tok, ref_tok, expires_at)
 
     print_json("debug", "Creating authorised client")
-    authdClient = fitbit.Fitbit(ClientID, ClientSecret, system="METRIC", oauth2=True, access_token=AccessToken, refresh_token=RefreshToken,
-                                expires_at=ExpiresAt, refresh_cb=WriteTokenWrapper, redirect_uri="http://127.0.0.1:8888/")
+    authd_client = fitbit.Fitbit(client_id, client_secret, system="METRIC", oauth2=True, access_token=access_token, refresh_token=refresh_token,
+                                 expires_at=expires_at, refresh_cb=WriteTokenWrapper, redirect_uri="http://127.0.0.1:8888/")
 
     print_json("debug", "Polling API for data")
     #####################################################
@@ -78,7 +74,7 @@ if __name__ == "__main__":
     if len(resource_list) == 0 or \
             any(item in activity_resources_all for item in resource_list):
 
-        activity_list = authdClient.activities()
+        activity_list = authd_client.activities()
 
         activity_summary = activity_list["summary"]
         activity_goals = activity_list["goals"]
@@ -140,8 +136,20 @@ if __name__ == "__main__":
     ##################################################
     if len(resource_list) == 0 or "sleep" in resource_list:
         try:
-            sleep_data = authdClient.sleep()
-            sleep_goal_data = authdClient.get_sleep_goal()
+            sleep_data = authd_client.sleep()
+
+            # python-fitbit does not have this function
+            # so we make it ourselves
+            def get_sleep_goal(fitbit_client):
+                """
+                https://dev.fitbit.com/build/reference/web-api/sleep/#sleep-goals
+                """
+                url = "{0}/{1}/user/-/sleep/goal.json".format(
+                    *fitbit_client._get_common_args()
+                )
+                return fitbit_client.make_request(url)
+
+            sleep_goal_data = get_sleep_goal(authd_client)
 
             sleep_summary = sleep_data["summary"]
             total_minutes_asleep = sleep_summary["totalMinutesAsleep"]
@@ -160,7 +168,7 @@ if __name__ == "__main__":
     ##################################################
     if len(resource_list) == 0 or "restingHeart" in resource_list:
         try:
-            heart_time_series_data = authdClient.time_series(
+            heart_time_series_data = authd_client.time_series(
                 "activities/heart", period="1d")
             heart_summary_time_series = heart_time_series_data["activities-heart"]
 
@@ -181,8 +189,8 @@ if __name__ == "__main__":
     ###################################################
     if len(resource_list) == 0 or "weight" in resource_list:
         try:
-            weight_data = authdClient.get_bodyweight(period="1m")["weight"]
-            weight_goal_data = authdClient.body_weight_goal()
+            weight_data = authd_client.get_bodyweight(period="1m")["weight"]
+            weight_goal_data = authd_client.body_weight_goal()
 
             last_weight_log = weight_data[-1]
             weight_current_kg = last_weight_log["weight"]
@@ -203,9 +211,9 @@ if __name__ == "__main__":
     #################################################
     if len(resource_list) == 0 or "caloriesIn" in resource_list:
         try:
-            calories_in_time_series_data = authdClient.time_series(
+            calories_in_time_series_data = authd_client.time_series(
                 "foods/log/caloriesIn", period="1d")
-            food_goal_data = authdClient.food_goal()
+            food_goal_data = authd_client.food_goal()
 
             calories_in_current = sum(float(c["value"])
                                       for c in calories_in_time_series_data["foods-log-caloriesIn"])
@@ -224,9 +232,9 @@ if __name__ == "__main__":
     ##################################################
     if len(resource_list) == 0 or "water" in resource_list:
         try:
-            water_time_series_data = authdClient.time_series(
+            water_time_series_data = authd_client.time_series(
                 "foods/log/water", period="1d")
-            water_goal_data = authdClient.water_goal()
+            water_goal_data = authd_client.water_goal()
 
             water_summary_time_series = water_time_series_data["foods-log-water"]
 

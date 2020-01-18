@@ -2,6 +2,8 @@ TODO
 ==
 
 ## High priority
+* Investigate occasional OAuth InvalidGrantError when left for a while
+* Determine debug state from config
 * Improve look
 	* Fix spacing and text, etc.
 		* Remove "zzz" from sleep, keep spacing
@@ -11,13 +13,14 @@ TODO
 		* Get food icons
 		* Fix weight icons
 	* Update screenshot
-* Get debug state from config
 
 ## Medium priority
+* Migrate to using Python 3
+	* Python 2 officially deprecated
+	* Fix iniHandler saving tokens
 * Check that nothing breaks if data is missing
 	* e.g. no weight data for 30 days
 	* e.g. no heart data for the day
-* Handle missing or corrupted ini files
 * Look into forking python-fitbit and add new features
 	* https://github.com/orcasgit/python-fitbit/pull/136/
 	* https://github.com/orcasgit/python-fitbit/pull/64/
@@ -36,14 +39,11 @@ TODO
 * Add additional information using more advanced views
 	* Active hours during the day
 	* Sleep - start/end times, time awake
-* Migrate to using Python 3
-	* Fix iniHandler saving tokens
-* Simpler dependency installation
+* Add more config parameters for controlling the view
 * Add tests
 
 ## Low priority
-* Formatting for regions other than central ones
+* Regional formatting options
 * 'Nice to have' information
-	* Device battery levels
-	* Friends leaderboard (api buggy, waiting on fix)
-* _Clean up the code_
+	* e.g. Device battery levels
+	* e.g. Friends leaderboard

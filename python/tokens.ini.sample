@@ -1,4 +1,0 @@
-[Tokens]
-acc_tok = <access token>
-ref_tok = <refresh token>
-expires_at = <access token expiry>

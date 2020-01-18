@@ -81,13 +81,24 @@ def ReadCredentials():
 def WriteCredentials(id, secret):
     print_json("status", "Attempting to write credentials")
 
-    # Check if credentials.ini exists
+    def fixBadCredentialsFormatting():
+        # If the credentials file is incorrectly formatted
+        print_json("error", "'%s' missing section 'Credentials'" %
+                   credentialsFile)
+        credentialParser.add_section("Credentials")
+        with open(iniDirectory + credentialsFile, "wb") as iniFile:
+            credentialParser.write(iniFile)
+
+    # If credentials.ini does not exist,
+    # create it with correct formatting and try again
     if not fileExists(iniDirectory, credentialsFile):
         print_json("error", "'%s' does not exist" % credentialsFile)
-        sys.exit(1)
+        fixBadCredentialsFormatting()
+        WriteCredentials(id, secret)
+        return
 
     print_json("debug", "Writing credentials to '%s'" % credentialsFile)
-    print_json("status", "Writing id: '%s' and secret: '%s'" % (id, secret))
+    print_json("debug", "Writing id: '%s' and secret: '%s'" % (id, secret))
 
     credentialParser.read(iniDirectory + credentialsFile)
 
@@ -98,11 +109,8 @@ def WriteCredentials(id, secret):
         with open(iniDirectory + credentialsFile, "wb") as iniFile:
             credentialParser.write(iniFile)
     except NoSectionError:
-        # If the credentials file is incorrectly formatted
-        print_json("error", "'%s' missing section 'Credentials'" % tokensFile)
-        credentialParser.add_section("Credentials")
-        with open(iniDirectory + credentialsFile, "wb") as iniFile:
-            credentialParser.write(iniFile)
+        # Add section if the credentials file is incorrectly formatted
+        fixBadCredentialsFormatting()
         WriteCredentials(id, secret)
     else:
         print_json("status", "Credentials written successfully")
@@ -137,12 +145,29 @@ def ReadTokens():
 def WriteTokens(AccToken, RefToken, Expires=None):
     print_json("status", "Attempting to write tokens")
 
-    # Check if tokens.ini exists
+    def fixBadTokensFormatting():
+        # If the tokens file is incorrectly formatted
+        print_json("error", "'%s' missing section 'Tokens'" % tokensFile)
+        tokenParser.add_section("Tokens")
+        with open(iniDirectory + tokensFile, "wb") as iniFile:
+            tokenParser.write(iniFile)
+
+    # If tokens.ini does not exist,
+    # create it with correct formatting and try again
     if not fileExists(iniDirectory, tokensFile):
         print_json("error", "'%s' does not exist" % tokensFile)
-        sys.exit(1)
+        fixBadTokensFormatting()
+        WriteTokens(AccToken, RefToken, Expires)
+        return
 
-    print_json("debug", "Writing token credentials to '%s'" % tokensFile)
+    print_json("debug", "Writing tokens to '%s'" % tokensFile)
+
+    debug_print_out = ("Writing access token: '%s', "
+                       "refresh token: '%s'"
+                       " and expiry Unix timestamp: '%s'" % (
+                           AccToken, RefToken, Expires)
+                       )
+    print_json("debug", debug_print_out)
 
     tokenParser.read(iniDirectory + tokensFile)
 
@@ -161,15 +186,8 @@ def WriteTokens(AccToken, RefToken, Expires=None):
             tokenParser.write(iniFile)
 
     except NoSectionError:
-
         # Add section if the tokens file is incorrectly formatted
-        print_json("error", "'%s' missing section 'Tokens'" % tokensFile)
-        tokenParser.add_section("Tokens")
-
-        with open(iniDirectory + tokensFile, "wb") as iniFile:
-            tokenParser.write(iniFile)
-
-        # Try again
+        fixBadTokensFormatting()
         WriteTokens(AccToken, RefToken, Expires)
 
     else:

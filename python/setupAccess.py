@@ -1,18 +1,15 @@
 #!/usr/bin/env python
-# addapted from gather_key_oauth2.py included with https://github.com/orcasgit/python-fitbit
+# Adapted from `gather_key_oauth2.py`
+# included with https://github.com/orcasgit/python-fitbit
 
 from iniHandler import ReadCredentials, WriteTokens
-from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
 from fitbit.api import FitbitOauth2Client
-from base64 import b64encode
 import cherrypy
-import os
 import sys
 import threading
 import traceback
 import webbrowser
-import math
 
 if (sys.version_info >= (3, 0)):
     from urllib.parse import urlparse
@@ -87,40 +84,7 @@ class OAuth2Server:
 
 
 if __name__ == '__main__':
-    try:
-        input = raw_input
-    except NameError:
-        pass
-
-    if not (len(sys.argv) == 3):
-        response = input(
-            "Get credentials from credentials.ini? (Y/N)\n").upper()
-
-        if response == "Y":
-            id, secret = ReadCredentials()
-        elif response == "N":
-            response = input(
-                "Would you like to enter them manually now? (Y/N)\n").upper()
-
-            if response == "Y":
-                id = input("Enter client id:\n")
-                secret = input("Enter client secret:\n")
-            elif response == "N":
-                print("Try again giving arguments: client id and client secret.")
-                sys.exit(1)
-            else:
-                print("Invalid input.")
-                sys.exit(1)
-
-        else:
-            print("Invalid input.")
-            sys.exit(1)
-
-    elif (len(sys.argv) == 3):
-        id, secret = sys.argv[1:]
-    else:
-        print("Try again giving arguments: client id and client secret.")
-        sys.exit(1)
+    id, secret = ReadCredentials()
 
     server = OAuth2Server(id, secret)
     server.browser_authorize()
@@ -130,10 +94,5 @@ if __name__ == '__main__':
     acc_tok = token_creds['access_token']
     ref_tok = token_creds['refresh_token']
     expires_at = int(token_creds['expires_at'])
-
-    # print('FULL RESULTS = %s' % server.oauth.session.token)
-    print('ACCESS_TOKEN = %s' % acc_tok)
-    print('REFRESH_TOKEN = %s' % ref_tok)
-    print('EXPIRES_AT = %s' % expires_at)
 
     WriteTokens(acc_tok, ref_tok, expires_at)
