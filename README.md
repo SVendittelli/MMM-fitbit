@@ -103,6 +103,11 @@ Add the example config below to your config file in `~/MagicMirror/config/config
 
 **Finally, (re)start your MagicMirror!**
 
+<!-- Configuration Options
+---
+This section is yet to be written...
+ -->
+
 ### Notice
 The Fitbit API explains:
 > You can make 150 API requests per hour for each user that has authorized your application to access their data. This rate limit is applied when you make an API request using the user's access token.

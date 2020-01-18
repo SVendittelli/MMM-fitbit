@@ -2,7 +2,6 @@ TODO
 ==
 
 ## High priority
-* Determine debug state from config
 * Investigate occasional OAuth InvalidGrantError when left for a while
 * Improve look
 	* Fix spacing and text, etc.
@@ -40,6 +39,7 @@ TODO
 	* Active hours during the day
 	* Sleep - start/end times, time awake
 * Add more config parameters for controlling the view
+	* Add "Configuration Options" to README
 * Add tests
 
 ## Low priority

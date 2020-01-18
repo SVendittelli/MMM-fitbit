@@ -14,7 +14,7 @@ module.exports = NodeHelper.create({
 	socketNotificationReceived: function(notification, payload) {
         if (notification === "GET DATA") {
 			console.log("MMM-Fitbit2: " + payload.trigger + " request to get data received");
-			this.getData(payload.config);
+			this.getData(JSON.stringify(payload.config));
 		}
     },
 

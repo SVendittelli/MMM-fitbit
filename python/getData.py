@@ -2,7 +2,7 @@
 import fitbit
 from fitbit.api import FitbitOauth2Client
 import json
-from iniHandler import print_data, print_json, ReadCredentials, ReadTokens, WriteTokens
+from iniHandler import set_debug_state, print_data, print_json, ReadCredentials, ReadTokens, WriteTokens
 from sys import stdin
 import select
 
@@ -34,10 +34,17 @@ if __name__ == "__main__":
         print_json("status", "Resource list exists on stdin")
         try:
             stdin_read = stdin.read()
-            resource_list = eval(stdin_read)
+            # TODO: take JSON object with resource array and debug state
+            config = json.loads(stdin_read)
+
+            resource_list = config["resources"]
+            debug_mode = config["debug"]
+            set_debug_state(debug_mode)
         except SyntaxError as err:
+            warning_text = ( "Debug mode and resource list"
+            " from stdin cannot be evaluated" )
             print_json(
-                "warning", "Resource list from stdin cannot be evaluated", stdin_read)
+                "warning", warning_text, stdin_read)
 
     resource_list_str = ", ".join(resource_list) \
         if len(resource_list) > 0 else "All"

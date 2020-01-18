@@ -54,6 +54,7 @@ Module.register("MMM-Fitbit2",{
 			"sleep",
 			"weight"
 		],
+		debug: false,
 		update_interval: 10
 	},
 
@@ -82,7 +83,12 @@ Module.register("MMM-Fitbit2",{
 	start: function() {
 		Log.info("Starting module: " + this.name);
 		get_data_payload = {}
-		get_data_payload.config = this.config.resources
+
+		config = {}
+		config.resources = this.config.resources
+		config.debug = this.config.debug
+
+		get_data_payload.config = config
 		get_data_payload.trigger = "Initial"
 		this.sendSocketNotification("GET DATA", get_data_payload);
 

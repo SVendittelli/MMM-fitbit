@@ -18,12 +18,14 @@ credentialParser = ConfigParser()
 tokensFile = "tokens.ini"
 tokenParser = ConfigParser()
 
+debug_mode = False
 
-DEBUG = False
-
+def set_debug_state(enable_debug):
+    global debug_mode
+    debug_mode = enable_debug
 
 def print_json(type, message, value=""):
-    if type == "debug" and not DEBUG:
+    if type == "debug" and not debug_mode:
         return
 
     if value == "":
@@ -36,7 +38,7 @@ def print_json(type, message, value=""):
 
 
 def print_data(resource, data, goal, debug=False):
-    if debug is True and not DEBUG:
+    if debug is True and not debug_mode:
         return
 
     print(json.dumps({"type": "data", "resource": resource,
