@@ -43,7 +43,7 @@ Setup
 		* (If you're asked for `OAuth 1.0 Application Type (Deprecated)`, set to "Browser")
 	* Callback URL **MUST BE** `http://127.0.0.1:8888/`
 	* Give your app read-only permission
-	* Note your OAuth 2.0 credentials (you'll need them in a moment!)
+	* Note your OAuth 2.0 credentials (you'll need them during setup)
 		* "OAuth 2.0 Client ID" --- (this is your `client_id`)
 		* "Client (Consumer) Secret" --- (this is your `client_secret`)
 			* You can access these again later via [Manage My Apps](https://dev.fitbit.com/apps)
@@ -71,33 +71,27 @@ Configuration
 After installing MMM-Fitbit2, you will need to include the module in your MagicMirror configuration.
 
 Add the example config below to your config file in `~/MagicMirror/config/config.json` (or whatever your path to your Magic Mirror config is).
-**Note: make sure that you change the `client_id` and `client_secret` fields in the `credentials` object to your own**.
 
 ````javascript
-{
-		module: "MMM-Fitbit2",
-		position: "top_center",
-		config: {
-				credentials: {
-						client_id: "<client_id>",
-						client_secret: "<client_secret>",
-				},
+		{
+			module: "MMM-Fitbit2",
+			position: "top_center",
+			config: {
 				resources: [
-						"steps",
-						"caloriesOut",
-						"distance",
-						"activeMinutes",
-						"floors",
-						"restingHeart",
-						"water",
-						"caloriesIn",
-						"sleep",
-						"weight"
-
+					"steps",
+					"caloriesOut",
+					"distance",
+					"activeMinutes",
+					"floors",
+					"restingHeart",
+					"water",
+					"caloriesIn",
+					"sleep",
+					"weight"
 				],
 				update_interval: 10
-		}
-},
+			}
+		},
 
 ````
 

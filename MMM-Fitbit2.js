@@ -38,10 +38,6 @@ Module.register("MMM-Fitbit2",{
 
 	// Default module config.
 	defaults: {
-		credentials: {
-			client_id: "",
-			client_secret: ""
-		},
 		resources: [
 			"steps",
 			"caloriesOut",

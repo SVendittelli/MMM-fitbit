@@ -41,6 +41,7 @@ TODO
 * Add more config parameters for controlling the view
 	* Add "Configuration Options" to README
 * Add tests
+* Add support for multiple users
 
 ## Low priority
 * Regional formatting options
