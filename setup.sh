@@ -13,10 +13,10 @@ pip install --quiet --user -r "${DIR}/requirements.txt"
 echo "SETUP.SH: Install dependencies: Done!"
 
 echo "SETUP.SH: Store OAuth 2.0 credentials: Fetch..."
-echo "Enter client_id:"
+echo "Enter 'OAuth 2.0 Client ID' (client_id):"
 read client_id
 
-echo "Enter client_secret:"
+echo "Enter 'Client Secret' (client_secret):"
 read client_secret
 
 python "${DIR}/python/iniHandler.py" "${client_id}" "${client_secret}"
