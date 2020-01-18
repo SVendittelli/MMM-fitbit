@@ -2,6 +2,10 @@ TODO
 ==
 
 ## High priority
+* Investigate moving from `credentials.ini` to sourcing from `config.js`
+	* Simplifies backing up MagicMirror config
+	* Consider how this might affect multiple users scenario
+		* Multiple modules, each with their own credentials?
 * Investigate occasional OAuth InvalidGrantError when left for a while
 * Improve look
 	* Fix spacing and text, etc.
