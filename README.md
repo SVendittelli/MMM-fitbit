@@ -39,9 +39,10 @@ Setup
 * Go to [Fitbit](https://dev.fitbit.com/apps/new/) and register a new app (sign in with your Fitbit account if needed).
 	* Give your app a catchy name and description
 	* Your personal website, organisation, and organisation website can be whatever you like
-	* Ensure that OAuth 2.0 Application Type is set to "personal"
+	* Ensure that `OAuth 2.0 Application Type` is set to "Personal"
+		* (If you're asked for `OAuth 1.0 Application Type (Deprecated)`, set to "Browser")
 	* Callback URL **MUST BE** `http://127.0.0.1:8888/`
-	* Give your app read & write permissions (read-only untested)
+	* Give your app read-only permission
 	* Note your OAuth 2.0 credentials (you'll need them in a moment!)
 		* "OAuth 2.0 Client ID" --- (this is your `client_id`)
 		* "Client (Consumer) Secret" --- (this is your `client_secret`)
@@ -49,7 +50,6 @@ Setup
 
 Installation
 ---
-
 ### Steps
 ```
 cd ~/MagicMirror # or whatever your path to Magic Mirror is
@@ -60,7 +60,6 @@ cd MMM-Fitbit2
 ```
 
 ### `setup.sh`
-
 When you run `setup.sh`, you'll be asked to provide your personal `client_id` and `client_secret` information - this will then be stored in `python/credentials.ini` for future use.
 
 After this, a web browser will launch on your display (even if you ran `setup.sh` over SSH). You'll need to log in using your Fitbit username and password, if you are not logged in already. Make sure to allow access to all options and close the window when instructed.
@@ -69,7 +68,6 @@ Once you have done this, you should have a file called `python/tokens.ini`. If y
 
 Configuration
 ---
-
 After installing MMM-Fitbit2, you will need to include the module in your MagicMirror configuration.
 
 Add the example config below to your config file in `~/MagicMirror/config/config.json` (or whatever your path to your Magic Mirror config is).
@@ -104,8 +102,6 @@ Add the example config below to your config file in `~/MagicMirror/config/config
 ````
 
 **Finally, (re)start your MagicMirror!**
-
-
 
 ### Notice
 The Fitbit API explains:
