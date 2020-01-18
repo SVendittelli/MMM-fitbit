@@ -11,6 +11,7 @@ TODO
 		* Get food icons
 		* Fix weight icons
 	* Update screenshot
+* Get debug state from config
 
 ## Medium priority
 * Check that nothing breaks if data is missing
