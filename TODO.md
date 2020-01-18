@@ -1,64 +1,50 @@
 TODO
 ==
-* Fix need for super user privileges
-* Formatting for regions other than central ones
-* _Cleanup the code_
 
-## Sample config:
-````javascript
-{
-	module: 'MMM-fitbit',
-	position: 'top_center',
-	config: [
-		credentials: {
-			client_id:
-			client_key:
-			client_secret:
-		},
-		resources: [
-			'steps',
-			'floors',
-			'caloriesOut',
-			'distance',
-			'activeMinutes',
-			'sleep',
-			'heart'
-		]
-	]
-},
-````
+## High priority
+* Determine debug state from config
+* Investigate occasional OAuth InvalidGrantError when left for a while
+* Improve look
+	* Fix spacing and text, etc.
+		* Remove "zzz" from sleep, keep spacing
+		* Give icons more room
+	* Icons
+		* Get water icons
+		* Get food icons
+		* Fix weight icons
+	* Update screenshot
 
-Files
---
-### Javascript
-* `MMM-fitbit.js`
-* `node_helper.js`
+## Medium priority
+* Migrate to using Python 3
+	* Python 2 officially deprecated
+	* Fix iniHandler saving tokens
+* Check that nothing breaks if data is missing
+	* e.g. no weight data for 30 days
+	* e.g. no heart data for the day
+* Look into forking python-fitbit and add new features
+	* https://github.com/orcasgit/python-fitbit/pull/136/
+	* https://github.com/orcasgit/python-fitbit/pull/64/
+	* https://github.com/orcasgit/python-fitbit/pull/104/
+	* https://github.com/orcasgit/python-fitbit/pull/138/?
+	* https://github.com/orcasgit/python-fitbit/pull/146/?
+* Add more complicated ways of representing progress
+	* Currently, only have value and goal, and it is assumed that progress % is value / goal
+	* e.g. "cals left to eat"
+	* e.g. "weight left to lose"
+	* e.g. "which hours were active"
+	* e.g. "histogram of heart activity"
+	* e.g. "how much I overate if I went over my goal"
+	* show additional information
+		* e.g. mins awake during sleep
+* Add additional information using more advanced views
+	* Active hours during the day
+	* Sleep - start/end times, time awake
+* Add more config parameters for controlling the view
+* Add tests
 
-### Python
-* `setupAccess.py` - file to get first access and refresh tokens
-* `iniHandler.py` - reads and writes `.ini` files
-* `authHandler.py` - file to update tokens
-* `getData.py` - file to return data
-
-### .ini
-* `credentials.ini`
-* `tokens.ini`
-
-### CSS
-* MMM-fitbit.css
-
-Supported Data
---
-* Steps
-* Floors
-* Calories
-* Total distance
-* Sleep (api missing goals)
-* Resting heartrate
-* Active minutes
-
-**WIP**:
-* Battery Levels? (need device details, ask user for device?)
-* Alarms? (see above)
-* Lifetime stats? (interesting but doesn't fit with others)
-* Friends leaderboard (api buggy, waiting on fix)
+## Low priority
+* Regional formatting options
+* 'Nice to have' information
+	* e.g. Device battery levels
+	* e.g. Friends leaderboard
+* Fix to use latest version of python-shell

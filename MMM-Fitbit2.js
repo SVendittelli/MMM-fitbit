@@ -1,111 +1,126 @@
 /* global Module */
 
 /* Magic Mirror
- * Module: MMM-fitbit
+ * Module: MMM-Fitbit2
  *
- * By Sam Vendittelli
+ * Forked from MMM-fitbit by Sam Vendittelli
+ * MMM-Fitbit2 modifications by Mike Roberts
  * MIT Licensed.
  */
- 
-Module.register('MMM-fitbit',{
-	
+
+Module.register("MMM-Fitbit2",{
 	userData: {
 		steps: 0,
-		floors: 0,
 		caloriesOut: 0,
 		distance: 0,
 		activeMinutes: 0,
+		floors: 0,
+		restingHeart: 0,
+		water: 0,
+		caloriesIn: 0,
 		sleep: 0,
-		heart: 0
+		weight: 0
 	},
-	
+
+	// Defaults
 	goals: {
 		steps: 10000,
-		floors: 10,
 		caloriesOut: 2000,
 		distance: 5,
 		activeMinutes: 30,
+		floors: 10,
+		restingHeart: 0,
+		water: 2000,
+		caloriesIn: 2000,
 		sleep: 480,
-		heart: 0
+		weight: 0
 	},
-	
+
 	// Default module config.
 	defaults: {
 		credentials: {
-			client_id: '',
-			client_secret: ''
+			client_id: "",
+			client_secret: ""
 		},
 		resources: [
-			'steps',
-			'floors',
-			'caloriesOut',
-			'distance',
-			'activeMinutes',
-			'sleep',
-			'heart'
+			"steps",
+			"caloriesOut",
+			"distance",
+			"activeMinutes",
+			"floors",
+			"restingHeart",
+			"water",
+			"caloriesIn",
+			"sleep",
+			"weight"
 		],
-		update_interval: 60
+		update_interval: 10
 	},
-	
+
 	// Define required scripts.
 	getStyles: function() {
-		return ["MMM-fitbit.css"];
+		return ["MMM-Fitbit2.css"];
 	},
-	
+
 	// Override socket notification handler.
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "DATA"){
-			resource = payload['resource'];
+			resource = payload.resource;
 			if (this.inResources(resource)) {
-				this.userData[resource] = payload['values']['data'];
-				this.goals[resource] = payload['values']['goal'];
+				this.userData[resource] = payload.values.data;
+				this.goals[resource] = payload.values.goal;
 				Log.log("Writing " + resource + " (data/goal): " + this.userData[resource] + "/" + this.goals[resource]);
 			}
 		}
 		if (notification === "UPDATE") {
-			Log.log('Updating Dom');
+			Log.log("Updating DOM");
 			this.updateDom(this.fadeSpeed);
 		}
 	},
-	
+
 	// Initialisation
 	start: function() {
-		Log.info('Starting module: ' + this.name);
-		this.sendSocketNotification('SET CREDS',this.config.credentials)
-		this.sendSocketNotification('GET DATA', 'intial');
-		
+		Log.info("Starting module: " + this.name);
+		get_data_payload = {}
+		get_data_payload.config = this.config.resources
+		get_data_payload.trigger = "Initial"
+		this.sendSocketNotification("GET DATA", get_data_payload);
+
 		this.fadeSpeed = 500;
-		
+
 		// Schedule update interval.
 		var self = this;
 		setInterval(function() {
 			self.updateData();
 		}, this.config.update_interval*60*1000);
 	},
-	
+
 	// Updates the data from fitbit
 	updateData: function() {
-		this.sendSocketNotification('GET DATA', 'Update');
+		get_data_payload = {}
+		get_data_payload.config = this.config.resources
+		get_data_payload.trigger = "Update"
+		this.sendSocketNotification("GET DATA", get_data_payload);
 	},
-	
+
 	// Checks whether the user wants to lookup a resourse type
 	inResources: function(resource) {
 		return this.config.resources.indexOf(resource) > -1;
 	},
-	
+
 	// To add commas to the step and calorie count
 	numberWithCommas: function(number) {
 		return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	},
-	
+
 	// Converts minutes into HH:MM
 	minsToHourMin: function(number) {
 		hours = Math.floor(number / 60);
 		minutes = number % 60;
 		return ("00" + hours.toString()).slice(-2) + ":" + ("00" + minutes.toString()).slice(-2);
 	},
-	
-	// WIdth of the progress bar
+
+	// Width of the progress bar
 	progressBar: function(resource) {
 		if (this.userData[resource] >= this.goals[resource]) {
 			return 100;
@@ -113,86 +128,102 @@ Module.register('MMM-fitbit',{
 			return Math.round(Number(this.userData[resource]) / this.goals[resource] * 100)
 		}
 	},
-	
+
 	// Make each resource element for the UI
 	UIElement: function(resource) {
-		iconPath = '/img/' + resource + 'White.png';
+		iconPath = "/img/" + resource + "White.png";
 		// Create wrappers
 		var wrapper = document.createElement("div");
 		var icon = document.createElement("img");
 		var text = document.createElement("div");
-		var userData = document.createElement("div")
-		var suffix = document.createElement("div");
+		var userData = document.createElement("div");
+		var measurementUnit = document.createElement("div");
 		var progress = document.createElement("div");
 		var bar = document.createElement("div");
-		
+
 		// Icon
-		icon.className = 'fitbiticon';
-		icon.src = 'modules/' + this.name + iconPath;
-		
+		icon.className = "fitbiticon";
+		icon.src = "modules/" + this.name + iconPath;
+
 		// Text to display
-		userData.className = 'normal medium';
-		suffix.className = "dimmed small"
-		if (resource == 'steps' || resource == 'caloriesOut') {
+		userData.className = "normal medium";
+		measurementUnit.className = "dimmed small";
+		if (resource == "steps" || resource == "caloriesOut" || resource == "caloriesIn") {
 			userData.innerHTML = this.numberWithCommas(this.userData[resource]);
-		} else if (resource == 'sleep') {
+		} else if (resource == "sleep") {
 			userData.innerHTML = this.minsToHourMin(this.userData[resource]);
 		} else {
 			userData.innerHTML = this.userData[resource];
-		};
+		}
 		switch(resource) {
-			case 'distance':
-				suffix.innerHTML = 'mi';
+			case "steps":
+				measurementUnit.innerHTML = "steps";
 				break;
-			case 'activeMinutes':
-				suffix.innerHTML = 'mins';
+			case "caloriesOut":
+				measurementUnit.innerHTML = "cals";
 				break;
-			case 'heart':
-				suffix.innerHTML = 'bpm';
+			case "distance":
+				measurementUnit.innerHTML = "km";
+				break;
+			case "activeMinutes":
+				measurementUnit.innerHTML = "mins";
+				break;
+			case "floors":
+				measurementUnit.innerHTML = "floors";
+				break;
+			case "restingHeart":
+				measurementUnit.innerHTML = "bpm";
+				break;
+			case "water":
+				measurementUnit.innerHTML = "ml";
+				break;
+			case "caloriesIn":
+				measurementUnit.innerHTML = "cals";
+				break;
+			case "sleep":
+				measurementUnit.innerHTML = "zzz";
+				break;
+			case "weight":
+				measurementUnit.innerHTML = "kg";
 				break;
 			default:
-				suffix.innerHTML = '';
+				measurementUnit.innerHTML = "";
 		}
-		
-		// Make text on the same line
-		userData.style.display = 'inline-block';
-		suffix.style.display = 'inline-block';
-		
-		// Progress bar
-		progress.className = 'progbarbkg';
-		
-		bar.className = 'progbar';
-		bar.style.width = this.progressBar(resource) + '%';
-		
-		if (resource !== 'heart') {
-			progress.appendChild(bar);
-		}
-		
+
+		// Assemble text
+		text.appendChild(userData);
+		text.appendChild(measurementUnit);
+
+		// Assemble progress bar
+		progress.className = "progbarbkg";
+
+		bar.className = "progbar";
+		bar.style.width = this.progressBar(resource) + "%";
+
+		progress.appendChild(bar);
+
 		// Put them all together
 		wrapper.appendChild(icon);
-		text.appendChild(userData);
-		if (['distance','activeMinutes','heart'].indexOf(resource) > -1) {
-			text.appendChild(suffix);
-		}
 		wrapper.appendChild(text);
 		wrapper.appendChild(progress);
-		
-		wrapper.style.display = 'inline-block';
-		wrapper.style.paddingLeft = '5px';
-		wrapper.style.paddingRight = '5px';
-		
+
+		// Make each "widget" align horizontally
+		wrapper.style.display = "inline-block";
+		wrapper.style.paddingLeft = "5px";
+		wrapper.style.paddingRight = "5px";
+
 		return wrapper;
 	},
-	
-	// Override dom generator.
+
+	// Override DOM generator.
 	getDom: function() {
 		// Create Wrappers
 		var wrapper = document.createElement("div");
-		
+
 		for (resource in this.config.resources) {
 			wrapper.appendChild(this.UIElement(this.config.resources[resource]));
 		}
-		
+
 		return wrapper;
 	},
 });

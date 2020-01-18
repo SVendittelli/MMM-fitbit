@@ -1,33 +1,36 @@
 #!/usr/bin/env python
-# addapted from gather_key_oauth2.py included with https://github.com/orcasgit/python-fitbit
+# Adapted from `gather_key_oauth2.py`
+# included with https://github.com/orcasgit/python-fitbit
 
+from iniHandler import ReadCredentials, WriteTokens
+from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
+from fitbit.api import FitbitOauth2Client
 import cherrypy
-import os
 import sys
 import threading
 import traceback
 import webbrowser
 
-from base64 import b64encode
-from fitbit.api import FitbitOauth2Client
-from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
-from requests_oauthlib import OAuth2Session
-from iniHandler import ReadCredentials, WriteTokens
+if (sys.version_info >= (3, 0)):
+    from urllib.parse import urlparse
+else:
+    from urlparse import urlparse
+
 
 class OAuth2Server:
     def __init__(self, client_id, client_secret,
-                 redirect_uri='http://127.0.0.1:8080/'):
+                 redirect_uri='http://127.0.0.1:8888/'):
         """ Initialize the FitbitOauth2Client """
         self.redirect_uri = redirect_uri
         self.success_html = """
-			<style>
-			h1 {text-align:center;}
-			h3 {text-align:center;}
-			</style>
+            <style>
+            h1 {text-align:center;}
+            h3 {text-align:center;}
+            </style>
             <h1>You are now authorised to access the Fitbit API!</h1>
             <br/><h3>You can close this window</h3>"""
         self.failure_html = """
-			<style> h1 {text-align:center;} </style>
+            <style> h1 {text-align:center;} </style>
             <h1>ERROR: %s</h1><br/><h3>You can close this window</h3>%s"""
         self.oauth = FitbitOauth2Client(client_id, client_secret)
 
@@ -39,6 +42,12 @@ class OAuth2Server:
         url, _ = self.oauth.authorize_token_url(redirect_uri=self.redirect_uri)
         # Open the web browser in a new thread for command-line browser support
         threading.Timer(1, webbrowser.open, args=(url,)).start()
+
+        # Same with redirect_uri hostname and port.
+        urlparams = urlparse(self.redirect_uri)
+        cherrypy.config.update({'server.socket_host': urlparams.hostname,
+                                'server.socket_port': urlparams.port})
+
         cherrypy.quickstart(self)
 
     @cherrypy.expose
@@ -75,45 +84,15 @@ class OAuth2Server:
 
 
 if __name__ == '__main__':
-	try: input = raw_input
-	except NameError: pass
-	
-	if not (len(sys.argv) == 3):
-		responce = input("Get credentials from credentials.ini? (Y/N)\n").upper()
-		
-		if responce == "Y":
-			id, secret = ReadCredentials()
-		elif responce == "N":
-			responce = input("Would you like to enter them manually now? (Y/N)\n").upper()
-			
-			if responce == "Y":
-				id = input("Enter client id:\n")
-				secret = input("Enter client secret:\n")
-			elif responce == "N":
-				print("Try again giving arguments: client id and client secret.")
-				sys.exit(1)
-			else:
-				print("Invalid input.")
-				sys.exit(1)
-			
-		else:
-			print("Invalid input.")
-			sys.exit(1)
-		
-	elif (len(sys.argv) == 3):
-		id, secret = sys.argv[1:]
-	else:
-		print("Try again giving arguments: client id and client secret.")
-		sys.exit(1)
+    id, secret = ReadCredentials()
 
-	server = OAuth2Server(id,secret)
-	server.browser_authorize()
-	
-	acc_tok = server.oauth.token['access_token']
-	ref_tok = server.oauth.token['refresh_token']
-	
-	print('FULL RESULTS = %s' % server.oauth.token)
-	print('ACCESS_TOKEN = %s' % acc_tok)
-	print('REFRESH_TOKEN = %s' % ref_tok)
-	
-	WriteTokens(acc_tok,ref_tok)
+    server = OAuth2Server(id, secret)
+    server.browser_authorize()
+
+    token_creds = server.oauth.session.token
+
+    acc_tok = token_creds['access_token']
+    ref_tok = token_creds['refresh_token']
+    expires_at = int(token_creds['expires_at'])
+
+    WriteTokens(acc_tok, ref_tok, expires_at)
