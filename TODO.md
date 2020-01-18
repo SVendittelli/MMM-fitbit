@@ -2,8 +2,8 @@ TODO
 ==
 
 ## High priority
-* Investigate occasional OAuth InvalidGrantError when left for a while
 * Determine debug state from config
+* Investigate occasional OAuth InvalidGrantError when left for a while
 * Improve look
 	* Fix spacing and text, etc.
 		* Remove "zzz" from sleep, keep spacing
