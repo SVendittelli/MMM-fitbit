@@ -47,3 +47,4 @@ TODO
 * 'Nice to have' information
 	* e.g. Device battery levels
 	* e.g. Friends leaderboard
+* Fix to use latest version of python-shell

@@ -11,7 +11,6 @@ MMM-Fitbit2
 This extends SVendittelli's original [MMM-fitbit](https://github.com/SVendittelli/MMM-fitbit) module and intends to build on top of the following changes that were incorporated from the efforts of others who forked the original repository:
 
 * adding weight data ([engeld's fork](https://github.com/engeld/MMM-fitbit))
-* updating python-fitbit to 0.3.0 ([shbatm's fork](https://github.com/shbatm/MMM-fitbit))
 * automatic re-authorisation when tokens have expired ([shbatm's fork](https://github.com/shbatm/MMM-fitbit))
 
 Currently Supported Data
@@ -33,7 +32,7 @@ Dependencies
 * [python-shell](https://www.npmjs.com/package/python-shell/v/0.5.0)
 
 ### Python
-* [python-fitbit](https://github.com/orcasgit/python-fitbit/tree/5f345ff819e3508a5765e47c26be7b5a4b634425)
+* [python-fitbit](https://pypi.org/project/fitbit/0.3.1)
 
 Setup
 ---
