@@ -14,15 +14,17 @@ module.exports = NodeHelper.create({
 	socketNotificationReceived: function(notification, payload) {
         if (notification === "GET DATA") {
 			console.log("MMM-Fitbit2: " + payload.trigger + " request to get data received");
-			this.getData(JSON.stringify(payload.config));
+			this.getData(payload.config);
 		}
     },
 
-	getData: function (resources) {
+	getData: function (config) {
 		const self = this;
 		const fileName = "getData.py";
 
-		console.log("MMM-Fitbit2: Data to receive: " + JSON.stringify(resources));
+		if (config.debug) {
+			console.log("MMM-Fitbit2: Data to receive: " + JSON.stringify(config));
+		}
 		console.log("MMM-Fitbit2: START " + fileName);
 
 		const fitbitPyShell = new PythonShell(
@@ -32,13 +34,18 @@ module.exports = NodeHelper.create({
 		);
 
 		// Pass data to get from API to getData.py via stdin
-		fitbitPyShell.send(resources)
+		fitbitPyShell.send(JSON.stringify(config))
 
 		// Return response from API
 		fitbitPyShell.on("message", function (message) {
 			if (message.type == "data") {
-				console.log("MMM-Fitbit2: Data received: " + JSON.stringify(message))
+				if (config.debug) {
+					console.log("MMM-Fitbit2: Data received: " + JSON.stringify(message))
+				}
 				self.sendSocketNotification("DATA", message);
+			}
+			else if (config.debug) {
+				console.log("MMM-Fitbit2: Message received: " + JSON.stringify(message))
 			}
 		});
 

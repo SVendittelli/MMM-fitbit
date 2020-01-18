@@ -20,9 +20,11 @@ tokenParser = ConfigParser()
 
 debug_mode = False
 
+
 def set_debug_state(enable_debug):
     global debug_mode
     debug_mode = enable_debug
+
 
 def print_json(type, message, value=""):
     if type == "debug" and not debug_mode:

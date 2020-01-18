@@ -31,20 +31,31 @@ if __name__ == "__main__":
     # reading an array passed in to stdin
     resource_list = []
     if select.select([stdin, ], [], [], 0.0)[0]:
-        print_json("status", "Resource list exists on stdin")
         try:
-            stdin_read = stdin.read()
-            # TODO: take JSON object with resource array and debug state
-            config = json.loads(stdin_read)
+            print_json("status", "Attempting to read data from stdin")
 
-            resource_list = config["resources"]
-            debug_mode = config["debug"]
-            set_debug_state(debug_mode)
+            stdin_read = stdin.read()
+            stdin_fixed = stdin_read\
+                .strip("\n")\
+                .strip("\"")\
+                .replace("\\\"", "\"")
+
+            config = json.loads(stdin_fixed)
+
+            print_json("status", "Parsed stdin - extracting data")
+
+            debug_mode = config.get("debug", False)
+            resource_list = config.get("resources", resource_list)
         except SyntaxError as err:
-            warning_text = ( "Debug mode and resource list"
-            " from stdin cannot be evaluated" )
+            warning_text = ("Debug mode and resource list"
+                            " from stdin cannot be evaluated")
             print_json(
                 "warning", warning_text, stdin_read)
+    else:
+        print_json("status", "Nothing to read from stdin - using defaults")
+
+    set_debug_state(debug_mode)
+    print_json("status", "Debug mode", str(debug_mode))
 
     resource_list_str = ", ".join(resource_list) \
         if len(resource_list) > 0 else "All"
