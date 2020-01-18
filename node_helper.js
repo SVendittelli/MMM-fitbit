@@ -38,7 +38,7 @@ module.exports = NodeHelper.create({
 		fitbitPyShell.on("message", function (message) {
 			if (message.type == "data") {
 				console.log("MMM-Fitbit2: Data received: " + JSON.stringify(message))
-				// self.sendSocketNotification("DATA", message);
+				self.sendSocketNotification("DATA", message);
 			}
 		});
 
@@ -46,7 +46,7 @@ module.exports = NodeHelper.create({
 			if (err) {
                 throw err;
             }
-			// self.sendSocketNotification("UPDATE", "Finished getting data from Fitbit API");
+			self.sendSocketNotification("UPDATE", "Finished getting data from Fitbit API");
 			console.log("MMM-Fitbit2: END " + fileName);
 		});
 	},
