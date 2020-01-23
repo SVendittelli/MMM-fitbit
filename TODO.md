@@ -42,6 +42,7 @@ TODO
 * Add additional information using more advanced views
 	* Active hours during the day
 	* Sleep - start/end times, time awake
+	* Body fat percentage (compared to goal)
 * Add more config parameters for controlling the view
 	* Add "Configuration Options" to README
 * Add tests
