@@ -2,7 +2,6 @@ TODO
 ==
 
 ### High priority
-* get_data.py/node_helper.js: Switch from stdin to args
 * BLOCKED: Improve look
 	* Fix spacing and text, etc.
 		* Remove "zzz" from sleep, keep spacing
