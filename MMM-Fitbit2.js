@@ -38,6 +38,10 @@ Module.register("MMM-Fitbit2",{
 
 	// Default module config.
 	defaults: {
+		credentials: {
+			client_id: "",
+			client_secret: ""
+		},
 		resources: [
 			"steps",
 			"caloriesOut",
@@ -81,6 +85,8 @@ Module.register("MMM-Fitbit2",{
 		get_data_payload = {}
 
 		config = {}
+		config.client_id = this.config.credentials.client_id
+		config.client_secret = this.config.credentials.client_secret
 		config.resources = this.config.resources
 		config.debug = this.config.debug
 
@@ -105,7 +111,7 @@ Module.register("MMM-Fitbit2",{
 		this.sendSocketNotification("GET DATA", get_data_payload);
 	},
 
-	// Checks whether the user wants to lookup a resourse type
+	// Checks whether the user wants to lookup a resource type
 	inResources: function(resource) {
 		return this.config.resources.indexOf(resource) > -1;
 	},

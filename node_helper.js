@@ -20,7 +20,7 @@ module.exports = NodeHelper.create({
 
 	getData: function (config) {
 		const self = this;
-		const fileName = "getData.py";
+		const fileName = "get_data.py";
 
 		if (config.debug) {
 			console.log("MMM-Fitbit2: Data to receive: " + JSON.stringify(config));
@@ -33,7 +33,7 @@ module.exports = NodeHelper.create({
 			}
 		);
 
-		// Pass data to get from API to getData.py via stdin
+		// Pass data to get from API to get_data.py via stdin
 		fitbitPyShell.send(JSON.stringify(config))
 
 		// Return response from API

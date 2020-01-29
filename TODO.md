@@ -2,9 +2,7 @@ TODO
 ==
 
 ### High priority
-* Move from `credentials.ini` to sourcing from `config.js`
-	* Store tokens separately for each `client_id` (e.g. `tokens-13CD5J.ini`)
-* Debugging: Add option for parameters instead of via stdin for manual execution in `getData.py`
+* Debugging: Add option for parameters instead of via stdin for manual execution in `get_data.py`
 * Improve look
 	* Fix spacing and text, etc.
 		* Remove "zzz" from sleep, keep spacing
@@ -18,7 +16,7 @@ TODO
 ### Medium priority
 * Migrate to using Python 3
 	* Python 2 officially deprecated
-	* Fix iniHandler saving tokens
+	* Fix token_handler saving tokens
 * Check that nothing breaks if data is missing
 	* e.g. no weight data for 30 days
 	* e.g. no heart data for the day
@@ -55,4 +53,4 @@ TODO
 
 ## Troubleshooting
 ### Invalid refresh token
-If you are getting `oauthlib.oauth2.rfc6749.errors.InvalidGrantError: (invalid_grant)` when running `getData.py`, it likely means that your access token has expired and your refresh token is not the latest one associated with your account. Try running `setupAccess.py` again, and seeing if this helps.
+If you are getting `oauthlib.oauth2.rfc6749.errors.InvalidGrantError: (invalid_grant)` when running `get_data.py`, it likely means that your access token has expired and your refresh token is not the latest one associated with your account. Try running `setup_access.py` again, and seeing if this helps.

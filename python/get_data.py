@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import fitbit
 import json
-from iniHandler import set_debug_state, print_data, print_json, ReadCredentials, ReadTokens, WriteTokens
+from token_handler import set_client_id, set_debug_state, print_data, print_json, read_tokens, write_tokens
 from sys import stdin
 import select
 
@@ -31,9 +31,13 @@ if __name__ == "__main__":
 
     debug_mode = False
 
+    client_id = None
+    client_secret = None
+
+    resource_list = []
+
     # Attempt to determine what data to get by
     # reading an array passed in to stdin
-    resource_list = []
     if select.select([stdin, ], [], [], 0.0)[0]:
         try:
             print_json("status", "Attempting to read data from stdin")
@@ -48,7 +52,11 @@ if __name__ == "__main__":
 
             print_json("status", "Parsed stdin - extracting data")
 
-            debug_mode = config.get("debug", False)
+            debug_mode = config.get("debug", debug_mode)
+
+            client_id = config.get("client_id", client_id)
+            client_secret = config.get("client_secret", client_secret)
+
             resource_list = config.get("resources", resource_list)
         except SyntaxError as err:
             warning_text = ("Debug mode and resource list"
@@ -59,17 +67,18 @@ if __name__ == "__main__":
         print_json("status", "Nothing to read from stdin - using defaults")
 
     set_debug_state(debug_mode)
-    print_json("status", "Debug mode", str(debug_mode))
+    print_json("status", "Debug Mode", str(debug_mode))
+
+    set_client_id(client_id)
+    print_json("status", "Client ID", str(client_id))
+
+    print_json("debug", "Client Secret", str(client_secret))
 
     resource_list_str = ", ".join(resource_list) \
         if len(resource_list) > 0 else "All"
     print_json("status", "Resources to get", resource_list_str)
 
-    client_id, client_secret = ReadCredentials()
-    print_json("debug", "client_id", client_id)
-    print_json("debug", "client_secret", client_secret)
-
-    access_token, refresh_token, expires_at = ReadTokens()
+    access_token, refresh_token, expires_at = read_tokens()
     print_json("debug", "access_token", access_token)
     print_json("debug", "refresh_token", refresh_token)
     print_json("debug", "expires_at", expires_at)
@@ -85,7 +94,7 @@ if __name__ == "__main__":
         acc_tok = token["access_token"]
         ref_tok = token["refresh_token"]
         expires_at = token["expires_at"]
-        WriteTokens(acc_tok, ref_tok, expires_at)
+        write_tokens(acc_tok, ref_tok, expires_at)
 
     print_json("debug", "Creating authorised client")
     authd_client = fitbit.Fitbit(client_id,

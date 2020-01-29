@@ -2,7 +2,7 @@
 # Adapted from `gather_key_oauth2.py`
 # included with https://github.com/orcasgit/python-fitbit
 
-from iniHandler import ReadCredentials, WriteTokens
+from token_handler import set_client_id, write_tokens
 from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
 from fitbit.api import FitbitOauth2Client
 import cherrypy
@@ -84,9 +84,10 @@ class OAuth2Server:
 
 
 if __name__ == '__main__':
-    id, secret = ReadCredentials()
+    client_id = sys.argv[1]
+    client_secret = sys.argv[2]
 
-    server = OAuth2Server(id, secret)
+    server = OAuth2Server(client_id, client_secret)
     server.browser_authorize()
 
     token_creds = server.oauth.session.token
@@ -95,4 +96,5 @@ if __name__ == '__main__':
     ref_tok = token_creds['refresh_token']
     expires_at = int(token_creds['expires_at'])
 
-    WriteTokens(acc_tok, ref_tok, expires_at)
+    set_client_id(client_id)
+    write_tokens(acc_tok, ref_tok, expires_at)
