@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import fitbit
 import json
-from token_handler import set_client_id, set_debug_state, print_data, print_json, read_tokens, write_tokens
+from token_handler import set_client_id, set_debug_state, print_json, read_tokens, write_tokens
 from sys import stdin
 import select
 
@@ -9,6 +9,15 @@ import select
 # All output must be printed in JSON format, #
 # as it is read in by node_helper.js         #
 ##############################################
+
+
+def print_data(resource, data, goal, debug=False):
+    if debug is True and not debug_mode:
+        return
+
+    print(json.dumps({"type": "data", "resource": resource,
+                      "values": {"data": data, "goal": goal}}))
+    sys.stdout.flush()
 
 
 def print_empty_resource(resource):

@@ -20,20 +20,9 @@ debug_mode = False
 client_id = None
 
 
-def set_client_id(id_to_set):
-    global client_id
-    print_json("debug", "Setting client ID", id_to_set)
-    client_id = id_to_set
-
-
 def set_debug_state(enable_debug):
     global debug_mode
     debug_mode = enable_debug
-
-
-def tokens_file():
-    assert(client_id is not None)
-    return "tokens-" + str(client_id) + ".ini"
 
 
 def print_json(type, message, value=""):
@@ -49,13 +38,16 @@ def print_json(type, message, value=""):
     sys.stdout.flush()
 
 
-def print_data(resource, data, goal, debug=False):
-    if debug is True and not debug_mode:
-        return
+def set_client_id(id_to_set):
+    global client_id
+    assert(id_to_set is not None)
+    print_json("debug", "Setting client ID", id_to_set)
+    client_id = id_to_set
 
-    print(json.dumps({"type": "data", "resource": resource,
-                      "values": {"data": data, "goal": goal}}))
-    sys.stdout.flush()
+
+def tokens_file():
+    assert(client_id is not None)
+    return "tokens-" + str(client_id) + ".ini"
 
 
 def file_exists(path, file):
@@ -70,11 +62,11 @@ def file_exists(path, file):
 def read_tokens():
     print_json("status", "Attempting to read tokens")
 
-    # Check if tokens.ini exists
+    # Check if tokens file exists
     if not file_exists(ini_directory, tokens_file()):
         print_json("error", "'%s' does not exist" % tokens_file())
         sys.exit(1)
-    # Reads tokens from tokens.ini
+    # Reads tokens from tokens file
     print_json("debug", "Reading from '%s'" % tokens_file())
 
     try:
@@ -103,7 +95,7 @@ def write_tokens(AccToken, RefToken, Expires=None):
         with open(ini_directory + tokens_file(), "wb") as iniFile:
             token_parser.write(iniFile)
 
-    # If tokens.ini does not exist,
+    # If tokens file does not exist,
     # create it with correct formatting and try again
     if not file_exists(ini_directory, tokens_file()):
         print_json("error", "'%s' does not exist" % tokens_file())
@@ -123,7 +115,7 @@ def write_tokens(AccToken, RefToken, Expires=None):
     token_parser.read(ini_directory + tokens_file())
 
     try:
-        # Write token data to tokens.ini
+        # Write token data to tokens file
         token_parser.set("Tokens", "REF_TOK", RefToken)
         token_parser.set("Tokens", "ACC_TOK", AccToken)
 
