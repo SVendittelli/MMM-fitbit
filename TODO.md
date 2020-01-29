@@ -2,6 +2,7 @@ TODO
 ==
 
 ### High priority
+* Fix `SyntaxError: Unexpected token ' in JSON at position 1` in MM log
 * Debugging: Add option for parameters instead of via stdin for manual execution in `get_data.py`
 * Improve look
 	* Fix spacing and text, etc.
