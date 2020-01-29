@@ -2,7 +2,7 @@
 import fitbit
 import json
 from token_handler import set_client_id, set_debug_state, print_json, read_tokens, write_tokens
-from sys import stdin
+from sys import stdin, stdout
 import select
 
 ##############################################
@@ -17,7 +17,7 @@ def print_data(resource, data, goal, debug=False):
 
     print(json.dumps({"type": "data", "resource": resource,
                       "values": {"data": data, "goal": goal}}))
-    sys.stdout.flush()
+    stdout.flush()
 
 
 def print_empty_resource(resource):
