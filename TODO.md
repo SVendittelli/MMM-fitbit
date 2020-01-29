@@ -2,9 +2,8 @@ TODO
 ==
 
 ### High priority
-* Fix `SyntaxError: Unexpected token ' in JSON at position 1` in MM log
-* Debugging: Add option for parameters instead of via stdin for manual execution in `get_data.py`
-* Improve look
+* get_data.py/node_helper.js: Switch from stdin to args
+* BLOCKED: Improve look
 	* Fix spacing and text, etc.
 		* Remove "zzz" from sleep, keep spacing
 		* Give icons more room
@@ -15,9 +14,6 @@ TODO
 	* Update screenshot
 
 ### Medium priority
-* Migrate to using Python 3
-	* Python 2 officially deprecated
-	* Fix token_handler saving tokens
 * Check that nothing breaks if data is missing
 	* e.g. no weight data for 30 days
 	* e.g. no heart data for the day
@@ -50,8 +46,12 @@ TODO
 	* e.g. Device battery levels
 	* e.g. Friends leaderboard
 * Fix to use latest version of python-shell
+* Add instructions for safe uninstall to protect data
 
 
 ## Troubleshooting
+### General help
+Add `debug: true` to your module config, and restart MagicMirror.
+
 ### Invalid refresh token
 If you are getting `oauthlib.oauth2.rfc6749.errors.InvalidGrantError: (invalid_grant)` when running `get_data.py`, it likely means that your access token has expired and your refresh token is not the latest one associated with your account. Try running `setup_access.py` again, and seeing if this helps.

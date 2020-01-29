@@ -8,6 +8,6 @@ echo "INIT.SH: Install dependencies: Node.js..."
 npm install
 
 echo "INIT.SH: Install dependencies: Python..."
-pip install --quiet --user -r "${DIR}/requirements.txt"
+python3 -m pip install --quiet --user -r "${DIR}/requirements.txt"
 
 echo "INIT.SH: Install dependencies: Done!"

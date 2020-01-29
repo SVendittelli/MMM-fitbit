@@ -55,6 +55,7 @@ Module.register("MMM-Fitbit2",{
 			"weight"
 		],
 		debug: false,
+		test: false,
 		update_interval: 10
 	},
 

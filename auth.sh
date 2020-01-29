@@ -11,5 +11,5 @@ read client_secret
 
 echo "AUTH.SH: Generate access tokens: Opening web browser..."
 cd "${DIR}/python"
-DISPLAY=:0 python setup_access.py "${client_id}" "${client_secret}" 2> /dev/null
+DISPLAY=:0 python3 setup_access.py "${client_id}" "${client_secret}" 2> /dev/null
 echo "AUTH.SH: Generate access tokens: Done!"

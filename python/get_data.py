@@ -1,9 +1,10 @@
-#!/usr/bin/env python
 import fitbit
 import json
-from token_handler import set_client_id, set_debug_state, print_json, read_tokens, write_tokens
-from sys import stdin, stdout
+from json_handler import set_token_client_id, set_debug_state, print_json, read_tokens, write_tokens
+from sys import stdin
+from platform import python_version
 import select
+
 
 ##############################################
 # All output must be printed in JSON format, #
@@ -17,7 +18,6 @@ def print_data(resource, data, goal, debug=False):
 
     print(json.dumps({"type": "data", "resource": resource,
                       "values": {"data": data, "goal": goal}}))
-    stdout.flush()
 
 
 def print_empty_resource(resource):
@@ -37,6 +37,8 @@ def handle_key_error(key_error, resource=None):
 
 
 if __name__ == "__main__":
+
+    print_json("debug", "Python Version", python_version())
 
     debug_mode = False
 
@@ -78,7 +80,7 @@ if __name__ == "__main__":
     set_debug_state(debug_mode)
     print_json("status", "Debug Mode", str(debug_mode))
 
-    set_client_id(client_id)
+    set_token_client_id(client_id)
     print_json("status", "Client ID", str(client_id))
 
     print_json("debug", "Client Secret", str(client_secret))

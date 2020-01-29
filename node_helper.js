@@ -12,15 +12,20 @@ module.exports = NodeHelper.create({
 
 	// Subclass socketNotificationReceived received.
 	socketNotificationReceived: function(notification, payload) {
-        if (notification === "GET DATA") {
+		if (notification === "GET DATA") {
 			console.log("MMM-Fitbit2: " + payload.trigger + " request to get data received");
 			this.getData(payload.config);
 		}
-    },
+	},
 
 	getData: function (config) {
 		const self = this;
-		const fileName = "get_data.py";
+		let fileName;
+		if (config.test) {
+			fileName = "test_data.py";
+		} else {
+			fileName = "get_data.py";
+		}
 
 		if (config.debug) {
 			console.log("MMM-Fitbit2: Data to receive: " + JSON.stringify(config));
@@ -29,7 +34,10 @@ module.exports = NodeHelper.create({
 
 		const fitbitPyShell = new PythonShell(
 			fileName, {
-				mode: "json", scriptPath: "modules/MMM-Fitbit2/python"
+				mode: "json",
+				scriptPath: "modules/MMM-Fitbit2/python",
+				pythonPath: "python3",
+				pythonOptions: ["-u"], // get print results in real-time
 			}
 		);
 
@@ -51,8 +59,8 @@ module.exports = NodeHelper.create({
 
 		fitbitPyShell.end(function (err) {
 			if (err) {
-                throw err;
-            }
+				throw err;
+			}
 			self.sendSocketNotification("UPDATE", "Finished getting data from Fitbit API");
 			console.log("MMM-Fitbit2: END " + fileName);
 		});
