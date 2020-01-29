@@ -39,8 +39,8 @@ Module.register("MMM-Fitbit2",{
 	// Default module config.
 	defaults: {
 		credentials: {
-			client_id: "",
-			client_secret: ""
+			clientId: "",
+			clientSecret: ""
 		},
 		resources: [
 			"steps",
@@ -56,7 +56,7 @@ Module.register("MMM-Fitbit2",{
 		],
 		debug: false,
 		test: false,
-		update_interval: 10
+		updateInterval: 10
 	},
 
 	// Define required scripts.
@@ -83,17 +83,18 @@ Module.register("MMM-Fitbit2",{
 	// Initialisation
 	start: function() {
 		Log.info("Starting module: " + this.name);
-		get_data_payload = {}
+		getDataPayload = {}
 
 		config = {}
-		config.client_id = this.config.credentials.client_id
-		config.client_secret = this.config.credentials.client_secret
+		config.clientId = this.config.credentials.clientId
+		config.clientSecret = this.config.credentials.clientSecret
 		config.resources = this.config.resources
 		config.debug = this.config.debug
+		config.test = this.config.test
 
-		get_data_payload.config = config
-		get_data_payload.trigger = "Initial"
-		this.sendSocketNotification("GET DATA", get_data_payload);
+		getDataPayload.config = config
+		getDataPayload.trigger = "Initial"
+		this.sendSocketNotification("GET DATA", getDataPayload);
 
 		this.fadeSpeed = 500;
 
@@ -101,15 +102,15 @@ Module.register("MMM-Fitbit2",{
 		var self = this;
 		setInterval(function() {
 			self.updateData();
-		}, this.config.update_interval*60*1000);
+		}, this.config.updateInterval*60*1000);
 	},
 
 	// Updates the data from fitbit
 	updateData: function() {
-		get_data_payload = {}
-		get_data_payload.config = this.config.resources
-		get_data_payload.trigger = "Update"
-		this.sendSocketNotification("GET DATA", get_data_payload);
+		getDataPayload = {}
+		getDataPayload.config = this.config.resources
+		getDataPayload.trigger = "Update"
+		this.sendSocketNotification("GET DATA", getDataPayload);
 	},
 
 	// Checks whether the user wants to lookup a resource type

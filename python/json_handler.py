@@ -78,15 +78,18 @@ def read_tokens():
         sys.exit(1)
 
     if AccToken is None:
-        print_json("error", "Cannot read access_token from '%s'" % tokens_file_name())
+        print_json("error", "Cannot read access_token from '%s'" %
+                   tokens_file_name())
         sys.exit(1)
 
     if RefToken is None:
-        print_json("error", "Cannot read refresh_token from '%s'" % tokens_file_name())
+        print_json("error", "Cannot read refresh_token from '%s'" %
+                   tokens_file_name())
         sys.exit(1)
 
     if Expires is None:
-        print_json("error", "Cannot read expires_at from '%s'" % tokens_file_name())
+        print_json("error", "Cannot read expires_at from '%s'" %
+                   tokens_file_name())
         sys.exit(1)
 
     # Return tokens

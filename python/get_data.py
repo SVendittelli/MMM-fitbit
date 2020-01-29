@@ -1,9 +1,9 @@
 import fitbit
 import json
 from json_handler import set_token_client_id, set_debug_state, print_json, read_tokens, write_tokens
-from sys import stdin
 from platform import python_version
 import select
+import argparse
 
 
 ##############################################
@@ -40,42 +40,25 @@ if __name__ == "__main__":
 
     print_json("debug", "Python Version", python_version())
 
-    debug_mode = False
+    parser = argparse.ArgumentParser()
 
-    client_id = None
-    client_secret = None
+    parser.add_argument('-d', '--debug', action='store_true', default=False)
+    # TODO: print dummy data if this is called
+    parser.add_argument('-t', '--test', action='store_true', default=False)
 
-    resource_list = []
+    parser.add_argument("client_id", type=str)
+    parser.add_argument("client_secret", type=str)
 
-    # Attempt to determine what data to get by
-    # reading an array passed in to stdin
-    if select.select([stdin, ], [], [], 0.0)[0]:
-        try:
-            print_json("status", "Attempting to read data from stdin")
+    parser.add_argument('-r', '--resources', nargs='+')
 
-            stdin_read = stdin.read()
-            stdin_fixed = stdin_read\
-                .strip("\n")\
-                .strip("\"")\
-                .replace("\\\"", "\"")
+    args = parser.parse_args()
 
-            config = json.loads(stdin_fixed)
+    debug_mode = args.debug
 
-            print_json("status", "Parsed stdin - extracting data")
+    client_id = args.client_id
+    client_secret = args.client_secret
 
-            debug_mode = config.get("debug", debug_mode)
-
-            client_id = config.get("client_id", client_id)
-            client_secret = config.get("client_secret", client_secret)
-
-            resource_list = config.get("resources", resource_list)
-        except SyntaxError as err:
-            warning_text = ("Debug mode and resource list"
-                            " from stdin cannot be evaluated")
-            print_json(
-                "warning", warning_text, stdin_read)
-    else:
-        print_json("status", "Nothing to read from stdin - using defaults")
+    resource_list = args.resources
 
     set_debug_state(debug_mode)
     print_json("status", "Debug Mode", str(debug_mode))
