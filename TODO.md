@@ -1,12 +1,10 @@
 TODO
 ==
 
-## High priority
-* Investigate moving from `credentials.ini` to sourcing from `config.js`
-	* Simplifies backing up MagicMirror config
-	* Consider how this might affect multiple users scenario
-		* Multiple modules, each with their own credentials?
-* Investigate occasional OAuth InvalidGrantError when left for a while
+### High priority
+* Move from `credentials.ini` to sourcing from `config.js`
+	* Store tokens separately for each `client_id` (e.g. `tokens-13CD5J.ini`)
+* Debugging: Add option for parameters instead of via stdin for manual execution in `getData.py`
 * Improve look
 	* Fix spacing and text, etc.
 		* Remove "zzz" from sleep, keep spacing
@@ -17,7 +15,7 @@ TODO
 		* Fix weight icons
 	* Update screenshot
 
-## Medium priority
+### Medium priority
 * Migrate to using Python 3
 	* Python 2 officially deprecated
 	* Fix iniHandler saving tokens
@@ -46,11 +44,15 @@ TODO
 * Add more config parameters for controlling the view
 	* Add "Configuration Options" to README
 * Add tests
-* Add support for multiple users
 
-## Low priority
+### Low priority
 * Regional formatting options
 * 'Nice to have' information
 	* e.g. Device battery levels
 	* e.g. Friends leaderboard
 * Fix to use latest version of python-shell
+
+
+## Troubleshooting
+### Invalid refresh token
+If you are getting `oauthlib.oauth2.rfc6749.errors.InvalidGrantError: (invalid_grant)` when running `getData.py`, it likely means that your access token has expired and your refresh token is not the latest one associated with your account. Try running `setupAccess.py` again, and seeing if this helps.

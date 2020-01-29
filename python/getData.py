@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 import fitbit
-from fitbit.api import FitbitOauth2Client
 import json
 from iniHandler import set_debug_state, print_data, print_json, ReadCredentials, ReadTokens, WriteTokens
 from sys import stdin
 import select
 
-# All output must be printed in JSON format, as it is read in by node_helper.js
+##############################################
+# All output must be printed in JSON format, #
+# as it is read in by node_helper.js         #
+##############################################
 
 
 def print_empty_resource(resource):
@@ -26,6 +28,8 @@ def handle_key_error(key_error, resource=None):
 
 
 if __name__ == "__main__":
+
+    debug_mode = False
 
     # Attempt to determine what data to get by
     # reading an array passed in to stdin
@@ -62,7 +66,13 @@ if __name__ == "__main__":
     print_json("status", "Resources to get", resource_list_str)
 
     client_id, client_secret = ReadCredentials()
+    print_json("debug", "client_id", client_id)
+    print_json("debug", "client_secret", client_secret)
+
     access_token, refresh_token, expires_at = ReadTokens()
+    print_json("debug", "access_token", access_token)
+    print_json("debug", "refresh_token", refresh_token)
+    print_json("debug", "expires_at", expires_at)
 
     def WriteTokenWrapper(token):
         print_json("status", "Access token expired - refreshing tokens")
@@ -78,8 +88,16 @@ if __name__ == "__main__":
         WriteTokens(acc_tok, ref_tok, expires_at)
 
     print_json("debug", "Creating authorised client")
-    authd_client = fitbit.Fitbit(client_id, client_secret, system="METRIC", oauth2=True, access_token=access_token, refresh_token=refresh_token,
-                                 expires_at=expires_at, refresh_cb=WriteTokenWrapper, redirect_uri="http://127.0.0.1:8888/")
+    authd_client = fitbit.Fitbit(client_id,
+                                 client_secret,
+                                 system="METRIC",
+                                 oauth2=True,
+                                 access_token=access_token,
+                                 refresh_token=refresh_token,
+                                 expires_at=expires_at,
+                                 refresh_cb=WriteTokenWrapper,
+                                 redirect_uri="http://127.0.0.1:8888/"
+                                 )
 
     print_json("debug", "Polling API for data")
     #####################################################
