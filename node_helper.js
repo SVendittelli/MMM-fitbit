@@ -54,8 +54,6 @@ module.exports = NodeHelper.create({
 		pyArgs.push("--resources")
 		pyArgs = pyArgs.concat(config.resources)
 
-		console.log(pyArgs)
-
 		const fitbitPyShell = new PythonShell(
 			fileName, {
 				mode: "json",
