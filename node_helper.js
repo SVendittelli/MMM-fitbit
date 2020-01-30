@@ -32,27 +32,21 @@ module.exports = NodeHelper.create({
 		}
 		console.log("MMM-Fitbit2: START " + fileName);
 
-		var clientId = config.clientId;
-		var clientSecret = config.clientSecret;
-		var resources = config.resources;
-		var debug = config.debug;
-		var test = config.test;
-
 		var pyArgs = []
-
 		if (config.debug) {
 			pyArgs.push("--debug")
 		}
-
 		if (config.test) {
 			pyArgs.push("--test")
 		}
-
-		pyArgs.push(clientId)
-		pyArgs.push(clientSecret)
-
+		pyArgs.push(config.clientId)
+		pyArgs.push(config.clientSecret)
 		pyArgs.push("--resources")
 		pyArgs = pyArgs.concat(config.resources)
+
+		if (config.debug) {
+			console.log("MMM-Fitbit2: " + JSON.stringify(pyArgs))
+		}
 
 		const fitbitPyShell = new PythonShell(
 			fileName, {
