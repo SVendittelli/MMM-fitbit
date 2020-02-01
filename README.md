@@ -1,14 +1,18 @@
 MMM-Fitbit2
 ===
 ### _Current Development Status: Work In Progress_
+(_Work to be done is identified and tracked [here](https://github.com/m-roberts/MMM-Fitbit2/projects)_)
 
+### Description
 [MagicMirror](https://github.com/MichMich/MagicMirror) Module for displaying Fitbit data, retrieved from Fitbit API ([https://api.fitbit.com](https://dev.fitbit.com/build/reference/web-api/)).
 
 ![](screenshot.png)
 
 **Note: this module requires that you set up your own "Fitbit app" using a free Fitbit account, in order to generate OAuth 2.0 credentials for accessing your data from Fitbit.**
 
-This extends SVendittelli's original [MMM-fitbit](https://github.com/SVendittelli/MMM-fitbit) module and intends to build on top of the following changes that were incorporated from the efforts of others who forked the original repository:
+### About This Module
+
+This extends SVendittelli's original [MMM-fitbit](https://github.com/SVendittelli/MMM-fitbit) module and builds on top of the following changes that were incorporated from the efforts of others who forked the original repository:
 
 * adding weight data ([engeld's fork](https://github.com/engeld/MMM-fitbit))
 * automatic re-authorisation when tokens have expired ([shbatm's fork](https://github.com/shbatm/MMM-fitbit))
@@ -141,12 +145,26 @@ Files
 ### CSS
 * MMM-Fitbit2.css - styling.
 
-TODO
+Development
 ---
-See [here](TODO.md).
+Work to be done is identified and tracked [https://github.com/m-roberts/MMM-Fitbit2/projects](here).
 
-<!-- Uninstalling/Revoking Access
+Troubleshooting
 ---
-This section is yet to be written...
-Delete tokens file. Go to Fitbit dashboard, remove permissions to access data.
- -->
+### General help
+Add `debug: true` to your module config, and restart MagicMirror.
+
+### Invalid refresh token
+If you are getting `oauthlib.oauth2.rfc6749.errors.InvalidGrantError: (invalid_grant)` when running `get_data.py`, it likely means that your access token has expired and your refresh token is not the latest one associated with your account. Try running `setup_access.py` again, and seeing if this helps.
+
+Uninstalling/Revoking Access
+---
+There are a few ways that you can do this:
+### You have access to the device and want to keep your Fitbit application
+Simply delete your tokens file (`tokens-<clientId>.json`) from `python/`.
+
+### You do not have access to the device and want to keep your Fitbit application
+Simply generate new tokens for yourself on another machine. This will make your previous tokens invalid.
+
+### You do not want to keep your Fitbit application (a.k.a. "reset all permissions")
+Go to [Manage My Apps](https://dev.fitbit.com/apps), log in if necessary, select your app and then "Delete Application".

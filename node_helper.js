@@ -33,14 +33,17 @@ module.exports = NodeHelper.create({
 		console.log("MMM-Fitbit2: START " + fileName);
 
 		var pyArgs = []
+
 		if (config.debug) {
 			pyArgs.push("--debug")
 		}
 		if (config.test) {
 			pyArgs.push("--test")
 		}
+
 		pyArgs.push(config.clientId)
 		pyArgs.push(config.clientSecret)
+
 		pyArgs.push("--resources")
 		pyArgs = pyArgs.concat(config.resources)
 
