@@ -16,12 +16,9 @@
 
 .MMM-Fitbit2 .widgeticon {
 	opacity: 0.6;
-	/* To do: override once all icons are there */
-	/*height: 40px;*/
-	min-height: 40px;
-	max-height: 40px;
-	display: block;  /*Make behave like a div*/
-	margin: 0 auto;  /*Auto-fill width; centers icon*/
+	height: 40px;
+	display: block;
+	margin: 0 auto;
 }
 
 .MMM-Fitbit2 .widgetprogbarbkg {
