@@ -107,21 +107,17 @@ Module.register("MMM-Fitbit2", {
 		}
 	},
 
+	getData: function(trigger) {
+		payload = {};
+		payload.config = this.config;
+		payload.trigger = trigger;
+		this.sendSocketNotification("GET DATA", payload);
+	},
+
 	// Initialisation
 	start: function() {
 		Log.info("Starting module: " + this.name);
-		getDataPayload = {}
-
-		config = {}
-		config.clientId = this.config.credentials.clientId
-		config.clientSecret = this.config.credentials.clientSecret
-		config.resources = this.config.resources
-		config.debug = this.config.debug
-		config.test = this.config.test
-
-		getDataPayload.config = config
-		getDataPayload.trigger = "Initial"
-		this.sendSocketNotification("GET DATA", getDataPayload);
+		this.getData("Initial");
 
 		this.fadeSpeed = 500;
 
@@ -134,10 +130,7 @@ Module.register("MMM-Fitbit2", {
 
 	// Updates the data from fitbit
 	updateData: function() {
-		getDataPayload = {}
-		getDataPayload.config = this.config.resources
-		getDataPayload.trigger = "Update"
-		this.sendSocketNotification("GET DATA", getDataPayload);
+		this.getData("Update");
 	},
 
 	// Checks whether the user wants to lookup a resource type

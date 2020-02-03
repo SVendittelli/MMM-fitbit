@@ -41,8 +41,8 @@ module.exports = NodeHelper.create({
 			pyArgs.push("--test")
 		}
 
-		pyArgs.push(config.clientId)
-		pyArgs.push(config.clientSecret)
+		pyArgs.push(config.credentials.clientId)
+		pyArgs.push(config.credentials.clientSecret)
 
 		pyArgs.push("--resources")
 		pyArgs = pyArgs.concat(config.resources)
