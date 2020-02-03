@@ -147,7 +147,7 @@ Module.register("MMM-Fitbit2", {
 
 	// Generate div for icon
 	iconDiv: function(resource) {
-		const iconPath = "/img/" + resource + "White.png";
+		const iconPath = "/img/" + resource + ".png";
 
 		var iconDiv = document.createElement("img");
 		iconDiv.className = "widgeticon";
