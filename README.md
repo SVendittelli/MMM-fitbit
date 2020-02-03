@@ -136,7 +136,7 @@ Files
 ### Python (internal)
 * `json_handler.py` - Handles JSON, including reading and writing token files.
 * `setup_access.py` - Used by `auth.sh` to generate token `.json` files.
-* `get_data.py` - Uses `python-fitbit` Python library to get Fitbit API data, using credentials from `tokens-<clientId>.json`. Client credentials and data to fetch is passed in via stdin. Prints out in JSON, to be parsed by `node_helper.js`.
+* `get_data.py` - Uses `python-fitbit` Python library to get Fitbit API data, using credentials from `tokens-<clientId>.json`. Client credentials and data to fetch is passed in via command line parameters. The response is printed out in JSON format, to be parsed by `node_helper.js`.
 
 ### Javascript (used by MagicMirror)
 * `node_helper.js` - Calls `get_data.py`, passes it to `MMM-Fitbit2.js`.
@@ -152,7 +152,9 @@ Work to be done is identified and tracked [https://github.com/m-roberts/MMM-Fitb
 Troubleshooting
 ---
 ### General help
-Add `debug: true` to your module config, and restart MagicMirror.
+For more information in the logs, add `debug: true` to your module config, and restart MagicMirror.
+
+If you are being rate-limited, or do not have a Fitbit account, you can add `test: true` to return dummy data. This can be helpful for development.
 
 ### Invalid refresh token
 If you are getting `oauthlib.oauth2.rfc6749.errors.InvalidGrantError: (invalid_grant)` when running `get_data.py`, it likely means that your access token has expired and your refresh token is not the latest one associated with your account. Try running `setup_access.py` again, and seeing if this helps.
