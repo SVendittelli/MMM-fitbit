@@ -66,7 +66,7 @@ module.exports = NodeHelper.create({
 				if (config.debug) {
 					console.log("MMM-Fitbit2: Data received: " + JSON.stringify(message))
 				}
-				self.sendSocketNotification("DATA", message);
+				self.sendSocketNotification("API_DATA_RECEIVED", message);
 			}
 			else if (config.debug) {
 				console.log("MMM-Fitbit2: Message received: " + JSON.stringify(message))
@@ -77,7 +77,7 @@ module.exports = NodeHelper.create({
 			if (err) {
 				throw err;
 			}
-			self.sendSocketNotification("UPDATE", "Finished getting data from Fitbit API");
+			self.sendSocketNotification("UPDATE_VIEW", "Finished getting data from Fitbit API");
 			console.log("MMM-Fitbit2: END " + fileName);
 		});
 	},

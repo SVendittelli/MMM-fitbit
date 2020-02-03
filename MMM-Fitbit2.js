@@ -8,32 +8,59 @@
  * MIT Licensed.
  */
 
-Module.register("MMM-Fitbit2",{
+Module.register("MMM-Fitbit2", {
+	// Initial values
 	userData: {
-		steps: 0,
-		caloriesOut: 0,
-		distance: 0,
-		activeMinutes: 0,
-		floors: 0,
-		restingHeart: 0,
-		water: 0,
-		caloriesIn: 0,
-		sleep: 0,
-		weight: 0
-	},
-
-	// Defaults
-	goals: {
-		steps: 10000,
-		caloriesOut: 2000,
-		distance: 5,
-		activeMinutes: 30,
-		floors: 10,
-		restingHeart: 0,
-		water: 2000,
-		caloriesIn: 2000,
-		sleep: 480,
-		weight: 0
+		steps: {
+			value: 0,
+			goal: 10000,
+			unit: "steps"
+		},
+		caloriesOut: {
+			value: 0,
+			goal: 2000,
+			unit: "cals"
+		},
+		distance: {
+			value: 0,
+			goal: 5,
+			unit: "km"
+		},
+		activeMinutes: {
+			value: 0,
+			goal: 30,
+			unit: "mins"
+		},
+		floors: {
+			value: 0,
+			goal: 10,
+			unit: "floors"
+		},
+		restingHeart: {
+			value: 0,
+			goal: 0,
+			unit: "bpm"
+		},
+		water: {
+			value: 0,
+			goal: 2000,
+			unit: "ml"
+		},
+		caloriesIn: {
+			value: 0,
+			goal: 2000,
+			unit: "cals"
+		},
+		sleep: {
+			value: 0,
+			goal: 480,
+			unit: "" // Formatted as HH:MM - no explicit unit
+		},
+		weight: {
+			value: 0,
+			goal: 0,
+			unit: "kg"
+		}
 	},
 
 	// Default module config.
@@ -66,15 +93,15 @@ Module.register("MMM-Fitbit2",{
 
 	// Override socket notification handler.
 	socketNotificationReceived: function(notification, payload) {
-		if (notification === "DATA"){
+		if (notification === "API_DATA_RECEIVED") {
 			resource = payload.resource;
 			if (this.inResources(resource)) {
-				this.userData[resource] = payload.values.data;
-				this.goals[resource] = payload.values.goal;
-				Log.log("Writing " + resource + " (data/goal): " + this.userData[resource] + "/" + this.goals[resource]);
+				this.userData[resource]["value"] = payload.values.data;
+				this.userData[resource]["goal"] = payload.values.goal;
+				Log.log("Writing " + resource + " (data/goal): " + this.userData[resource]["value"] + "/" + this.userData[resource]["goal"]);
 			}
 		}
-		if (notification === "UPDATE") {
+		if (notification === "UPDATE_VIEW") {
 			Log.log("Updating DOM");
 			this.updateDom(this.fadeSpeed);
 		}
@@ -118,117 +145,108 @@ Module.register("MMM-Fitbit2",{
 		return this.config.resources.indexOf(resource) > -1;
 	},
 
-	// To add commas to the step and calorie count
-	numberWithCommas: function(number) {
+	// Generate div for icon
+	iconDiv: function(resource) {
+		const iconPath = "/img/" + resource + "White.png";
+
+		var iconDiv = document.createElement("img");
+		iconDiv.className = "widgeticon";
+		iconDiv.src = "modules/" + this.name + iconPath;
+
+		return iconDiv
+	},
+
+	// Add commas to step and calorie count
+	formatNumberWithCommas: function(number) {
 		return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	},
 
 	// Converts minutes into HH:MM
-	minsToHourMin: function(number) {
+	formatMinsToHourMin: function(number) {
 		hours = Math.floor(number / 60);
 		minutes = number % 60;
 		return ("00" + hours.toString()).slice(-2) + ":" + ("00" + minutes.toString()).slice(-2);
 	},
 
-	// Width of the progress bar
-	progressBar: function(resource) {
-		if (this.userData[resource] >= this.goals[resource]) {
-			return 100;
+	// Generate div for first part of text div
+	userDataValueDiv: function(resource) {
+		var userDataValueDiv = document.createElement("div");
+		userDataValueDiv.className = "normal medium";
+
+		if (["steps", "caloriesOut", "caloriesIn"].indexOf(resource) > -1) {
+			userDataValueDiv.innerHTML = this.formatNumberWithCommas(this.userData[resource]["value"]);
+		} else if (resource == "sleep") {
+			userDataValueDiv.innerHTML = this.formatMinsToHourMin(this.userData[resource]["value"]);
 		} else {
-			return Math.round(Number(this.userData[resource]) / this.goals[resource] * 100)
+			userDataValueDiv.innerHTML = this.userData[resource]["value"];
 		}
+
+		return userDataValueDiv;
+	},
+
+	// Generate div for second part of text div
+	userDataUnitDiv: function(resource) {
+		var userDataMeasurementUnit = document.createElement("div");
+		userDataMeasurementUnit.className = "dimmed small";
+		userDataMeasurementUnit.innerHTML = this.userData[resource]["unit"];
+
+		return userDataMeasurementUnit;
+	},
+
+	// Generate div for text (data + unit)
+	textDiv: function(resource) {
+		var textDiv = document.createElement("div");
+		textDiv.className = "widgettext";
+
+
+		textDiv.appendChild(this.userDataValueDiv(resource));
+		textDiv.appendChild(this.userDataUnitDiv(resource));
+
+		return textDiv
+	},
+
+	// Generate div for progress (grey background line and white overlay)
+	progressBarDiv: function(resource) {
+		// Start with background
+		var progressBarMasterDiv = document.createElement("div");
+		progressBarMasterDiv.className = "widgetprogbarbkg";
+
+		// Overlay actual progress
+		var progressBarChildDiv = document.createElement("div");
+		progressBarChildDiv.className = "widgetprogbar";
+
+		var width;
+		const exceededGoal = this.userData[resource]["value"] >= this.userData[resource]["goal"];
+		if (exceededGoal) {
+			width = 100;
+		} else {
+			width = Math.round(
+				Number(this.userData[resource]["value"]) / this.userData[resource]["goal"] * 100
+			)
+		}
+		progressBarChildDiv.style.width = width + "%";
+
+		progressBarMasterDiv.appendChild(progressBarChildDiv);
+
+		return progressBarMasterDiv;
 	},
 
 	// Make each resource element for the UI
 	UIElement: function(resource) {
-		iconPath = "/img/" + resource + "White.png";
-		// Create wrappers
-		var wrapper = document.createElement("div");
-		var icon = document.createElement("img");
-		var text = document.createElement("div");
-		var userData = document.createElement("div");
-		var measurementUnit = document.createElement("div");
-		var progress = document.createElement("div");
-		var bar = document.createElement("div");
+		var widgetDiv = document.createElement("div");
+		widgetDiv.className = "widget"
 
-		// Icon
-		icon.className = "fitbiticon";
-		icon.src = "modules/" + this.name + iconPath;
+		widgetDiv.appendChild(this.iconDiv(resource));
+		widgetDiv.appendChild(this.textDiv(resource));
+		widgetDiv.appendChild(this.progressBarDiv(resource));
 
-		// Text to display
-		userData.className = "normal medium";
-		measurementUnit.className = "dimmed small";
-		if (resource == "steps" || resource == "caloriesOut" || resource == "caloriesIn") {
-			userData.innerHTML = this.numberWithCommas(this.userData[resource]);
-		} else if (resource == "sleep") {
-			userData.innerHTML = this.minsToHourMin(this.userData[resource]);
-		} else {
-			userData.innerHTML = this.userData[resource];
-		}
-		switch(resource) {
-			case "steps":
-				measurementUnit.innerHTML = "steps";
-				break;
-			case "caloriesOut":
-				measurementUnit.innerHTML = "cals";
-				break;
-			case "distance":
-				measurementUnit.innerHTML = "km";
-				break;
-			case "activeMinutes":
-				measurementUnit.innerHTML = "mins";
-				break;
-			case "floors":
-				measurementUnit.innerHTML = "floors";
-				break;
-			case "restingHeart":
-				measurementUnit.innerHTML = "bpm";
-				break;
-			case "water":
-				measurementUnit.innerHTML = "ml";
-				break;
-			case "caloriesIn":
-				measurementUnit.innerHTML = "cals";
-				break;
-			case "sleep":
-				measurementUnit.innerHTML = "zzz";
-				break;
-			case "weight":
-				measurementUnit.innerHTML = "kg";
-				break;
-			default:
-				measurementUnit.innerHTML = "";
-		}
-
-		// Assemble text
-		text.appendChild(userData);
-		text.appendChild(measurementUnit);
-
-		// Assemble progress bar
-		progress.className = "progbarbkg";
-
-		bar.className = "progbar";
-		bar.style.width = this.progressBar(resource) + "%";
-
-		progress.appendChild(bar);
-
-		// Put them all together
-		wrapper.appendChild(icon);
-		wrapper.appendChild(text);
-		wrapper.appendChild(progress);
-
-		// Make each "widget" align horizontally
-		wrapper.style.display = "inline-block";
-		wrapper.style.paddingLeft = "5px";
-		wrapper.style.paddingRight = "5px";
-
-		return wrapper;
+		return widgetDiv;
 	},
 
-	// Override DOM generator.
+	// Override DOM generator
 	getDom: function() {
-		// Create Wrappers
 		var wrapper = document.createElement("div");
+		wrapper.className = "wrapper"
 
 		for (resource in this.config.resources) {
 			wrapper.appendChild(this.UIElement(this.config.resources[resource]));

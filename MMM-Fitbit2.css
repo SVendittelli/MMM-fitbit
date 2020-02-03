@@ -1,18 +1,36 @@
-.MMM-Fitbit2 .fitbiticon {
-	opacity: 0.6;
-	margin-top: -5px;
-	margin-bottom: -25px;
-	height: 40px;
+.MMM-Fitbit2 .wrapper {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 }
 
-.MMM-Fitbit2 .progbarbkg {
+.MMM-Fitbit2 .widget {
+	padding: 10px 5px 0 5px;
+}
+
+.MMM-Fitbit2 .widgettext {
+	height: 60px;
+	padding: 0 0 5px 0;
+}
+
+.MMM-Fitbit2 .widgeticon {
+	opacity: 0.6;
+	/* To do: override once all icons are there */
+	/*height: 40px;*/
+	min-height: 40px;
+	max-height: 40px;
+	display: block;  /*Make behave like a div*/
+	margin: 0 auto;  /*Auto-fill width; centers icon*/
+}
+
+.MMM-Fitbit2 .widgetprogbarbkg {
 	position: relative;
 	width: 75px;
 	height: 5px;
 	background-color: grey;
 }
 
-.MMM-Fitbit2 .progbar {
+.MMM-Fitbit2 .widgetprogbar {
 	position: absolute;
 	height: 100%;
 	background-color: lightgrey;
