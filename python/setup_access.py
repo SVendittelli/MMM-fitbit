@@ -3,7 +3,7 @@
 
 from json_handler import set_token_client_id, write_tokens
 from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
-from fitbit.api import FitbitOauth2Client
+from fitbit import FitbitOauth2Client
 import cherrypy
 import sys
 import threading
