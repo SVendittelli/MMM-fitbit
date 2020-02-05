@@ -33,3 +33,16 @@
 	height: 100%;
 	background-color: lightgrey;
 }
+
+.MMM-Fitbit2 .lastsyncedwrapper {
+	position: relative;
+}
+
+.MMM-Fitbit2 .textbottomwrapper {
+	position: absolute;
+	bottom: 0;
+}
+
+.MMM-Fitbit2 .textbottom {
+	position: relative;
+}

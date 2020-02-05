@@ -83,6 +83,7 @@ Module.register("MMM-Fitbit2", {
 		],
 		debug: false,
 		test: false,
+		showLastSynced: false,
 		updateInterval: 10
 	},
 
@@ -103,6 +104,7 @@ Module.register("MMM-Fitbit2", {
 		}
 		if (notification === "UPDATE_VIEW") {
 			Log.log("Updating DOM");
+			this.loaded = true;
 			this.updateDom(this.fadeSpeed);
 		}
 	},
@@ -119,6 +121,7 @@ Module.register("MMM-Fitbit2", {
 		Log.info("Starting module: " + this.name);
 		this.getData("Initial");
 
+		this.loaded = false;
 		this.fadeSpeed = 500;
 
 		// Schedule update interval.
@@ -236,15 +239,58 @@ Module.register("MMM-Fitbit2", {
 		return widgetDiv;
 	},
 
+	LastSyncedElement: function(resource) {
+		var lastSyncedWrapperDiv = document.createElement("div");
+		lastSyncedWrapperDiv.className = "lastsynced";
+
+		var textBottomWrapperDiv = document.createElement("div");
+		textBottomWrapperDiv.className = "textbottomwrapper";
+
+		var currentDate = new Date();
+
+		var date = ('0' + currentDate.getDate()).slice(-2) + "/"
+			+ ('0' + (currentDate.getMonth()+1)).slice(-2) + "/"
+			+ currentDate.getFullYear();
+
+		var lastSyncedDateDiv = document.createElement("div");
+		lastSyncedDateDiv.innerHTML = date;
+		lastSyncedDateDiv.className = "dimmed light xsmall textbottom";
+
+		var time = ('0' + currentDate.getHours()).slice(-2) + ":"
+			+ ('0' + currentDate.getMinutes()).slice(-2) + ":"
+			+ ('0' + currentDate.getSeconds()).slice(-2);
+
+		var lastSyncedTimeDiv = document.createElement("div");
+		lastSyncedTimeDiv.innerHTML = time;
+		lastSyncedTimeDiv.className = "dimmed light xsmall textbottom";
+
+		textBottomWrapperDiv.appendChild(lastSyncedDateDiv);
+		textBottomWrapperDiv.appendChild(lastSyncedTimeDiv);
+
+		lastSyncedWrapperDiv.appendChild(textBottomWrapperDiv);
+
+		return lastSyncedWrapperDiv;
+	},
+
 	// Override DOM generator
 	getDom: function() {
 		var wrapper = document.createElement("div");
-		wrapper.className = "wrapper"
 
-		for (resource in this.config.resources) {
-			wrapper.appendChild(this.UIElement(this.config.resources[resource]));
+		if (this.loaded) {
+			wrapper.className = "wrapper"
+
+			for (resource in this.config.resources) {
+				wrapper.appendChild(this.UIElement(this.config.resources[resource]));
+			}
+
+			if (this.config.showLastSynced) {
+				wrapper.appendChild(this.LastSyncedElement());
+			}
 		}
-
+		else {
+			wrapper.innerHTML = "Loading...";
+			wrapper.className = "dimmed light small";
+		}
 		return wrapper;
 	},
 });
