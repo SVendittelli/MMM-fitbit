@@ -78,7 +78,12 @@ After this, a web browser will launch on your display (even if you ran `auth.sh`
 
 Once you have done this, you should have a file called `python/tokens-<clientId>.json`. If you have this, you have finished authorisation!
 
-**Note: generating tokens for MMM-Fitbit2 will nullify all previously generated tokens associated with a given `clientId`. If you want to have a Fitbit account working with MMM-Fitbit2 on more than one device, you should copy your tokens file to the same file path, rather than generating new tokens.**
+### Some notes on how tokens work, and how to use them properly
+Generating tokens for any Fitbit application will nullify all previously generated tokens associated with a given `clientId` for that application.
+
+Copying tokens from one machine to another will only work until one of the machines refreshes the tokens (typically in 24 hours), whereby the outdated tokens on the other machine will now be unable to refresh themselves, leading to an invalid grant error.
+
+Therefore, if you want to have your Fitbit account working with MMM-Fitbit2 on more than one device (such as a development machine), you should create a new Fitbit application for each usage.
 
 Configuration
 ---
