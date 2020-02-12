@@ -3,6 +3,8 @@ MMM-Fitbit2
 ### _Current Development Status: Work In Progress_
 (_Work to be done is identified and tracked [here](https://github.com/m-roberts/MMM-Fitbit2/projects)_)
 
+_While this module should be relatively stable, it is subject to change in all areas, including possible breaking changes in its config structure. If you wish to use this module, be mindful when updating until it has approached a stable release._
+
 ### Description
 [MagicMirror](https://github.com/MichMich/MagicMirror) Module for displaying Fitbit data, retrieved from Fitbit API ([https://api.fitbit.com](https://dev.fitbit.com/build/reference/web-api/)).
 
