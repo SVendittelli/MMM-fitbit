@@ -231,10 +231,13 @@ if __name__ == "__main__":
             weight_data = authd_client.get_bodyweight(period="1m")["weight"]
             weight_goal_data = authd_client.body_weight_goal()
 
-            last_weight_log = weight_data[-1]
-            weight_current_kg = last_weight_log["weight"]
+            if len(weight_data) > 0:
+                last_weight_log = weight_data[-1]
+                weight_current_kg = last_weight_log["weight"]
+            else:
+                weight_current_kg = -1
 
-            weight_start_kg = weight_goal_data["goal"]["startWeight"]
+            # weight_start_kg = weight_goal_data["goal"]["startWeight"]
             weight_goal_kg = weight_goal_data["goal"]["weight"]
             # --------------
             print_data(
