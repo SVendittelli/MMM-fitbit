@@ -95,6 +95,11 @@ Module.register("MMM-Fitbit2", {
 	// Override socket notification handler.
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "API_DATA_RECEIVED") {
+			if (payload.clientId != this.config.credentials.clientId) {
+				// Not for this user
+				return
+			}
+
 			resource = payload.resource;
 			if (this.inResources(resource)) {
 				this.userData[resource]["value"] = payload.values.data;

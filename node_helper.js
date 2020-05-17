@@ -66,6 +66,7 @@ module.exports = NodeHelper.create({
 				console.log("MMM-Fitbit2: Message received: " + JSON.stringify(message))
 			}
 			if (message.type == "data") {
+				message.clientId = config.credentials.clientId
 				self.sendSocketNotification("API_DATA_RECEIVED", message);
 			}
 		});
