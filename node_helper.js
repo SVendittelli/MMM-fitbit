@@ -6,7 +6,7 @@
  */
 
 var NodeHelper = require("node_helper");
-var PythonShell = require("python-shell");
+const {PythonShell} = require("python-shell");
 
 module.exports = NodeHelper.create({
 
