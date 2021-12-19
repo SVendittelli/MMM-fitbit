@@ -10,7 +10,8 @@ _While this module should be relatively stable, it is subject to change in all a
 
 ![](screenshot.png)
 
-**Note: this module requires that you set up your own "Fitbit app" using a free Fitbit account, in order to generate OAuth 2.0 credentials for accessing your data from Fitbit.**
+
+**Note: this module requires that you set up your own "Fitbit app" using a free Fitbit account. It's not a big deal, it's just a container for your credentials and where to put all the vital information about what your app is or does. You can't access your data from Fitbit without it.**
 
 ### About This Module
 
