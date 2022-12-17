@@ -1,1 +1,0 @@
-This directory was generated using OpenAPI Generator (version 6.2.1) from Fitbit API's [swagger.json](https://dev.fitbit.com/build/reference/web-api/explore/fitbit-web-api-swagger.json) on 17th December 2022.

@@ -75,7 +75,7 @@ cd MMM-Fitbit2
 ```
 
 ### `auth.sh`
-When you run `auth.sh`, you'll be asked to provide your personal `clientId` and `clientSecret` information.
+When you run `auth.sh`, you'll be asked to provide your personal `clientId` and `clientSecret` information (this is stored in a `.env` file if you wish to change it later).
 
 After this, a web browser will launch on your display (even if you ran `auth.sh` over SSH). You'll need to log in using your Fitbit username and password, if you are not logged in already. Make sure to allow access to all options and close the window when instructed.
 

@@ -1,6 +1,4 @@
-const express = require('express');
-const open = require('open');
-const querystring = require('querystring');
+const fitbitWebApi = require('fitbit_web_api_explorer');
 
 require('dotenv').config();
 
@@ -17,6 +15,14 @@ if (!fitbitClientSecret) {
   process.exit(1);
 }
 
+const express = require('express');
+const open = require('open');
+const querystring = require('querystring');
+const fs = require('fs');
+
+
+let apiInstance = new fitbitWebApi.AuthApi();
+
 const scope = "activity nutrition heartrate location nutrition profile settings sleep social weight"
 const redirectUri = 'http://127.0.0.1:8888/';
 
@@ -28,42 +34,42 @@ const state = Math.random().toString(36).substring(2);
 
 const app = express();
 
-// Function to request an access token using the authorization code
-// TODO: replace with 'Auth Api . oauthToken'
-async function requestAccessToken(authCode) {
-  const requestUrl = 'https://www.fitbit.com/oauth2/token';
+'&client_id=' + encodeURIComponent(fitbitClientId) +
+    '&redirect_uri=' + encodeURIComponent(redirectUri) +
+    '&scope=' + encodeURIComponent(scope) +
+    '&state=' + encodeURIComponent(state);
 
-  const requestBody = {
-    grant_type: 'authorization_code',
-    client_id: fitbitClientId,
-    client_secret: fitbitClientSecret,
-    code: authCode,
-    redirect_uri: redirectUri,
+// Function to request an access token using the authorization code
+async function requestAccessToken(authCode) {
+  const authorization = "Basic " + btoa(`${fitbitClientId}:${fitbitClientSecret}`);
+
+  const opts = {
+    'authorization': authorization,
+    'code': authCode,
+    'redirectUri': redirectUri,
+    'state': state
   };
 
-  const encodedRequestBody = querystring.stringify(requestBody);
+  apiInstance.oauthToken(fitbitClientId, "authorization_code", opts, (error, data, response) => {
+    if (error) {
+      console.error(error);
+      return;
+    }
 
-  console.log(encodedRequestBody);
+    data = {
+      "ACC_TOK": response.body.access_token,
+      "REF_TOK": response.body.refresh_token,
+      "EXPIRES_AT": response.body.expires_in,
+    }
 
-  const response = await fetch(requestUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: encodedRequestBody,
+    let tokenFile = `python/tokens-${fitbitClientId}.json`
+
+    fs.writeFileSync(tokenFile, JSON.stringify(data));
+    console.log(`Saved access token data to ${tokenFile}!`);
+
+    process.exit();
   });
-
-  if (response.status !== 200) {
-    console.error(`Error requesting access token: ${response.statusText}`);
-    return;
-  }
-
-  const responseJson = await response.json();
-  const accessToken = responseJson.access_token;
-  console.log(`Access token: ${accessToken}`);
 }
-
-// requestAccessToken("ffe68de25a4f75e126c7f3429ab943e19d1256e6")
 
 app.get('/', (req, res) => {
   const authCode = req.query.code;
@@ -71,10 +77,8 @@ app.get('/', (req, res) => {
 
   res.send('Authorization successful! You can now close this window.');
 
-  // Request an access token using the authorization code
+  console.log(`Requesting an access token using the authorization code...`);
   requestAccessToken(authCode);
-
-  // app.close();
 });
 
 
