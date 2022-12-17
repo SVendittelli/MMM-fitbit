@@ -1,4 +1,4 @@
-const fitbitWebApi = require('fitbit_web_api_explorer');
+const fitbitWebApi = require('fitbit_web_api');
 
 require('dotenv').config();
 

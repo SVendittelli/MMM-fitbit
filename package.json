@@ -22,6 +22,6 @@
     "express": "^4.18.2",
     "open": "^8.4.0",
     "querystring": "^0.2.1",
-    "fitbit_web_api_explorer": "file:./fitbit_web_api_explorer"
+    "fitbit_web_api": "file:./fitbit_web_api"
   }
 }
