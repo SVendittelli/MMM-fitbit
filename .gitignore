@@ -248,3 +248,4 @@ dist
 #########################
 .DS_Store
 tokens-*.json
+!fitbit_web_api/dist/
