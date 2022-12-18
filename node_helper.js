@@ -16,161 +16,173 @@ let clientId = null;
 
 module.exports = NodeHelper.create({
 
-	// Subclass socketNotificationReceived received.
-	socketNotificationReceived: function(notification, payload) {
-		if (notification === "GET DATA") {
-			console.log("MMM-Fitbit2: " + payload.trigger + " request to get data received");
-			this.getData(payload.config);
-		}
-	},
+  // Subclass socketNotificationReceived received.
+  socketNotificationReceived: function(notification, payload) {
+    if (notification === "GET DATA") {
+      console.log("MMM-Fitbit2: " + payload.trigger + " request to get data received");
+      this.getData(payload.config);
+    }
+  },
 
-	setDebugState: function(enableDebug) {
-	  debugMode = enableDebug;
-	},
+  setTokenClientId: function(idToSet) {
+    if (!idToSet) {
+      throw new Error('idToSet must not be null or undefined');
+    }
+    console.log(`Setting client ID to ${idToSet}`);
+    clientId = idToSet;
+  },
 
-	printJson: function(type, message, value = "") {
-	  if (type === "debug" && !debugMode) {
-	    return;
-	  }
+  tokensFilename: function() {
+    if (!clientId) {
+      throw new Error('clientId must not be null or undefined');
+    }
+    return `tokens-${clientId}.json`;
+  },
 
-	  if (value === "") {
-	    console.log(JSON.stringify({type, message}));
-	  } else {
-	    console.log(JSON.stringify({type, message: {[message]: value}}));
-	  }
-	},
+  tokensFilepath: function() {
+    return `${this.path}/${this.tokensFilename()}`;
+  },
 
-	setTokenClientId: function(idToSet) {
-	  if (!idToSet) {
-	    throw new Error('idToSet must not be null or undefined');
-	  }
-	  printJson("debug", "Setting client ID", idToSet);
-	  clientId = idToSet;
-	},
+  tokensFileExists: function() {
+    return fs.existsSync(this.tokensFilepath())
+  },
 
-	tokensFilename: function() {
-	  if (!clientId) {
-	    throw new Error('clientId must not be null or undefined');
-	  }
-	  return `tokens-${clientId}.json`;
-	},
+  readTokens: function() {
+    console.log("Attempting to read tokens");
 
-	tokensFilepath: function() {
-	  return path.join(path.dirname(path.realpath(__filename)), tokensFilename());
-	},
+    if (!this.tokensFileExists()) {
+      console.error(`'${this.tokensFilename()}' does not exist`);
+      process.exit(1);
+    }
 
-	tokensFileExists: function() {
-	  if (fs.existsSync(tokensFilepath())) {
-	    printJson("debug", `'${tokensFilename()}' exists`);
-	    return true;
-	  } else {
-	    printJson("debug", `'${tokensFilename()}' does not exist`);
-	    return false;
-	  }
-	},
+    console.log(`Reading from '${this.tokensFilename()}'`);
 
-	readTokens: async function() {
-	  printJson("status", "Attempting to read tokens");
+    let AccToken = null;
+    let RefToken = null;
+    let Expires = null;
 
-	  if (!tokensFileExists()) {
-	    printJson("error", `'${tokensFilename()}' does not exist`);
-	    process.exit(1);
-	  }
+    try {
+      const data = JSON.parse(fs.readFileSync(this.tokensFilepath()));
+      AccToken = data["ACC_TOK"];
+      RefToken = data["REF_TOK"];
+      Expires = data["EXPIRES_AT"];
+    } catch (error) {
+      console.error(`Cannot read '${this.tokensFilename()}'`);
+      process.exit(1);
+    }
 
-	  printJson("debug", `Reading from '${tokensFilename()}'`);
+    if (!AccToken) {
+      console.error(`Cannot read access_token from '${this.tokensFilename()}'`);
+      process.exit(1);
+    }
 
-	  try {
-	    let AccToken = null;
-	    let RefToken = null;
-	    let Expires = null;
+    if (!RefToken) {
+      console.error(`Cannot read refresh_token from '${this.tokensFilename()}'`);
+      process.exit(1);
+    }
 
-	    const data = JSON.parse(fs.readFileSync(tokensFilepath()));
-	    AccToken = data["ACC_TOK"];
-	    RefToken = data["REF_TOK"];
-	    Expires = data["EXPIRES_AT"];
-	  } catch (error) {
-	    printJson("error", `Cannot read '${tokensFilename()}'`);
-	    process.exit(1);
-	  }
+    if (!Expires) {
+      console.error(`Cannot read expires_at from '${this.tokensFilename()}'`);
+      process.exit(1);
+    }
 
-	  if (!AccToken) {
-	    printJson("error", `Cannot read access_token from '${tokensFilename()}'`);
-	    process.exit(1);
-	  }
+    console.log("Tokens read successfully");
+    return {AccToken, RefToken, Expires};
+  },
 
-	  if (!RefToken) {
-	    printJson("error", `Cannot read refresh_token from '${tokensFilename()}'`);
-	    process.exit(1);
-	  }
+  writeTokens: function(AccToken, RefToken, Expires = null) {
+    console.log("Attempting to write tokens");
 
-	  if (!Expires) {
-	    printJson("error", `Cannot read expires_at from '${tokensFilename()}'`);
-	    process.exit(1);
-	  }
+    console.log(`Writing tokens to '${this.tokensFilename()}'`);
 
-	  printJson("status", "Tokens read successfully");
-	  return {AccToken, RefToken, Expires};
-	},
+    const debug_print_out = `Writing access token: '${AccToken}', refresh token: '${RefToken}' and expiry Unix timestamp: '${Expires}'`;
+    console.log(debug_print_out);
 
-	writeTokens: function(AccToken, RefToken, Expires = null) {
-	  printJson("status", "Attempting to write tokens");
+    const data = {
+      ACC_TOK: AccToken,
+      REF_TOK: RefToken,
+      EXPIRES_AT: Expires,
+    };
 
-	  printJson("debug", `Writing tokens to '${tokensFilename()}'`);
+    fs.writeFileSync(this.tokensFilepath(), JSON.stringify(data));
 
-	  const debug_print_out = `Writing access token: '${AccToken}', refresh token: '${RefToken}' and expiry Unix timestamp: '${Expires}'`;
-	  printJson("debug", debug_print_out);
+    console.log("Tokens written successfully");
+  },
 
-	  const data = {
-	    ACC_TOK: AccToken,
-	    REF_TOK: RefToken,
-	    EXPIRES_AT: Expires,
-	  };
+  sendDataMessageSocketNotification: function (error, data, response) {
+    if (error) {
+      console.error(error);
+      return;
+    }
 
-	  fs.writeFileSync(tokensFilepath(), JSON.stringify(data));
+    message = {
+      "values": {
+        "data": response._body.summary.caloriesOut,
+        "goal": response._body.goals.caloriesOut
+      },
+      "resource": "caloriesOut",
+      "clientId": clientId
+    }
+    console.log("Sending socket notification...")
+    this.sendSocketNotification("API_DATA_RECEIVED", message);
+    console.log("Sent socket notification!")
 
-	  printJson("status", "Tokens written successfully");
-	},
+    // TODO: only start fading in when ALL values are ready!
+    this.sendSocketNotification("UPDATE_VIEW", "Finished getting data from Fitbit API");
+  },
 
-	getData: function (config) {
-		const self = this;
+  getData: function (config) {
+    const self = this;
+    this.setTokenClientId(config.credentials.clientId);
 
-		// if (config.test) {
-		// 	TODO: get from test/test_data.json
-		// }
+    // if (config.test) {
+    //  TODO: get from test/test_data.json
+    // }
 
-		if (config.debug) {
-			console.log("MMM-Fitbit2: Data to receive: " + JSON.stringify(config));
-		}
+    if (config.debug) {
+      console.log("MMM-Fitbit2: Data to receive: " + JSON.stringify(config));
+    }
 
-		let apiInstance = new fitbitWebApi.AuthApi();
+    // TODO: replace https://github.com/m-roberts/MMM-Fitbit2/blob/master/python/get_data.py
+ 
+    const tokens = this.readTokens();
 
-		console.log(Object.keys(fitbitWebApi));
-		console.log(Object.keys(apiInstance));
+    let apiClient = new fitbitWebApi.ApiClient()
+    apiClient.authentications['oauth2'].type = 'bearer'
+    apiClient.authentications['oauth2'].accessToken = tokens.AccToken
 
-		fitbitWebApi.getUsers()
-		  .then(response => {
-		    // Do something with the response
-		    if (message.type == "data") {
-					message.clientId = config.credentials.clientId
-					self.sendSocketNotification("API_DATA_RECEIVED", message);
-				}
-		  })
-		  .catch(error => {
-		    throw error;
-		  });
+    let activityApiInstance = new fitbitWebApi.ActivityApi(apiClient);
+  
+    activityApiInstance.getActivitiesByDate("2022-12-18", (error, data, response) => {
+      self.sendDataMessageSocketNotification(error, data, response)
+    })
 
-		self.sendSocketNotification("UPDATE_VIEW", "Finished getting data from Fitbit API");
-		console.log("MMM-Fitbit2: END API CALLS");
+    // ActiveZoneMinutesIntradayTimeSeriesApi
+    // ActiveZoneMinutesTimeSeriesApi
+    // ActivityApi
+    // ActivityIntradayTimeSeriesApi
+    // ActivityTimeSeriesApi
+    // BodyAndWeightApi
+    // BodyAndWeightTimeSeriesApi
+    // BreathingRateApi
+    // BreathingRateIntradayApi
+    // CardioFitnessScoreVO2MaxApi
+    // DevicesApi
+    // ElectrocardiogramApi
+    // FoodAndWaterApi
+    // FoodAndWaterTimeSeriesApi
+    // FriendsApi
+    // HeartRateIntradayTimeSeriesApi
+    // HeartRateTimeSeriesApi
+    // HeartRateVariabilityApi
+    // HeartRateVariabilityIntradayApi
+    // SleepApi
+    // SpO2Api
+    // SpO2IntradayApi
+    // SubscriptionsApi
+    // TemperatureApi
+    // UserApi
 
-
-		// fitbitPyShell.on("message", function (message) {
-		// 	if (config.debug) {
-		// 		console.log("MMM-Fitbit2: Message received: " + JSON.stringify(message))
-		// 	}
-		// if (message.type == "data") {
-		// 	message.clientId = config.credentials.clientId
-		// 	self.sendSocketNotification("API_DATA_RECEIVED", message);
-		// }
-		// });
-	},
+    console.log("MMM-Fitbit2: END API CALLS");
+  }
 });

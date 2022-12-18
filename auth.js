@@ -34,11 +34,6 @@ const state = Math.random().toString(36).substring(2);
 
 const app = express();
 
-'&client_id=' + encodeURIComponent(fitbitClientId) +
-    '&redirect_uri=' + encodeURIComponent(redirectUri) +
-    '&scope=' + encodeURIComponent(scope) +
-    '&state=' + encodeURIComponent(state);
-
 // Function to request an access token using the authorization code
 async function requestAccessToken(authCode) {
   const authorization = "Basic " + btoa(`${fitbitClientId}:${fitbitClientSecret}`);
