@@ -26,7 +26,7 @@ module.exports = NodeHelper.create({
 
 	setDebugState: function(enableDebug) {
 	  debugMode = enableDebug;
-	}
+	},
 
 	printJson: function(type, message, value = "") {
 	  if (type === "debug" && !debugMode) {
@@ -38,7 +38,7 @@ module.exports = NodeHelper.create({
 	  } else {
 	    console.log(JSON.stringify({type, message: {[message]: value}}));
 	  }
-	}
+	},
 
 	setTokenClientId: function(idToSet) {
 	  if (!idToSet) {
@@ -46,18 +46,18 @@ module.exports = NodeHelper.create({
 	  }
 	  printJson("debug", "Setting client ID", idToSet);
 	  clientId = idToSet;
-	}
+	},
 
 	tokensFilename: function() {
 	  if (!clientId) {
 	    throw new Error('clientId must not be null or undefined');
 	  }
 	  return `tokens-${clientId}.json`;
-	}
+	},
 
 	tokensFilepath: function() {
 	  return path.join(path.dirname(path.realpath(__filename)), tokensFilename());
-	}
+	},
 
 	tokensFileExists: function() {
 	  if (fs.existsSync(tokensFilepath())) {
@@ -67,7 +67,7 @@ module.exports = NodeHelper.create({
 	    printJson("debug", `'${tokensFilename()}' does not exist`);
 	    return false;
 	  }
-	}
+	},
 
 	readTokens: async function() {
 	  printJson("status", "Attempting to read tokens");
@@ -110,7 +110,7 @@ module.exports = NodeHelper.create({
 
 	  printJson("status", "Tokens read successfully");
 	  return {AccToken, RefToken, Expires};
-	}
+	},
 
 	writeTokens: function(AccToken, RefToken, Expires = null) {
 	  printJson("status", "Attempting to write tokens");
@@ -129,7 +129,7 @@ module.exports = NodeHelper.create({
 	  fs.writeFileSync(tokensFilepath(), JSON.stringify(data));
 
 	  printJson("status", "Tokens written successfully");
-	}
+	},
 
 	getData: function (config) {
 		const self = this;
