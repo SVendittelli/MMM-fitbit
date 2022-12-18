@@ -79,7 +79,7 @@ When you run `auth.sh`, you'll be asked to provide your personal `clientId` and 
 
 After this, a web browser will launch on your display (even if you ran `auth.sh` over SSH). You'll need to log in using your Fitbit username and password, if you are not logged in already. Make sure to allow access to all options and close the window when instructed.
 
-Once you have done this, you should have a file called `python/tokens-<clientId>.json`. If you have this, you have finished authorisation!
+Once you have done this, you should have a file called `tokens-<clientId>.json`. If you have this, you have finished authorisation!
 
 ### Some notes on how tokens work, and how to use them properly
 Generating tokens for any Fitbit application will nullify all previously generated tokens associated with a given `clientId` for that application.
@@ -171,7 +171,7 @@ Uninstalling/Revoking Access
 ---
 There are a few ways that you can do this:
 ### You have access to the device and want to keep your Fitbit application
-Simply delete your tokens file (`tokens-<clientId>.json`) from `python/`.
+Simply delete your tokens file (`tokens-<clientId>.json`).
 
 ### You do not have access to the device and want to keep your Fitbit application
 Simply generate new tokens for yourself on another machine. This will make your previous tokens invalid.

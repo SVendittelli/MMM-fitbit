@@ -247,4 +247,4 @@ dist
 # Additional parameters #
 #########################
 .DS_Store
-python/*.json
+tokens-*.json

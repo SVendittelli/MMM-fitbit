@@ -62,7 +62,7 @@ async function requestAccessToken(authCode) {
       "EXPIRES_AT": response.body.expires_in,
     }
 
-    let tokenFile = `python/tokens-${fitbitClientId}.json`
+    let tokenFile = `tokens-${fitbitClientId}.json`
 
     fs.writeFileSync(tokenFile, JSON.stringify(data));
     console.log(`Saved access token data to ${tokenFile}!`);
