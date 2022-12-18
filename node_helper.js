@@ -6,7 +6,7 @@
  */
 
 var NodeHelper = require("node_helper");
-const apiInstance = require('./fitbit_web_api/index');
+const fitbitWebApi = require('fitbit_web_api');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -142,8 +142,12 @@ module.exports = NodeHelper.create({
 			console.log("MMM-Fitbit2: Data to receive: " + JSON.stringify(config));
 		}
 
+		let apiInstance = new fitbitWebApi.AuthApi();
+
+		console.log(Object.keys(fitbitWebApi));
 		console.log(Object.keys(apiInstance));
-		apiInstance.getUsers()
+
+		fitbitWebApi.getUsers()
 		  .then(response => {
 		    // Do something with the response
 		    if (message.type == "data") {
